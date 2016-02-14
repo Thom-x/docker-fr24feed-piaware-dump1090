@@ -20,14 +20,12 @@ Replace `fr24key="YOUR_KEY_HERE"` with your key (ex: `fr24key="a23165za4za56"`).
 ## Dump1090
 ### Receiver location
 Download and edit https://raw.githubusercontent.com/Thom-x/docker-fr24feed-dump1090-mutability/master/config.jsto suite your receiver location and name:
-
-```
+```javascript
 SiteShow    = true;           // true to show a center marker
 SiteLat     = 47;            // position of the marker
 SiteLon     = 2.5;
 SiteName    = "Home"; // tooltip of the marker
 ```
-
 ### Terrain-limit rings (optional):
 If you don't need this feature simply delete the `upintheair.json` file or else
 create a panorama for your receiver location on **http://www.heywhatsthat.com**
@@ -48,7 +46,6 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 -v /path/to/your/fr24feed.ini:/etc/fr24feed.ini \
 thomx/fr24feed
 ```
-
 # Build it yourself
 ## FlightRadar24
 Register to https://www.flightradar24.com/share-your-data and get a sharing key.
