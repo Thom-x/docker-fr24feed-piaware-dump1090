@@ -22,7 +22,7 @@ RUN git clone https://github.com/mutability/dump1090 && \
     cd dump1090 && \
     make && mkdir /usr/lib/fr24 && cp dump1090 /usr/lib/fr24/ && cp -r public_html /usr/lib/fr24/
 COPY config.js /usr/lib/fr24/public_html/
-COPY upintheair.json /usr/lib/fr24/public_html/
+#COPY upintheair.json /usr/lib/fr24/public_html/ # Uncomment if you want to add your upintheair.json file
 
 # PIAWARE
 WORKDIR /tmp
@@ -32,13 +32,15 @@ RUN git clone https://github.com/flightaware/piaware_builder.git piaware_builder
 WORKDIR /tmp/piaware_builder
 RUN ./sensible-build.sh && cd package && dpkg-buildpackage -b && cd .. && dpkg -i piaware_*_*.deb
 COPY .piaware /root/
-RUN /etc/init.d/piaware restart
 
 # FR24FEED
-WORKDIR /work
+WORKDIR /fr24feed
 RUN wget $(wget -qO- http://feed.flightradar24.com/linux | egrep amd64.tgz | awk -F\" '{print $2}') \
     && tar -xvzf *amd64.tgz
 COPY fr24feed.ini /etc/
+
+WORKDIR /
+COPY run.sh /
 
 EXPOSE 8754
 EXPOSE 8080
@@ -49,4 +51,4 @@ EXPOSE 30004
 EXPOSE 30005
 EXPOSE 30104
 
-ENTRYPOINT ["/work/fr24feed_amd64/fr24feed"]
+ENTRYPOINT ["/bin/bash", "/run.sh"]

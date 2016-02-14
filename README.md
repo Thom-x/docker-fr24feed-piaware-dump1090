@@ -1,7 +1,7 @@
-# Fr24feed with dump1090-mutability Docker image
-Docker image of fr24feed and dump1090-mutability.
+# Fr24feed and FlightAware with dump1090-mutability as a Docker image
+Docker image of Fr24feed, FlightAware and dump1090-mutability.
 
-Feed FlightRadar24 and see the positions of aircraft on a Google Maps map.
+Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts on a Google Maps map.
 
 ![Image of dump1090 webapp](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-dump1090-mutability/master/screenshot.png)
 
@@ -9,12 +9,13 @@ Feed FlightRadar24 and see the positions of aircraft on a Google Maps map.
 - Docker
 - RTL-SDR DVBT USB Dongle (RTL2832)
 
-# From image
+# Install from image
 
 ## FlightAware
 Register to https://flightaware.com/account/join/.
 
 Download and edit https://raw.githubusercontent.com/Thom-x/docker-fr24feed-dump1090-mutability/master/.piaware
+
 Replace `user YOUR_USERNAME` with your username (ex: `user JohnDoe`) and `password YOUR_PASSWORD` with your password (ex: `password azerty`).
 
 ## FlightRadar24
@@ -33,24 +34,26 @@ SiteLon     = 2.5;
 SiteName    = "Home"; // tooltip of the marker
 ```
 ### Terrain-limit rings (optional):
-If you don't need this feature simply delete the `upintheair.json` file or else
-create a panorama for your receiver location on **http://www.heywhatsthat.com**
+If you don't need this feature ignore this.
 
-*Note the "view" value from the URL at the top of the panorama*
-i.e. the XXXX in http://www.heywhatsthat.com/?view=XXXX
-**Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=3048,9144 and replace upintheair.json in this directory**.
-NB: altitudes are in _meters_, you can specify a list of altitudes
+Create a panorama for your receiver location on http://www.heywhatsthat.com.
 
+Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=1000,10000 as upintheair.json.
+
+*Note : the "id" value XXXX correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes.*
 ## Installation
 
 Run : 
 ```
 docker run -d -p 8080:8080 -p 8754:8754 \
 --device=/dev/bus/usb:/dev/bus/usb \
+-v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json \
 -v /path/to/your/.piaware:/root/.piaware \
 -v /path/to/your/config.js:/usr/lib/fr24/public_html/config.js \
--v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json \
 -v /path/to/your/fr24feed.ini:/etc/fr24feed.ini \
+
+*Note : remove `-v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json \` from the command line if you don't want to use this feature.*
+
 thomx/fr24feed
 ```
 # Build it yourself
@@ -81,11 +84,13 @@ SiteLon     = 2.5;
 SiteName    = "Home"; // tooltip of the marker
 ```
 ### Terrain-limit rings (optional):
+If you don't need this feature ignore this.
+
 Create a panorama for your receiver location on http://www.heywhatsthat.com.
 
-Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=3048,9144 and place it in this directory (altitudes are in meters, you can specify a list of altitudes).
+Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=1000,10000 and place the file upintheair.json in this directory.
 
-*Note : XXXX is the "view" value from the URL at the top of the panorama XXXX in http://www.heywhatsthat.com/?view=XXXX*
+*Note : the "id" value XXXX correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes.*
 ## Installation
 Run : `docker-compose up`
 
