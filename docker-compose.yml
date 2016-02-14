@@ -1,0 +1,28 @@
+fr24feed:
+  restart: always
+  build: .
+  # expose
+  # 30001 - Raw output listen port
+  # 30002 - Feed Dump1090 input listen port
+  # 30003 - TCP BaseStation output listen port
+  # 30004 - TCP Beast input listen port
+  # 30005 - TCP Beast output listen port
+  # 8754 - DUMP1090 server port
+  # 4242 - HTTP server port
+  expose:
+    - "30001"
+    - "30002"
+    - "30003"
+    - "30004"
+    - "30005"
+    - "30104"
+    - "8754"
+    - "8080"
+  devices:
+    - "/dev/bus/usb"
+  # posts
+  # 8754 - DUMP1090 server port
+  # 4242 - HTTP server port
+  ports:
+    - "8754:8754"
+    - "8080:8080"
