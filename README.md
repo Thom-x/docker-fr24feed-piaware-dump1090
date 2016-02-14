@@ -25,6 +25,7 @@ SiteName    = "Maison"; // tooltip of the marker
 Create a panorama for your receiver location on http://www.heywhatsthat.com.
 
 Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=3048,9144 and place it in this directory (altitudes are in meters, you can specify a list of altitudes).
+
 *Note : XXXX is the "view" value from the URL at the top of the panorama XXXX in http://www.heywhatsthat.com/?view=XXXX*
 # Installation
 Run : `docker-compose up`
