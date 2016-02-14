@@ -11,6 +11,12 @@ Feed FlightRadar24 and see the positions of aircraft on a Google Maps map.
 
 # From image
 
+## FlightAware
+Register to https://flightaware.com/account/join/.
+
+Download and edit https://raw.githubusercontent.com/Thom-x/docker-fr24feed-dump1090-mutability/master/.piaware
+Replace `user YOUR_USERNAME` with your username (ex: `user JohnDoe`) and `password YOUR_PASSWORD` with your password (ex: `password azerty`).
+
 ## FlightRadar24
 Register to https://www.flightradar24.com/share-your-data and get a sharing key.
 
@@ -41,12 +47,26 @@ Run :
 ```
 docker run -d -p 8080:8080 -p 8754:8754 \
 --device=/dev/bus/usb:/dev/bus/usb \
+-v /path/to/your/.piaware:/root/.piaware \
 -v /path/to/your/config.js:/usr/lib/fr24/public_html/config.js \
 -v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json \
 -v /path/to/your/fr24feed.ini:/etc/fr24feed.ini \
 thomx/fr24feed
 ```
 # Build it yourself
+## FlightAware
+Register to https://flightaware.com/account/join/.
+
+Edit `.piaware` and replace `user YOUR_USERNAME` with your username (ex: `user JohnDoe`) and `password YOUR_PASSWORD` with your password (ex: `password azerty`).
+## Dump1090
+### Receiver location
+Edit `config.js` to suite your receiver location and name:
+```javascript
+SiteShow    = true;           // true to show a center marker
+SiteLat     = 47;            // position of the marker
+SiteLon     = 2.5;
+SiteName    = "Home"; // tooltip of the marker
+```
 ## FlightRadar24
 Register to https://www.flightradar24.com/share-your-data and get a sharing key.
 

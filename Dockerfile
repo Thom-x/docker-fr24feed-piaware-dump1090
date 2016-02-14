@@ -6,7 +6,6 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
  
 WORKDIR /tmp
- 
 RUN echo 'blacklist dvb_usb_rtl28xxu' > /etc/modprobe.d/raspi-blacklist.conf && \
     git clone git://git.osmocom.org/rtl-sdr.git && \
     mkdir rtl-sdr/build && \
@@ -17,21 +16,28 @@ RUN echo 'blacklist dvb_usb_rtl28xxu' > /etc/modprobe.d/raspi-blacklist.conf && 
     ldconfig && \
     rm -rf /tmp/rtl-sdr
 
+# DUMP1090
 WORKDIR /tmp
- 
-#RUN git clone git://github.com/antirez/dump1090.git && \
-#RUN git clone https://github.com/Flightradar24/dump1090.git && \
 RUN git clone https://github.com/mutability/dump1090 && \
-	cd dump1090 && \
-	make && mkdir /usr/lib/fr24 && cp dump1090 /usr/lib/fr24/ && cp -r public_html /usr/lib/fr24/
-
+    cd dump1090 && \
+    make && mkdir /usr/lib/fr24 && cp dump1090 /usr/lib/fr24/ && cp -r public_html /usr/lib/fr24/
 COPY config.js /usr/lib/fr24/public_html/
+COPY upintheair.json /usr/lib/fr24/public_html/
 
+# PIAWARE
+WORKDIR /tmp
+RUN apt-get update && \
+    apt-get install sudo build-essential debhelper tcl8.5-dev autoconf python3-dev python-virtualenv libz-dev net-tools tclx8.4 tcllib tcl-tls itcl3 -y
+RUN git clone https://github.com/flightaware/piaware_builder.git piaware_builder
+WORKDIR /tmp/piaware_builder
+RUN ./sensible-build.sh && cd package && dpkg-buildpackage -b && cd .. && dpkg -i piaware_*_*.deb
+COPY .piaware /root/
+RUN /etc/init.d/piaware restart
+
+# FR24FEED
 WORKDIR /work
-
 RUN wget $(wget -qO- http://feed.flightradar24.com/linux | egrep amd64.tgz | awk -F\" '{print $2}') \
     && tar -xvzf *amd64.tgz
-
 COPY fr24feed.ini /etc/
 
 EXPOSE 8754
