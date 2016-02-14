@@ -3,7 +3,7 @@ Docker image of Fr24feed, FlightAware and dump1090-mutability.
 
 Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts on a Google Maps map.
 
-![Image of dump1090 webapp](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-dump1090-mutability/master/screenshot.png)
+![Image of dump1090 webapp](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/screenshot.png)
 
 # Requirements
 - Docker
@@ -14,19 +14,19 @@ Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts 
 ## FlightAware
 Register to https://flightaware.com/account/join/.
 
-Download and edit https://raw.githubusercontent.com/Thom-x/docker-fr24feed-dump1090-mutability/master/.piaware
+Download and edit https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/.piaware
 
 Replace `user YOUR_USERNAME` with your username (ex: `user JohnDoe`) and `password YOUR_PASSWORD` with your password (ex: `password azerty`).
 
 ## FlightRadar24
 Register to https://www.flightradar24.com/share-your-data and get a sharing key.
 
-Download and edit https://raw.githubusercontent.com/Thom-x/docker-fr24feed-dump1090-mutability/master/fr24feed.ini
+Download and edit https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/fr24feed.ini
 Replace `fr24key="YOUR_KEY_HERE"` with your key (ex: `fr24key="a23165za4za56"`).
 
 ## Dump1090
 ### Receiver location
-Download and edit https://raw.githubusercontent.com/Thom-x/docker-fr24feed-dump1090-mutability/master/config.jsto suite your receiver location and name:
+Download and edit https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/config.jsto suite your receiver location and name:
 ```javascript
 SiteShow    = true;           // true to show a center marker
 SiteLat     = 47;            // position of the marker
