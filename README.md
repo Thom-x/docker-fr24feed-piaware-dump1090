@@ -51,6 +51,7 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 -v /path/to/your/.piaware:/root/.piaware \
 -v /path/to/your/config.js:/usr/lib/fr24/public_html/config.js \
 -v /path/to/your/fr24feed.ini:/etc/fr24feed.ini \
+thomx/fr24feed-piaware
 
 *Note : remove `-v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json \` from the command line if you don't want to use this feature.*
 
