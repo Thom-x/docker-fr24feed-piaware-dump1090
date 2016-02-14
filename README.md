@@ -22,13 +22,10 @@ SiteLon     = -1.542872;
 SiteName    = "Maison"; // tooltip of the marker 
 ```
 ### Terrain-limit rings (optional):
-Create a panorama for your receiver location on **http://www.heywhatsthat.com**
+Create a panorama for your receiver location on http://www.heywhatsthat.com.
 
-*Note the "view" value from the URL at the top of the panorama
-i.e. the XXXX in http://www.heywhatsthat.com/?view=XXXX*
-
-**Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=3048,9144 and place it in this directory**.
-NB: altitudes are in _meters_, you can specify a list of altitudes
+Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=3048,9144 and place it in this directory (altitudes are in meters, you can specify a list of altitudes).
+*Note : XXXX is the "view" value from the URL at the top of the panorama XXXX in http://www.heywhatsthat.com/?view=XXXX*
 # Installation
 Run : `docker-compose up`
 # Usage
