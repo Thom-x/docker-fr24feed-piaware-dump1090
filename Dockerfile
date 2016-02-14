@@ -26,7 +26,6 @@ RUN git clone https://github.com/mutability/dump1090 && \
 	make && mkdir /usr/lib/fr24 && cp dump1090 /usr/lib/fr24/ && cp -r public_html /usr/lib/fr24/
 
 COPY config.js /usr/lib/fr24/public_html/
-COPY upintheair.json /usr/lib/fr24/public_html/
 
 WORKDIR /work
 
