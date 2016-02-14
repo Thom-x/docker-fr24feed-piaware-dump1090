@@ -14,19 +14,19 @@ Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts 
 ## FlightAware
 Register to https://flightaware.com/account/join/.
 
-Download and edit https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/.piaware
+Download and edit [`.piaware`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/.piaware)
 
 Replace `user YOUR_USERNAME` with your username (ex: `user JohnDoe`) and `password YOUR_PASSWORD` with your password (ex: `password azerty`).
 
 ## FlightRadar24
 Register to https://www.flightradar24.com/share-your-data and get a sharing key.
 
-Download and edit https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/fr24feed.ini
+Download and edit [`fr24feed.ini`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/fr24feed.ini)
 Replace `fr24key="YOUR_KEY_HERE"` with your key (ex: `fr24key="a23165za4za56"`).
 
 ## Dump1090
 ### Receiver location
-Download and edit https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/config.jsto suite your receiver location and name:
+Download and edit [`config.js`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/config.js) to suite your receiver location and name:
 ```javascript
 SiteShow    = true;           // true to show a center marker
 SiteLat     = 47;            // position of the marker
@@ -88,7 +88,7 @@ If you don't need this feature ignore this.
 
 Create a panorama for your receiver location on http://www.heywhatsthat.com.
 
-Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=1000,10000 and place the file upintheair.json in this directory.
+Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=1000,10000 place the file upintheair.json in this directory and uncomment `#COPY upintheair.json /usr/lib/fr24/...` from Dockerfile.
 
 *Note : the "id" value XXXX correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes.*
 ## Installation
