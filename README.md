@@ -15,7 +15,7 @@ Edit `fr24feed.ini` and replace `fr24key="YOUR_KEY_HERE"` with your key (ex: `fr
 ## Dump1090
 ### Receiver location :
 Edit `config.js` to suite your receiver location and name:
-```
+```javascript
 SiteShow    = true;           // true to show a center marker
 SiteLat     = 47.175718;            // position of the marker
 SiteLon     = -1.542872;
