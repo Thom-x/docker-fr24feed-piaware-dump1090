@@ -17,9 +17,9 @@ Edit `fr24feed.ini` and replace `fr24key="YOUR_KEY_HERE"` with your key (ex: `fr
 Edit `config.js` to suite your receiver location and name:
 ```javascript
 SiteShow    = true;           // true to show a center marker
-SiteLat     = 47.175718;            // position of the marker
-SiteLon     = -1.542872;
-SiteName    = "Maison"; // tooltip of the marker 
+SiteLat     = 47;            // position of the marker
+SiteLon     = 2.5;
+SiteName    = "Home"; // tooltip of the marker
 ```
 ### Terrain-limit rings (optional):
 Create a panorama for your receiver location on http://www.heywhatsthat.com.
