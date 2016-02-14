@@ -3,6 +3,8 @@ Docker image of fr24feed and dump1090-mutability.
 
 Feed FlightRadar24 and see the positions of aircraft on a Google Maps map.
 
+![Image of dump1090 webapp](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-dump1090-mutability/master/screenshot.png)
+
 # Requirements
 - Docker
 - RTL-SDR DVBT USB Dongle (RTL2832)
