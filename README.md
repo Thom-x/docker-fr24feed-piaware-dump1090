@@ -47,13 +47,15 @@ Run :
 ```
 docker run -d -p 8080:8080 -p 8754:8754 \
 --device=/dev/bus/usb:/dev/bus/usb \
+--mac-address="ff:ff:ff:ff:ff:ff" \
 -v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json \
 -v /path/to/your/.piaware:/root/.piaware \
 -v /path/to/your/config.js:/usr/lib/fr24/public_html/config.js \
 -v /path/to/your/fr24feed.ini:/etc/fr24feed.ini \
 thomx/fr24feed-piaware
 ```
-*Note : remove `-v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json \` from the command line if you don't want to use this feature.*
+Change `--mac-address="ff:ff:ff:ff:ff:ff"` with your own MAC address.
+*Note : remove `-v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json` from the command line if you don't want to use this feature.*
 # Build it yourself
 ## FlightAware
 Register to https://flightaware.com/account/join/.
@@ -90,6 +92,7 @@ Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25
 
 *Note : the "id" value XXXX correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes.*
 ## Installation
+Edit `docker-compose.yml` and replace `mac-address: ff:ff:ff:ff:ff:ff` with your own MAC address.
 Run : `docker-compose up`
 
 # Usage

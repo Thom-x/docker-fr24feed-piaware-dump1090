@@ -1,4 +1,4 @@
-fr24feed:
+fr24feed-piaware:
   restart: always
   build: .
   # expose
@@ -8,7 +8,7 @@ fr24feed:
   # 30004 - TCP Beast input listen port
   # 30005 - TCP Beast output listen port
   # 8754 - DUMP1090 server port
-  # 4242 - HTTP server port
+  # 8080 - HTTP server port
   expose:
     - "30001"
     - "30002"
@@ -18,11 +18,12 @@ fr24feed:
     - "30104"
     - "8754"
     - "8080"
+  mac_address: ff:ff:ff:ff:ff:ff
   devices:
     - "/dev/bus/usb"
   # posts
   # 8754 - DUMP1090 server port
-  # 4242 - HTTP server port
+  # 8080 - HTTP server port
   ports:
     - "8754:8754"
     - "8080:8080"
