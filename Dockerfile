@@ -1,4 +1,6 @@
 FROM debian:jessie
+
+MAINTAINER maugin.thomas@gmail.com
  
 RUN apt-get update && \
     apt-get install -y wget libusb-1.0-0-dev pkg-config ca-certificates git-core cmake build-essential --no-install-recommends && \
@@ -22,7 +24,9 @@ RUN git clone https://github.com/mutability/dump1090 && \
     cd dump1090 && \
     make && mkdir /usr/lib/fr24 && cp dump1090 /usr/lib/fr24/ && cp -r public_html /usr/lib/fr24/
 COPY config.js /usr/lib/fr24/public_html/
-#COPY upintheair.json /usr/lib/fr24/public_html/ # Uncomment if you want to add your upintheair.json file
+
+# Uncomment if you want to add your upintheair.json file
+#COPY upintheair.json /usr/lib/fr24/public_html/
 
 # PIAWARE
 WORKDIR /tmp
@@ -39,16 +43,15 @@ RUN wget $(wget -qO- http://feed.flightradar24.com/linux | egrep amd64.tgz | awk
     && tar -xvzf *amd64.tgz
 COPY fr24feed.ini /etc/
 
-WORKDIR /
-COPY run.sh /
+RUN apt-get update && apt-get install -y supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-EXPOSE 8754
-EXPOSE 8080
-EXPOSE 30001
-EXPOSE 30002
-EXPOSE 30003
-EXPOSE 30004
-EXPOSE 30005
-EXPOSE 30104
+# Add Tini
+ENV TINI_VERSION v0.9.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+ENTRYPOINT ["/tini", "--"]
 
-ENTRYPOINT ["/bin/bash", "/run.sh"]
+EXPOSE 8754 8080 30001 30002 30003 30004 30005 30104 
+
+CMD ["/usr/bin/supervisord"]
