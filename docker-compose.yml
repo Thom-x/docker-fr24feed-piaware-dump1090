@@ -21,7 +21,7 @@ fr24feed-piaware:
   mac_address: ff:ff:ff:ff:ff:ff
   devices:
     - "/dev/bus/usb"
-  # posts
+  # ports
   # 8754 - DUMP1090 server port
   # 8080 - HTTP server port
   ports:
