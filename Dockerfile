@@ -36,7 +36,7 @@ RUN apt-get update && \
 RUN git clone https://github.com/flightaware/piaware_builder.git piaware_builder
 WORKDIR /tmp/piaware_builder
 RUN ./sensible-build.sh jessie && cd package-jessie && dpkg-buildpackage -b && cd .. && dpkg -i piaware_*_*.deb
-COPY .piaware /root/
+COPY piaware.conf /etc/
 
 # FR24FEED
 WORKDIR /fr24feed
@@ -48,7 +48,7 @@ RUN apt-get update && apt-get install -y supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Add Tini
-ENV TINI_VERSION v0.9.0
+ENV TINI_VERSION v0.13.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 ENTRYPOINT ["/tini", "--"]

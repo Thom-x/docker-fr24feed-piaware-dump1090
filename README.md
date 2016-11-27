@@ -4,7 +4,7 @@
 # Fr24feed and FlightAware with dump1090-mutability as a Docker image
 Docker image of Fr24feed, FlightAware and dump1090-mutability.
 
-Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts on a Google Maps map.
+Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts on a map.
 
 ![Image of dump1090 webapp](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/screenshot.png)
 
@@ -17,9 +17,9 @@ Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts 
 ## FlightAware
 Register to https://flightaware.com/account/join/.
 
-Download and edit [`.piaware`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/.piaware)
+Download and edit [`piaware.conf`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/piaware.conf)
 
-Replace `user YOUR_USERNAME` with your username (ex: `user JohnDoe`) and `password YOUR_PASSWORD` with your password (ex: `password azerty`).
+Replace `flightaware-user YOUR_USERNAME` with your username (ex: `flightaware-user JohnDoe`) and `flightaware-password YOUR_PASSWORD` with your password (ex: `flightaware-password azerty`).
 
 ## FlightRadar24
 Register to https://www.flightradar24.com/share-your-data and get a sharing key.
@@ -52,7 +52,7 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 --device=/dev/bus/usb:/dev/bus/usb \
 --mac-address="ff:ff:ff:ff:ff:ff" \
 -v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json \
--v /path/to/your/.piaware:/root/.piaware \
+-v /path/to/your/piaware.conf:/etc/piaware.conf \
 -v /path/to/your/config.js:/usr/lib/fr24/public_html/config.js \
 -v /path/to/your/fr24feed.ini:/etc/fr24feed.ini \
 thomx/fr24feed-piaware
@@ -63,7 +63,7 @@ Change `--mac-address="ff:ff:ff:ff:ff:ff"` with your own MAC address.
 ## FlightAware
 Register to https://flightaware.com/account/join/.
 
-Edit `.piaware` and replace `user YOUR_USERNAME` with your username (ex: `user JohnDoe`) and `password YOUR_PASSWORD` with your password (ex: `password azerty`).
+Edit `piaware.conf` and replace `user YOUR_USERNAME` with your username (ex: `user JohnDoe`) and `password YOUR_PASSWORD` with your password (ex: `password azerty`).
 ## Dump1090
 ### Receiver location
 Edit `config.js` to suite your receiver location and name:
