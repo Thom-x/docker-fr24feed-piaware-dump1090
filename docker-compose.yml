@@ -1,6 +1,7 @@
 fr24feed-piaware:
-  restart: always
-  build: .
+  init: /usr/libexec/docker-init
+  restart: unless-stopped
+  build: "fr24feed-piaware"
   # expose
   # 30001 - Raw output listen port
   # 30002 - Feed Dump1090 input listen port
@@ -27,3 +28,6 @@ fr24feed-piaware:
   ports:
     - "8754:8754"
     - "8080:8080"
+  logging:
+    options:
+      max-size: "30m"
