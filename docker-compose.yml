@@ -1,5 +1,4 @@
 fr24feed-piaware:
-  init: /usr/libexec/docker-init
   restart: unless-stopped
   build: "fr24feed-piaware"
   # expose
