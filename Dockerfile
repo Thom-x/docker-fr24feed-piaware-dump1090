@@ -27,7 +27,7 @@ COPY config.js /usr/lib/fr24/public_html/
 RUN mkdir /usr/lib/fr24/public_html/data
 
 # Uncomment if you want to add your upintheair.json file
-COPY upintheair.json /usr/lib/fr24/public_html/
+#COPY upintheair.json /usr/lib/fr24/public_html/
 
 # PIAWARE
 WORKDIR /tmp
