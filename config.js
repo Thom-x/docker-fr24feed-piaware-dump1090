@@ -8,17 +8,14 @@
 // -- Title Settings --------------------------------------
 // Show number of aircraft and/or messages per second in the page title
 PlaneCountInTitle = true;
-MessageRateInTitle = true;
+MessageRateInTitle = false;
 
 // -- Output Settings -------------------------------------
-// Show metric values
-// The Metric setting controls whether metric (m, km, km/h) or
-// imperial (ft, NM, knots) units are used in the plane table
-// and in the detailed plane info. If ShowOtherUnits is true,
-// then the other unit will also be shown in the detailed plane
-// info.
-Metric = true;
-ShowOtherUnits = true;
+// The DisplayUnits setting controls whether nautical (ft, NM, knots), 
+// metric (m, km, km/h) or imperial (ft, mi, mph) units are used in the 
+// plane table and in the detailed plane info. Valid values are
+// "nautical", "metric", or "imperial".
+DisplayUnits = "nautical";
 
 // -- Map settings ----------------------------------------
 // These settings are overridden by any position information
@@ -26,18 +23,18 @@ ShowOtherUnits = true;
 // degrees.
 
 // Default center of the map.
-DefaultCenterLat = 47;
-DefaultCenterLon = 2.5;
+DefaultCenterLat = 45.0;
+DefaultCenterLon = 9.0;
 // The google maps zoom level, 0 - 16, lower is further out
 DefaultZoomLvl   = 7;
 
 // Center marker. If dump1090 provides a receiver location,
 // that location is used and these settings are ignored.
 
-SiteShow    = true;           // true to show a center marker
-SiteLat     = 47;            // position of the marker
-SiteLon     = 2.5;
-SiteName    = "Home"; // tooltip of the marker
+SiteShow    = false;           // true to show a center marker
+SiteLat     = 45.0;            // position of the marker
+SiteLon     = 9.0;
+SiteName    = "My Radar Site"; // tooltip of the marker
 
 // -- Marker settings -------------------------------------
 
@@ -48,7 +45,7 @@ ColorByAlt = {
         unknown : { h: 0,   s: 0,   l: 40 },
 
         // HSL for planes that are on the ground:
-        ground  : { h: 120, s: 100, l: 30 },
+        ground  : { h: 15, s: 80, l: 20 },
 
         air : {
                 // These define altitude-to-hue mappings
@@ -98,14 +95,11 @@ OutlineADSBColor = '#000000';
 OutlineMlatColor = '#4040FF';
 
 SiteCircles = true; // true to show circles (only shown if the center marker is shown)
-// In nautical miles or km (depending settings value 'Metric')
-SiteCirclesDistances = new Array(50,100,150,200,250,300);
-
-// Show the clocks at the top of the righthand pane? You can disable the clocks if you want here
-ShowClocks = true;
+// In miles, nautical miles, or km (depending settings value 'DisplayUnits')
+SiteCirclesDistances = new Array(100,150,200);
 
 // Controls page title, righthand pane when nothing is selected
-PageName = "DUMP1090";
+PageName = "PiAware Skyview";
 
 // Show country flags by ICAO addresses?
 ShowFlags = true;
@@ -114,7 +108,7 @@ ShowFlags = true;
 FlagPath = "flags-tiny/";
 
 // Set to true to enable the ChartBundle base layers (US coverage only)
-ChartBundleLayers = true;
+ChartBundleLayers = false;
 
 // Provide a Bing Maps API key here to enable the Bing imagery layer.
 // You can obtain a free key (with usage limits) at
@@ -125,11 +119,7 @@ ChartBundleLayers = true;
 //
 BingMapsAPIKey = null;
 
-// Provide a Mapzen API key here to enable the Mapzen vector tile layer.
-// You can obtain a free key at https://mapzen.com/developers/
-// (you need a "vector tiles" key)
-//
-// Be sure to quote your key:
-//   MapzenAPIKey = "your key here";
-//
-MapzenAPIKey = null;
+// Turn on display of extra Mode S EHS / ADS-B v1/v2 data
+// This is not polished yet (and so is disabled by default),
+// currently it's just a data dump of the new fields with no UX work.
+ExtendedData = false;
