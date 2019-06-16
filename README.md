@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Thom-x/docker-fr24feed-piaware-dump1090-mutability.svg?branch=master)](https://travis-ci.org/Thom-x/docker-fr24feed-piaware-dump1090-mutability)
+[![Build Status](https://travis-ci.org/Thom-x/docker-fr24feed-piaware-dump1090.svg?branch=master)](https://travis-ci.org/Thom-x/docker-fr24feed-piaware-dump1090)
 ![](https://images.microbadger.com/badges/image/thomx/fr24feed-piaware.svg)
 ![](https://images.microbadger.com/badges/version/thomx/fr24feed-piaware.svg)
 
@@ -7,7 +7,7 @@ Docker image of Fr24feed, FlightAware and dump1090-mutability.
 
 Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts on a map.
 
-![Image of dump1090 webapp](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/screenshot.png)
+![Image of dump1090 webapp](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/screenshot.png)
 
 # Requirements
 - Docker
@@ -18,19 +18,19 @@ Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts 
 ## FlightAware
 Register to https://flightaware.com/account/join/.
 
-Download and edit [`piaware.conf`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/piaware.conf)
+Download and edit [`piaware.conf`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/piaware.conf)
 
-Replace `flightaware-user YOUR_USERNAME` with your username (ex: `flightaware-user JohnDoe`) and `flightaware-password YOUR_PASSWORD` with your password (ex: `flightaware-password azerty`).
+Replace `flightaware-user YOUR_USERNAME` with your username (ex: `flightaware-user JohnDoe`), `flightaware-password YOUR_PASSWORD` with your password (ex: `flightaware-password azerty`) and `feeder-id YOUR_FEEDER_ID` with your feeder id (ex: `feeder-id ffffffff-ffff-ffff-ffff-ffffffffffff`).
 
 ## FlightRadar24
 Register to https://www.flightradar24.com/share-your-data and get a sharing key.
 
-Download and edit [`fr24feed.ini`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/fr24feed.ini)
+Download and edit [`fr24feed.ini`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/fr24feed.ini)
 Replace `fr24key="YOUR_KEY_HERE"` with your key (ex: `fr24key="a23165za4za56"`).
 
 ## Dump1090
 ### Receiver location
-Download and edit [`config.js`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090-mutability/master/config.js) to suite your receiver location and name:
+Download and edit [`config.js`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/config.js) to suite your receiver location and name:
 ```javascript
 SiteShow    = true;           // true to show a center marker
 SiteLat     = 47;            // position of the marker
@@ -51,14 +51,12 @@ Run :
 ```
 docker run -d -p 8080:8080 -p 8754:8754 \
 --device=/dev/bus/usb:/dev/bus/usb \
---mac-address="ff:ff:ff:ff:ff:ff" \
 -v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json \
 -v /path/to/your/piaware.conf:/etc/piaware.conf \
 -v /path/to/your/config.js:/usr/lib/fr24/public_html/config.js \
 -v /path/to/your/fr24feed.ini:/etc/fr24feed.ini \
 thomx/fr24feed-piaware
 ```
-Change `--mac-address="ff:ff:ff:ff:ff:ff"` with your own MAC address.
 *Note : remove `-v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json` from the command line if you don't want to use this feature.*
 # Build it yourself
 ## FlightAware
@@ -96,7 +94,6 @@ Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25
 
 *Note : the "id" value XXXX correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes.*
 ## Installation
-Edit `docker-compose.yml` and replace `mac-address: ff:ff:ff:ff:ff:ff` with your own MAC address.
 Run : `docker-compose up`
 
 # Usage

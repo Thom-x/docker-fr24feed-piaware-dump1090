@@ -18,7 +18,6 @@ fr24feed-piaware:
     - "30104"
     - "8754"
     - "8080"
-  mac_address: ff:ff:ff:ff:ff:ff
   devices:
     - "/dev/bus/usb"
   # ports
