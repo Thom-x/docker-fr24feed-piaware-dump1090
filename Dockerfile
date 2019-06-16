@@ -20,7 +20,9 @@ RUN mkdir /etc/modprobe.d && echo 'blacklist dvb_usb_rtl28xxu' > /etc/modprobe.d
 
 # DUMP1090
 WORKDIR /tmp
-RUN git clone https://github.com/mutability/dump1090 && \
+RUN apt-get update && \
+    apt-get install sudo build-essential debhelper librtlsdr-dev pkg-config dh-systemd libncurses5-dev libbladerf-dev -y 
+RUN git clone https://github.com/flightaware/dump1090 && \
     cd dump1090 && \
     make && mkdir /usr/lib/fr24 && cp dump1090 /usr/lib/fr24/ && cp -r public_html /usr/lib/fr24/
 COPY config.js /usr/lib/fr24/public_html/
@@ -32,7 +34,7 @@ RUN mkdir /usr/lib/fr24/public_html/data
 # PIAWARE
 WORKDIR /tmp
 RUN apt-get update && \
-    apt-get install sudo build-essential debhelper tcl8.6-dev autoconf python3-dev python-virtualenv libz-dev net-tools tclx8.4 tcllib tcl-tls itcl3 python3-venv dh-systemd init-system-helpers -y 
+    apt-get install sudo build-essential debhelper tcl8.6-dev autoconf python3-dev python-virtualenv libz-dev dh-systemd net-tools tclx8.4 tcllib tcl-tls itcl3 python3-venv dh-systemd init-system-helpers  libboost-system-dev libboost-program-options-dev libboost-regex-dev libboost-filesystem-dev -y 
 RUN git clone https://github.com/flightaware/piaware_builder.git piaware_builder
 WORKDIR /tmp/piaware_builder
 RUN ./sensible-build.sh stretch && cd package-stretch && dpkg-buildpackage -b && cd .. && dpkg -i piaware_*_*.deb
