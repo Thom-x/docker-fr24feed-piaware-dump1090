@@ -3,7 +3,7 @@ FROM debian:stretch
 MAINTAINER maugin.thomas@gmail.com
 
 RUN apt-get update && \
-    apt-get install -y wget libusb-1.0-0-dev pkg-config ca-certificates git-core cmake build-essential --no-install-recommends && \
+    apt-get install -y wget devscripts libusb-1.0-0-dev pkg-config ca-certificates git-core cmake build-essential --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
