@@ -21,7 +21,8 @@ Register to https://flightaware.com/account/join/.
 Download and edit [`piaware.conf`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/piaware.conf)
 
 Replace `feeder-id YOUR_FEEDER_ID` with your feeder id (ex: `feeder-id ffffffff-ffff-ffff-ffff-ffffffffffff`).
-And claim it https://fr.flightaware.com/adsb/piaware/claim
+
+And claim it on https://fr.flightaware.com/adsb/piaware/claim.
 
 ## FlightRadar24
 Register to https://www.flightradar24.com/share-your-data and get a sharing key.
@@ -60,12 +61,18 @@ thomx/fr24feed-piaware
 ```
 *Note : remove `-v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json` from the command line if you don't want to use this feature.*
 # Build it yourself
+
+Clone this repo.
+
 ## FlightAware
+
 Register to https://flightaware.com/account/join/.
 
-edit [`fr24feed.ini`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/fr24feed.ini)
-Replace `fr24key="YOUR_KEY_HERE"` with your key (ex: `fr24key="a23165za4za56"`).
+Edit [`piaware.conf`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/piaware.conf)
 
+Replace `feeder-id YOUR_FEEDER_ID` with your feeder id (ex: `feeder-id ffffffff-ffff-ffff-ffff-ffffffffffff`).
+
+And claim it on https://fr.flightaware.com/adsb/piaware/claim.
 ## FlightRadar24
 Register to https://www.flightradar24.com/share-your-data and get a sharing key.
 
