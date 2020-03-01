@@ -22,7 +22,7 @@ RUN mkdir /etc/modprobe.d && echo 'blacklist r820t' >> /etc/modprobe.d/raspi-bla
 WORKDIR /tmp
 RUN apt-get update && \
     apt-get install sudo build-essential debhelper librtlsdr-dev pkg-config dh-systemd libncurses5-dev libbladerf-dev -y 
-RUN git clone https://github.com/flightaware/dump1090 && \
+RUN git clone -b v3.8.0 --depth 1 https://github.com/flightaware/dump1090 && \
     cd dump1090 && \
     make && mkdir /usr/lib/fr24 && cp dump1090 /usr/lib/fr24/ && cp -r public_html /usr/lib/fr24/
 COPY config.js /usr/lib/fr24/public_html/
