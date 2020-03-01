@@ -9,7 +9,7 @@ RUN apt-get update && \
 
 WORKDIR /tmp
 RUN mkdir /etc/modprobe.d && echo 'blacklist r820t' >> /etc/modprobe.d/raspi-blacklist.conf && echo 'blacklist rtl2832' >> /etc/modprobe.d/raspi-blacklist.conf && echo 'blacklist rtl2830' >> /etc/modprobe.d/raspi-blacklist.conf && echo 'blacklist dvb_usb_rtl28xxu' >> /etc/modprobe.d/raspi-blacklist.conf && \
-    git clone https://github.com/osmocom/rtl-sdr.git && \
+    git clone -b v0.6.0 --depth 1 https://github.com/osmocom/rtl-sdr.git && \
     mkdir rtl-sdr/build && \
     cd rtl-sdr/build && \
     cmake ../ -DINSTALL_UDEV_RULES=ON -DDETACH_KERNEL_DRIVER=ON && \
