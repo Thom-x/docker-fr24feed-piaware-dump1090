@@ -1,11 +1,13 @@
-FROM debian:stretch
+FROM debian:buster
 
-MAINTAINER maugin.thomas@gmail.com
-
+ENV DEBIAN_VERSION buster
 ENV TINI_VERSION v0.18.0
 ENV RTL_SDR_VERSION 0.6.0
 ENV DUMP1090_VERSION v3.8.0
 ENV PIAWARE_VERSION v3.8.0
+
+MAINTAINER maugin.thomas@gmail.com
+
 
 RUN apt-get update && \
     apt-get install -y wget devscripts libusb-1.0-0-dev pkg-config ca-certificates git-core cmake build-essential --no-install-recommends && \
@@ -42,7 +44,7 @@ RUN apt-get update && \
     apt-get install sudo build-essential debhelper tcl8.6-dev autoconf python3-dev python-virtualenv libz-dev dh-systemd net-tools tclx8.4 tcllib tcl-tls itcl3 python3-venv dh-systemd init-system-helpers  libboost-system-dev libboost-program-options-dev libboost-regex-dev libboost-filesystem-dev -y 
 RUN git clone -b ${PIAWARE_VERSION} --depth 1 https://github.com/flightaware/piaware_builder.git piaware_builder
 WORKDIR /tmp/piaware_builder
-RUN ./sensible-build.sh stretch && cd package-stretch && dpkg-buildpackage -b && cd .. && dpkg -i piaware_*_*.deb
+RUN ./sensible-build.sh ${DEBIAN_VERSION} && cd package-${DEBIAN_VERSION} && dpkg-buildpackage -b && cd .. && dpkg -i piaware_*_*.deb
 COPY piaware.conf /etc/
 
 # FR24FEED
