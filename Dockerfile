@@ -1,10 +1,10 @@
-FROM debian
+FROM debian:stretch
 
 MAINTAINER maugin.thomas@gmail.com
 
 ENV TINI_VERSION v0.18.0
 ENV RTL_SDR_VERSION v0.6.0
-ENV DUMP1090_VERSION v3.7.2
+ENV DUMP1090_VERSION v3.8.0
 ENV PIAWARE_VERSION v3.8.0
 
 RUN apt-get update && \
