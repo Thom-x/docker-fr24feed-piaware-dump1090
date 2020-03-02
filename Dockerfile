@@ -1,4 +1,4 @@
-FROM debian
+FROM debian:stretch
 
 MAINTAINER maugin.thomas@gmail.com
 
