@@ -54,6 +54,8 @@ RUN wget https://repo-feed.flightradar24.com/linux_x86_64_binaries/fr24feed_1.0.
 COPY fr24feed.ini /etc/
 
 RUN apt-get update && apt-get install -y supervisor
+COPY manage-supervisord /usr/local/bin/manage-supervisord
+RUN chmod +x /usr/local/bin/manage-supervisord
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Add Tini
