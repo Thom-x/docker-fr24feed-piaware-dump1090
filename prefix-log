@@ -5,7 +5,29 @@ exec 3>&1
 exec 4>&2
 
 # get the prefix from SUPERVISOR_PROCESS_NAME environement variable
-printf -v PREFIX "%-10.10s" ${SUPERVISOR_PROCESS_NAME}
+printf -v PREFIX_TEXT "%-10.10s" ${SUPERVISOR_PROCESS_NAME}
+
+COLOR="\033[0m"
+if [ $PREFIX_TEXT = "dump1090" ]
+then
+	COLOR="\033[0;34m"
+fi
+
+if [ $PREFIX_TEXT = "piaware" ]
+then
+	COLOR="\033[0;35m"
+fi
+
+if [ $PREFIX_TEXT = "fr24feed" ]
+then
+	COLOR="\033[0;36m"
+fi
+
+if [ $PREFIX_TEXT = "python" ]
+then
+	COLOR="\033[0;32m"
+fi
+PREFIX="${COLOR}${PREFIX_TEXT}\033[0m"
 
 # reassign stdout and stderr to a preprocessed and redirected to the original stdout/stderr (3 and 4) we have create eralier
 exec 1> >( perl -ne '$| = 1; print "'"${PREFIX}"' | $_"' >&3)
