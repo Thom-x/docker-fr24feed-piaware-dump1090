@@ -1,23 +1,28 @@
+# Fr24feed and FlightAware with dump1090 as a Docker image
+
 [![Build Status](https://travis-ci.org/Thom-x/docker-fr24feed-piaware-dump1090.svg?branch=master)](https://travis-ci.org/Thom-x/docker-fr24feed-piaware-dump1090)
 ![](https://images.microbadger.com/badges/image/thomx/fr24feed-piaware.svg)
 ![](https://images.microbadger.com/badges/version/thomx/fr24feed-piaware.svg)
+![GitHub](https://img.shields.io/github/license/Thom-x/docker-fr24feed-piaware-dump1090)
+![GitHub issues](https://img.shields.io/github/issues/Thom-x/docker-fr24feed-piaware-dump1090)
 
-# Fr24feed and FlightAware with dump1090 as a Docker image
-⭐️ Star it on GitHub — it helps
+> Please consider following this project's author, [Thom-x](https://github.com/Thom-x), and consider starring the project to show your ❤️ and support.
 
 Docker image of Fr24feed, FlightAware and dump1090.
 
 Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts on a map.
 
+---
+
 ![Image of dump1090 webapp](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/screenshot.png)
 
-# Requirements
+## Requirements
 - Docker
 - RTL-SDR DVBT USB Dongle (RTL2832)
 
-# Install from image
+## Install from image
 
-## FlightAware
+### FlightAware
 Register to https://flightaware.com/account/join/.
 
 Download and edit [`piaware.conf`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/piaware.conf)
@@ -26,14 +31,14 @@ Replace `feeder-id YOUR_FEEDER_ID` with your feeder id (ex: `feeder-id ffffffff-
 
 And claim it on https://fr.flightaware.com/adsb/piaware/claim.
 
-## FlightRadar24
+### FlightRadar24
 Register to https://www.flightradar24.com/share-your-data and get a sharing key.
 
 Download and edit [`fr24feed.ini`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/fr24feed.ini)
 Replace `fr24key="YOUR_KEY_HERE"` with your key (ex: `fr24key="a23165za4za56"`).
 
-## Dump1090
-### Receiver location
+### Dump1090
+#### Receiver location
 Download and edit [`config.js`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/config.js) to suite your receiver location and name:
 ```javascript
 SiteShow    = true;           // true to show a center marker
@@ -41,7 +46,7 @@ SiteLat     = 47;            // position of the marker
 SiteLon     = 2.5;
 SiteName    = "Home"; // tooltip of the marker
 ```
-### Terrain-limit rings (optional):
+#### Terrain-limit rings (optional):
 If you don't need this feature ignore this.
 
 Create a panorama for your receiver location on http://www.heywhatsthat.com.
@@ -49,7 +54,7 @@ Create a panorama for your receiver location on http://www.heywhatsthat.com.
 Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=1000,10000 as upintheair.json.
 
 *Note : the "id" value XXXX correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes.*
-## Installation
+### Installation
 
 Run : 
 ```
@@ -62,11 +67,11 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 thomx/fr24feed-piaware
 ```
 *Note : remove `-v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json` from the command line if you don't want to use this feature.*
-# Build it yourself
+## Build it yourself
 
 Clone this repo.
 
-## FlightAware
+### FlightAware
 
 Register to https://flightaware.com/account/join/.
 
@@ -75,12 +80,12 @@ Edit [`piaware.conf`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-p
 Replace `feeder-id YOUR_FEEDER_ID` with your feeder id (ex: `feeder-id ffffffff-ffff-ffff-ffff-ffffffffffff`).
 
 And claim it on https://fr.flightaware.com/adsb/piaware/claim.
-## FlightRadar24
+### FlightRadar24
 Register to https://www.flightradar24.com/share-your-data and get a sharing key.
 
 Edit `fr24feed.ini` and replace `fr24key="YOUR_KEY_HERE"` with your key (ex: `fr24key="a23165za4za56"`).
-## Dump1090
-### Receiver location
+### Dump1090
+#### Receiver location
 Edit `config.js` to suite your receiver location and name:
 ```javascript
 SiteShow    = true;           // true to show a center marker
@@ -88,7 +93,7 @@ SiteLat     = 47;            // position of the marker
 SiteLon     = 2.5;
 SiteName    = "Home"; // tooltip of the marker
 ```
-### Terrain-limit rings (optional):
+#### Terrain-limit rings (optional):
 If you don't need this feature ignore this.
 
 Create a panorama for your receiver location on http://www.heywhatsthat.com.
@@ -96,10 +101,10 @@ Create a panorama for your receiver location on http://www.heywhatsthat.com.
 Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=1000,10000 place the file upintheair.json in this directory and uncomment `#COPY upintheair.json /usr/lib/fr24/...` from Dockerfile.
 
 *Note : the "id" value XXXX correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes.*
-## Installation
+### Installation
 Run : `docker-compose up`
 
-# Usage
+## Usage
 Go to http://dockerhost:8080 to view a map of reveived data.
 
 Go to http://dockerhost:8754 to view fr24feed configuration panel.
