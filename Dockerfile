@@ -57,6 +57,8 @@ COPY fr24feed.ini /etc/
 RUN apt-get update && apt-get install -y supervisor
 COPY manage-supervisord /usr/local/bin/manage-supervisord
 RUN chmod +x /usr/local/bin/manage-supervisord
+COPY prefix-log /usr/local/bin/prefix-log
+RUN chmod +x /usr/local/bin/prefix-log
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Add Tini
