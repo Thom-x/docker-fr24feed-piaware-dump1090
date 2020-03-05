@@ -119,18 +119,22 @@ COPY --from=dump1090 /tmp/dump1090/public_html /usr/lib/fr24/public_html
 
 # PIAWARE
 COPY --from=piaware /tmp/piaware_builder /tmp/piaware_builder
-RUN cd /tmp/piaware_builder && dpkg -i piaware_*_*.deb && rm -rf /tmp/piaware
+RUN cd /tmp/piaware_builder && dpkg -i piaware_*_*.deb && rm -rf /tmp/piaware && rm /etc/piaware.conf
 
 # FR24FEED
 WORKDIR /fr24feed
-RUN wget https://repo-feed.flightradar24.com/linux_x86_64_binaries/fr24feed_1.0.24-5_amd64.tgz && \
-    tar -xvzf *amd64.tgz
+ADD https://repo-feed.flightradar24.com/linux_x86_64_binaries/fr24feed_1.0.24-5_amd64.tgz /fr24feed
+RUN tar -xzf *amd64.tgz && rm *amd64.tgz
 
 
 ADD https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-amd64.tar.gz /tmp/
-RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C /
+RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C / && rm /tmp/s6-overlay-amd64.tar.gz
 COPY /root /
-RUN ls -la /bin/
+
+ADD https://github.com/kelseyhightower/confd/releases/download/v0.16.0/confd-0.16.0-linux-amd64 /tmp/
+RUN mkdir -p /opt/confd/bin && \
+    mv /tmp/confd-0.16.0-linux-amd64 /opt/confd/bin/confd && \
+    chmod +x /opt/confd/bin/confd
 
 EXPOSE 8754 8080 30001 30002 30003 30004 30005 30104 
 

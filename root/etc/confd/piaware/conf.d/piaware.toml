@@ -1,0 +1,6 @@
+[template]
+src = "piaware.conf.tmpl"
+dest = "/etc/piaware.conf"
+keys = [
+    "/"
+]

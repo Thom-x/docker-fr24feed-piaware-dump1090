@@ -1,0 +1,24 @@
+#!/usr/bin/with-contenv bash
+
+default_value() 
+{ 
+	key=${1//\-/_DASH_}
+	key=FR24FEED_${key^^}
+	eval "value=\${$key:-\$2}"
+	printf -v $key $value
+	export $key
+}
+
+default_value "receiver" "beast-tcp"
+default_value "fr24key" "YOUR_KEY_HERE"
+default_value "host" "127.0.0.1:30005"
+default_value "bs" "no"
+default_value "raw" "no"
+default_value "logmode" "1"
+default_value "logpath" "/tmp"
+default_value "mlat" "no"
+default_value "mlat-without-gps" "no"
+
+if [ ! -f /etc/fr24feed.ini ]; then
+	/opt/confd/bin/confd -onetime -confdir "/etc/confd/fr24feed" -prefix "fr24feed" -backend env
+fi
