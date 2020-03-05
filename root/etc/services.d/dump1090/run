@@ -1,0 +1,2 @@
+#!/bin/execlineb -P
+/usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet

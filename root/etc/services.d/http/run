@@ -1,0 +1,2 @@
+#!/bin/execlineb -P
+cd /usr/lib/fr24/public_html /usr/bin/python3 -m http.server 8080

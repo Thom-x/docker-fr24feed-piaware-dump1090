@@ -63,7 +63,6 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 
 FROM debian:buster-slim as serve
 
-ENV TINI_VERSION v0.18.0
 ENV RTL_SDR_VERSION 0.6.0
 
 MAINTAINER maugin.thomas@gmail.com
@@ -99,7 +98,7 @@ RUN apt-get update && \
 
 # RTL-SDR
 WORKDIR /tmp
-RUN mkdir /etc/modprobe.d && \
+RUN mkdir -p /etc/modprobe.d && \
     echo 'blacklist r820t' >> /etc/modprobe.d/raspi-blacklist.conf && \
 	echo 'blacklist rtl2832' >> /etc/modprobe.d/raspi-blacklist.conf && \
 	echo 'blacklist rtl2830' >> /etc/modprobe.d/raspi-blacklist.conf && \
@@ -114,7 +113,7 @@ RUN mkdir /etc/modprobe.d && \
     rm -rf /tmp/rtl-sdr
 
 # DUMP1090
-RUN mkdir -p /usr/lib/fr24/data
+RUN mkdir -p /usr/lib/fr24/public_html/data
 COPY --from=dump1090 /tmp/dump1090/dump1090 /usr/lib/fr24/
 COPY --from=dump1090 /tmp/dump1090/public_html /usr/lib/fr24/public_html
 
@@ -127,31 +126,12 @@ WORKDIR /fr24feed
 RUN wget https://repo-feed.flightradar24.com/linux_x86_64_binaries/fr24feed_1.0.24-5_amd64.tgz && \
     tar -xvzf *amd64.tgz
 
-# SUPERVISORD
-RUN apt-get update && apt-get install -y \
-	supervisor && \
-    rm -rf /var/lib/apt/lists/*
 
-COPY manage-supervisord /usr/local/bin/manage-supervisord
-RUN chmod +x /usr/local/bin/manage-supervisord
-COPY prefix-log /usr/local/bin/prefix-log
-RUN chmod +x /usr/local/bin/prefix-log
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# User conf
-# Uncomment if you want to add your upintheair.json file
-#COPY upintheair.json /usr/lib/fr24/public_html/
-COPY fr24feed.ini /etc/
-COPY piaware.conf /etc/
-COPY config.js /usr/lib/fr24/public_html/
-
-
-# Add Tini
-
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
-ENTRYPOINT ["/tini", "--"]
+ADD https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-amd64.tar.gz /tmp/
+RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C /
+COPY /root /
+RUN ls -la /bin/
 
 EXPOSE 8754 8080 30001 30002 30003 30004 30005 30104 
-RUN ls -la /usr/lib/fr24/
-CMD ["/usr/bin/supervisord"]
+
+ENTRYPOINT ["/init"]
