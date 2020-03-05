@@ -1,47 +1,12 @@
-FROM debian:buster
+FROM debian:buster as dump1090
 
-
-ENV DEBIAN_VERSION buster
-ENV TINI_VERSION v0.18.0
-ENV RTL_SDR_VERSION 0.6.0
 ENV DUMP1090_VERSION v3.8.0
-ENV PIAWARE_VERSION v3.8.0
-
-MAINTAINER maugin.thomas@gmail.com
-
-
-RUN apt-get update && \
-    apt-get install -y \
-    wget \
-    devscripts \
-    libusb-1.0-0-dev \
-    pkg-config \
-    ca-certificates \
-    git-core \
-    cmake \
-    build-essential \
-    --no-install-recommends && \
-    rm -rf /var/lib/apt/lists/*
-
-WORKDIR /tmp
-RUN mkdir /etc/modprobe.d && \
-    echo 'blacklist r820t' >> /etc/modprobe.d/raspi-blacklist.conf && \
-	echo 'blacklist rtl2832' >> /etc/modprobe.d/raspi-blacklist.conf && \
-	echo 'blacklist rtl2830' >> /etc/modprobe.d/raspi-blacklist.conf && \
-	echo 'blacklist dvb_usb_rtl28xxu' >> /etc/modprobe.d/raspi-blacklist.conf && \
-    git clone -b ${RTL_SDR_VERSION} --depth 1 https://github.com/osmocom/rtl-sdr.git && \
-    mkdir rtl-sdr/build && \
-    cd rtl-sdr/build && \
-    cmake ../ -DINSTALL_UDEV_RULES=ON -DDETACH_KERNEL_DRIVER=ON && \
-    make && \
-    make install && \
-    ldconfig && \
-    rm -rf /tmp/rtl-sdr
 
 # DUMP1090
 RUN apt-get update && \
     apt-get install -y \
     sudo \
+    git-core \
     build-essential \
     debhelper \
     librtlsdr-dev \
@@ -54,21 +19,20 @@ RUN apt-get update && \
 WORKDIR /tmp
 RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/dump1090 && \
     cd dump1090 && \
-    make && \
-    mkdir /usr/lib/fr24 && cp dump1090 /usr/lib/fr24/ && \
-    cp -r public_html /usr/lib/fr24/
+    make
 
-COPY config.js /usr/lib/fr24/public_html/
-RUN mkdir /usr/lib/fr24/public_html/data
+FROM debian:buster as piaware
 
-# Uncomment if you want to add your upintheair.json file
-#COPY upintheair.json /usr/lib/fr24/public_html/
+ENV DEBIAN_VERSION buster
+ENV PIAWARE_VERSION v3.8.0
 
 # PIAWARE
 WORKDIR /tmp
 RUN apt-get update && \
     apt-get install -y \
     sudo \
+    git-core \
+    wget \
     build-essential \
     debhelper \
     tcl8.6-dev \
@@ -95,17 +59,75 @@ RUN git clone -b ${PIAWARE_VERSION} --depth 1 https://github.com/flightaware/pia
 WORKDIR /tmp/piaware_builder
 RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 	cd package-${DEBIAN_VERSION} && \
-	dpkg-buildpackage -b && \
-	cd .. && \
-	dpkg -i piaware_*_*.deb
-COPY piaware.conf /etc/
+	dpkg-buildpackage -b
+
+FROM debian:buster-slim as serve
+
+ENV TINI_VERSION v0.18.0
+ENV RTL_SDR_VERSION 0.6.0
+
+MAINTAINER maugin.thomas@gmail.com
+
+RUN apt-get update && \
+	# rtl-sdr
+    apt-get install -y \
+    wget \
+    devscripts \
+    libusb-1.0-0-dev \
+    pkg-config \
+    ca-certificates \
+    git-core \
+    cmake \
+    build-essential \
+    # piaware
+    libboost-system-dev \
+    libboost-program-options-dev \
+    libboost-regex-dev \
+    libboost-filesystem-dev \
+	libtcl \
+	net-tools \
+	tclx \
+	tcl \
+	tcllib \
+	tcl-tls \
+	itcl3 \
+	librtlsdr-dev \
+    pkg-config \
+    libncurses5-dev \
+    libbladerf-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# RTL-SDR
+WORKDIR /tmp
+RUN mkdir /etc/modprobe.d && \
+    echo 'blacklist r820t' >> /etc/modprobe.d/raspi-blacklist.conf && \
+	echo 'blacklist rtl2832' >> /etc/modprobe.d/raspi-blacklist.conf && \
+	echo 'blacklist rtl2830' >> /etc/modprobe.d/raspi-blacklist.conf && \
+	echo 'blacklist dvb_usb_rtl28xxu' >> /etc/modprobe.d/raspi-blacklist.conf && \
+    git clone -b ${RTL_SDR_VERSION} --depth 1 https://github.com/osmocom/rtl-sdr.git && \
+    mkdir rtl-sdr/build && \
+    cd rtl-sdr/build && \
+    cmake ../ -DINSTALL_UDEV_RULES=ON -DDETACH_KERNEL_DRIVER=ON && \
+    make && \
+    make install && \
+    ldconfig && \
+    rm -rf /tmp/rtl-sdr
+
+# DUMP1090
+RUN mkdir -p /usr/lib/fr24/data
+COPY --from=dump1090 /tmp/dump1090/dump1090 /usr/lib/fr24/
+COPY --from=dump1090 /tmp/dump1090/public_html /usr/lib/fr24/public_html
+
+# PIAWARE
+COPY --from=piaware /tmp/piaware_builder /tmp/piaware_builder
+RUN cd /tmp/piaware_builder && dpkg -i piaware_*_*.deb && rm -rf /tmp/piaware
 
 # FR24FEED
 WORKDIR /fr24feed
 RUN wget https://repo-feed.flightradar24.com/linux_x86_64_binaries/fr24feed_1.0.24-5_amd64.tgz && \
     tar -xvzf *amd64.tgz
-COPY fr24feed.ini /etc/
 
+# SUPERVISORD
 RUN apt-get update && apt-get install -y \
 	supervisor && \
     rm -rf /var/lib/apt/lists/*
@@ -116,6 +138,14 @@ COPY prefix-log /usr/local/bin/prefix-log
 RUN chmod +x /usr/local/bin/prefix-log
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# User conf
+# Uncomment if you want to add your upintheair.json file
+#COPY upintheair.json /usr/lib/fr24/public_html/
+COPY fr24feed.ini /etc/
+COPY piaware.conf /etc/
+COPY config.js /usr/lib/fr24/public_html/
+
+
 # Add Tini
 
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
@@ -123,5 +153,5 @@ RUN chmod +x /tini
 ENTRYPOINT ["/tini", "--"]
 
 EXPOSE 8754 8080 30001 30002 30003 30004 30005 30104 
-
+RUN ls -la /usr/lib/fr24/
 CMD ["/usr/bin/supervisord"]
