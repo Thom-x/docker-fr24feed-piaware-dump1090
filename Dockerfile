@@ -116,6 +116,7 @@ RUN mkdir -p /etc/modprobe.d && \
 RUN mkdir -p /usr/lib/fr24/public_html/data
 COPY --from=dump1090 /tmp/dump1090/dump1090 /usr/lib/fr24/
 COPY --from=dump1090 /tmp/dump1090/public_html /usr/lib/fr24/public_html
+RUN rm /usr/lib/fr24/public_html/config.js
 
 # PIAWARE
 COPY --from=piaware /tmp/piaware_builder /tmp/piaware_builder

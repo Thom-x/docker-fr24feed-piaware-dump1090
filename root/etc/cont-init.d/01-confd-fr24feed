@@ -5,7 +5,7 @@ default_value()
 	key=${1//\-/_DASH_}
 	key=FR24FEED_${key^^}
 	eval "value=\${$key:-\$2}"
-	printf -v $key $value
+	printf -v $key "$value"
 	export $key
 }
 
