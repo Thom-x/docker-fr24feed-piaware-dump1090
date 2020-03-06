@@ -27,7 +27,9 @@ Run :
 docker run -d -p 8080:8080 -p 8754:8754 \
 --device=/dev/bus/usb:/dev/bus/usb \
 -v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json \
--v /path/to/your/config.js:/usr/lib/fr24/public_html/config.js \
+-e HTML_SITE_LAT=45.0
+-e HTML_SITE_LON=9.0
+-e HTML_SITE_NAME="My Radar Site"
 -e FR24FEED_FR24KEY=MY_SHARING_KEY \
 -e PIAWARE_FEEDER_DASH_ID=MY_FEEDER_ID \
 thomx/fr24feed-piaware
