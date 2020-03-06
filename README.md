@@ -71,7 +71,7 @@ Add the environment variable `FR24FEED_FR24KEY` with your sharing key.
 | `FR24FEED_MLAT`                       | `mlat`                   | `no`              |
 | `FR24FEED_MLAT_DASH_WITHOUT_DASH_GPS` | `mlat-without-gps`       | `no`              |
 
-**Note** : you can add any property to either fr24feed or piaware configuration file by adding an environment variable sarting with `PIAWARE_...` or `FR24FEED_...`.
+**Note** : you can add any property to either fr24feed or piaware configuration file by adding an environment variable starting with `PIAWARE_...` or `FR24FEED_...`.
 
 Example :
 | Environment Variable                  | Configuration property   | value             | Configuration file      |
