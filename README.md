@@ -74,6 +74,7 @@ Add the environment variable `FR24FEED_FR24KEY` with your sharing key.
 **Note** : you can add any property to either fr24feed or piaware configuration file by adding an environment variable starting with `PIAWARE_...` or `FR24FEED_...`.
 
 Example :
+
 | Environment Variable                  | Configuration property   | value             | Configuration file      |
 |---------------------------------------|--------------------------|-------------------|-------------------------|
 | `FR24FEED_TEST=value`                 | `test`                   | `value`           | `fr24feed.init`         |
@@ -82,13 +83,13 @@ Example :
 
 ## Dump1090
 ### Receiver location
-Download and edit [`config.js`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/config.js) to suite your receiver location and name:
-```javascript
-SiteShow    = true;           // true to show a center marker
-SiteLat     = 47;            // position of the marker
-SiteLon     = 2.5;
-SiteName    = "Home"; // tooltip of the marker
-```
+
+| Environment Variable                  | Default value            |
+|---------------------------------------|--------------------------|
+| `HTML_SITE_LAT`                       | `45.0`                   |
+| `HTML_SITE_LON`                       | `9.0`                    |
+| `HTML_SITE_NAME`                      | `My Radar Site`          |
+
 ### Terrain-limit rings (optional):
 If you don't need this feature ignore this.
 
