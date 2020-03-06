@@ -1,2 +1,7 @@
-#!/bin/execlineb -P
-/fr24feed/fr24feed_amd64/fr24feed
+#!/usr/bin/with-contenv bash
+if [ "$SERVICE_ENABLE_FR24FEED" != "false" ]
+then
+	/fr24feed/fr24feed_amd64/fr24feed
+else
+	tail -f /dev/null
+fi
