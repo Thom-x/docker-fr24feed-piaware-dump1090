@@ -26,12 +26,12 @@ Run :
 ```
 docker run -d -p 8080:8080 -p 8754:8754 \
 --device=/dev/bus/usb:/dev/bus/usb \
--v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json \
--e HTML_SITE_LAT=45.0
--e HTML_SITE_LON=9.0
--e HTML_SITE_NAME="My Radar Site"
+-e HTML_SITE_LAT=45.0 \
+-e HTML_SITE_LON=9.0 \
+-e HTML_SITE_NAME="My Radar Site" \
 -e FR24FEED_FR24KEY=MY_SHARING_KEY \
 -e PIAWARE_FEEDER_DASH_ID=MY_FEEDER_ID \
+-e PANORAMA_ID=FRUXK2G7 \
 thomx/fr24feed-piaware
 ```
 
@@ -41,6 +41,21 @@ Go to http://dockerhost:8754 to view fr24feed configuration panel.
 *Note : remove `-v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json` from the command line if you don't want to use this feature.*
 
 # Configuration
+
+## Common
+
+To disable starting a service you can add an environement variable :
+
+| Environment Variable                  | Value                    | Description               |
+|---------------------------------------|--------------------------|---------------------------|
+| `SERVICE_ENABLE_DUMP1090`             | `false`                  | Disable dump1090 service  |
+| `SERVICE_ENABLE_PIAWARE`              | `false`                  | Disable piaware service   |
+| `SERVICE_ENABLE_FR24FEED`             | `false`                  | Disable fr24feed service  |
+| `SERVICE_ENABLE_HTTP`                 | `false`                  | Disable http service      |
+
+Ex : `-e SERVICE_ENABLE_HTTP=false`
+
+
 ## FlightAware
 Register to https://flightaware.com/account/join/.
 
@@ -54,6 +69,8 @@ Add the environment variable `PIAWARE_FEEDER_DASH_ID` with your feeder id.
 | `PIAWARE_RECEIVER_DASH_PORT`          | `receiver-port`          | `30005`           |
 
 And claim it on https://fr.flightaware.com/adsb/piaware/claim.
+
+Ex : `-e PIAWARE_RECEIVER_DASH_TYPE=other`
 
 ## FlightRadar24
 Register to https://www.flightradar24.com/share-your-data and get a sharing key.
@@ -72,6 +89,10 @@ Add the environment variable `FR24FEED_FR24KEY` with your sharing key.
 | `FR24FEED_LOGPATH`                    | `logpath`                | `/tmp`            |
 | `FR24FEED_MLAT`                       | `mlat`                   | `no`              |
 | `FR24FEED_MLAT_DASH_WITHOUT_DASH_GPS` | `mlat-without-gps`       | `no`              |
+
+Ex : `-e FR24FEED_LOGMODE=0`
+
+## Add custom properties
 
 **Note** : you can add any property to either fr24feed or piaware configuration file by adding an environment variable starting with `PIAWARE_...` or `FR24FEED_...`.
 
@@ -92,6 +113,8 @@ Example :
 | `HTML_SITE_LON`                       | `9.0`                    |
 | `HTML_SITE_NAME`                      | `My Radar Site`          |
 
+Ex : `-e HTML_SITE_NAME="My site"`
+
 ### Terrain-limit rings (optional):
 If you don't need this feature ignore this.
 
@@ -103,6 +126,8 @@ Create a panorama for your receiver location on http://www.heywhatsthat.com.
 | `PANORAMA_ALTS`                       | `1000,10000`             | Comma seperated list of altitudes in meter  |
 
 *Note : the panorama id value correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes.*
+
+Ex : `-e PANORAMA_ID=FRUXK2G7`
 
 If you don't want to download the limit every time you bring up the container you can download `http://www.heywhatsthat.com/api/upintheair.json?id=${PANORAMA_ID}&refraction=0.25&alts=${PANORAMA_ALTS}` as upintheair.json and mount it in `/usr/lib/fr24/public_html/upintheair.json`.
 
