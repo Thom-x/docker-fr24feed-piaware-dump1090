@@ -95,9 +95,14 @@ If you don't need this feature ignore this.
 
 Create a panorama for your receiver location on http://www.heywhatsthat.com.
 
-Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=1000,10000 as upintheair.json.
+| Environment Variable                  | Default value            | Description                                 |
+|---------------------------------------|--------------------------|---------------------------------------------|
+| `PANORAMA_ID`                         |                          | Panorama id                                 |
+| `PANORAMA_ALTS`                       | `1000,10000`             | Comma seperated list of altitudes in meter  |
 
-*Note : the "id" value XXXX correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes.*
+*Note : the panorama id value correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes.*
+
+If you don't want to download the limit every time you bring up the container you can download `http://www.heywhatsthat.com/api/upintheair.json?id=${PANORAMA_ID}&refraction=0.25&alts=${PANORAMA_ALTS}` as upintheair.json and mount it in `/usr/lib/fr24/public_html/upintheair.json`.
 
 # Build it yourself
 
