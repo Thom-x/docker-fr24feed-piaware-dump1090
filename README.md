@@ -44,12 +44,12 @@ Register to https://flightaware.com/account/join/.
 
 Add the environment variable `PIAWARE_FEEDER_DASH_ID` with your feeder id.
 
-| Environment Variable                | Configuration property | Default value   |
-|-------------------------------------|------------------------|-----------------|
-| PIAWARE_FEEDER_DASH_ID              | feeder-id              | YOUR_FEEDER_ID  |
-| PIAWARE_RECEIVER_DASH_TYPE          | receiver-type          | other           |
-| PIAWARE_RECEIVER_DASH_HOST          | receiver-host          | 127.0.0.1       |
-| PIAWARE_RECEIVER_DASH_PORT          | receiver-port          | 30005           |
+| Environment Variable                  | Configuration property   | Default value     |
+|---------------------------------------|--------------------------|-------------------|
+| `PIAWARE_FEEDER_DASH_ID`              | `feeder-id`              | `YOUR_FEEDER_ID`  |
+| `PIAWARE_RECEIVER_DASH_TYPE`          | `receiver-type`          | `other`           |
+| `PIAWARE_RECEIVER_DASH_HOST`          | `receiver-host`          | `127.0.0.1`       |
+| `PIAWARE_RECEIVER_DASH_PORT`          | `receiver-port`          | `30005`           |
 
 And claim it on https://fr.flightaware.com/adsb/piaware/claim.
 
@@ -59,26 +59,26 @@ Register to https://www.flightradar24.com/share-your-data and get a sharing key.
 Add the environment variable `FR24FEED_FR24KEY` with your sharing key.
 
 
-| Environment Variable                | Configuration property | Default value   |
-|-------------------------------------|------------------------|-----------------|
-| FR24FEED_RECEIVER                   | receiver               | beast-tcp       |
-| FR24FEED_FR24KEY                    | fr24key                | YOUR_KEY_HERE   |
-| FR24FEED_HOST                       | host                   | 127.0.0.1:30005 |
-| FR24FEED_BS                         | bs                     | no              |
-| FR24FEED_RAW                        | raw                    | no              |
-| FR24FEED_LOGMODE                    | logmode                | 1               |
-| FR24FEED_LOGPATH                    | logpath                | /tmp            |
-| FR24FEED_MLAT                       | mlat                   | no              |
-| FR24FEED_MLAT_DASH_WITHOUT_DASH_GPS | mlat-without-gps       | no              |
+| Environment Variable                  | Configuration property   | Default value     |
+|---------------------------------------|--------------------------|-------------------|
+| `FR24FEED_RECEIVER`                   | `receiver`               | `beast-tcp`       |
+| `FR24FEED_FR24KEY`                    | `fr24key`                | `YOUR_KEY_HERE`   |
+| `FR24FEED_HOST`                       | `host`                   | `127.0.0.1:30005` |
+| `FR24FEED_BS`                         | `bs`                     | `no`              |
+| `FR24FEED_RAW`                        | `raw`                    | `no`              |
+| `FR24FEED_LOGMODE`                    | `logmode`                | `1`               |
+| `FR24FEED_LOGPATH`                    | `logpath`                | `/tmp`            |
+| `FR24FEED_MLAT`                       | `mlat`                   | `no`              |
+| `FR24FEED_MLAT_DASH_WITHOUT_DASH_GPS` | `mlat-without-gps`       | `no`              |
 
-**Note** : you can add any property to either fr24feed or piaware configuration file by adding an environment variable sarting either `PIAWARE_...` or `FR24FEED_...`.
+**Note** : you can add any property to either fr24feed or piaware configuration file by adding an environment variable sarting with `PIAWARE_...` or `FR24FEED_...`.
 
 Example :
-| Environment Variable                | Configuration property | value           | Configuration file    |
-|-------------------------------------|------------------------|-----------------|-----------------------|
-| FR24FEED_TEST_=value                | test-test              | value           | fr24feed.init         |
-| FR24FEED_TEST_DASH_TEST=value       | test                   | value2          | fr24feed.init         |
-| PIAWARE_TEST=value                  | test                   | value           | piaware.conf          |
+| Environment Variable                  | Configuration property   | value             | Configuration file      |
+|---------------------------------------|--------------------------|-------------------|-------------------------|
+| `FR24FEED_TEST=value`                 | `test`                   | `value`           | `fr24feed.init`         |
+| `FR24FEED_TEST_DASH_TEST=value`       | `test-test`              | `value2`          | `fr24feed.init`         |
+| `PIAWARE_TEST=value`                  | `test`                   | `value`           | `piaware.conf`          |
 
 ## Dump1090
 ### Receiver location
