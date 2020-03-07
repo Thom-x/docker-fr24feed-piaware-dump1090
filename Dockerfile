@@ -128,15 +128,16 @@ WORKDIR /fr24feed
 ADD https://repo-feed.flightradar24.com/linux_x86_64_binaries/fr24feed_${FR24FEED_VERSION}_amd64.tgz /fr24feed
 RUN tar -xzf *amd64.tgz && rm *amd64.tgz
 
-
-ADD https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-amd64.tar.gz /tmp/
-RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C / && rm /tmp/s6-overlay-amd64.tar.gz
-COPY /root /
-
+# CONFD
 ADD https://github.com/kelseyhightower/confd/releases/download/v0.16.0/confd-0.16.0-linux-amd64 /tmp/
 RUN mkdir -p /opt/confd/bin && \
     mv /tmp/confd-0.16.0-linux-amd64 /opt/confd/bin/confd && \
     chmod +x /opt/confd/bin/confd
+
+# S6 OVERLAY
+ADD https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-amd64.tar.gz /tmp/
+RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C / && rm /tmp/s6-overlay-amd64.tar.gz
+COPY /root /
 
 EXPOSE 8754 8080 30001 30002 30003 30004 30005 30104 
 
