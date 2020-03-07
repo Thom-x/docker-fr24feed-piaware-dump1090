@@ -64,6 +64,7 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 FROM debian:buster-slim as serve
 
 ENV RTL_SDR_VERSION 0.6.0
+ENC FR24FEED_VERSION 1.0.18-5
 
 MAINTAINER maugin.thomas@gmail.com
 
@@ -124,7 +125,7 @@ RUN cd /tmp/piaware_builder && dpkg -i piaware_*_*.deb && rm -rf /tmp/piaware &&
 
 # FR24FEED
 WORKDIR /fr24feed
-ADD https://repo-feed.flightradar24.com/linux_x86_64_binaries/fr24feed_1.0.24-5_amd64.tgz /fr24feed
+ADD https://repo-feed.flightradar24.com/linux_x86_64_binaries/fr24feed_${FR24FEED_VERSION}_amd64.tgz /fr24feed
 RUN tar -xzf *amd64.tgz && rm *amd64.tgz
 
 
