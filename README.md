@@ -25,14 +25,14 @@ Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts 
 Run : 
 ```
 docker run -d -p 8080:8080 -p 8754:8754 \
---device=/dev/bus/usb:/dev/bus/usb \
--e "FR24FEED_FR24KEY=MY_SHARING_KEY" \
--e "PIAWARE_FEEDER_DASH_ID=MY_FEEDER_ID" \
--e "HTML_SITE_LAT=MY_SITE_LAT" \
--e "HTML_SITE_LON=MY_SITE_LON" \
--e "HTML_SITE_NAME=MY_SITE_NAME" \
--e "PANORAMA_ID=MY_PANORAMA_ID" \
-thomx/fr24feed-piaware
+	--device=/dev/bus/usb:/dev/bus/usb \
+	-e "FR24FEED_FR24KEY=MY_SHARING_KEY" \
+	-e "PIAWARE_FEEDER_DASH_ID=MY_FEEDER_ID" \
+	-e "HTML_SITE_LAT=MY_SITE_LAT" \
+	-e "HTML_SITE_LON=MY_SITE_LON" \
+	-e "HTML_SITE_NAME=MY_SITE_NAME" \
+	-e "PANORAMA_ID=MY_PANORAMA_ID" \
+	thomx/fr24feed-piaware
 ```
 
 Go to http://dockerhost:8080 to view a map of reveived data.
@@ -57,7 +57,18 @@ Ex : `-e "SERVICE_ENABLE_HTTP=false"`
 
 
 ## FlightAware
-Register to https://flightaware.com/account/join/.
+
+Resgister on https://flightaware.com/account/join/.
+
+Run :
+```
+docker run -it --rm \
+	--device=/dev/bus/usb:/dev/bus/usb \
+	-e "SERVICE_ENABLE_HTTP=false" \
+	-e "SERVICE_ENABLE_FR24FEED=false" \
+	thomx/fr24feed-piaware /bin/bash
+```
+Wait 5 minutes and you should see a new receiver at https://fr.flightaware.com/adsb/piaware/claim (use the same IP as your docker host), claim it and exit the container.
 
 Add the environment variable `PIAWARE_FEEDER_DASH_ID` with your feeder id.
 
@@ -68,12 +79,24 @@ Add the environment variable `PIAWARE_FEEDER_DASH_ID` with your feeder id.
 | `PIAWARE_RECEIVER_DASH_HOST`          | `receiver-host`          | `127.0.0.1`       |
 | `PIAWARE_RECEIVER_DASH_PORT`          | `receiver-port`          | `30005`           |
 
-And claim it on https://fr.flightaware.com/adsb/piaware/claim.
 
 Ex : `-e "PIAWARE_RECEIVER_DASH_TYPE=other"`
 
 ## FlightRadar24
-Register to https://www.flightradar24.com/share-your-data and get a sharing key.
+
+Run :
+```
+docker run -it --rm \
+	-e "SERVICE_ENABLE_DUMP1090=false" \
+	-e "SERVICE_ENABLE_HTTP=false" \
+	-e "SERVICE_ENABLE_PIAWARE=false" \
+	-e "SERVICE_ENABLE_FR24FEED=false" \
+	thomx/fr24feed-piaware /bin/bash
+```
+
+Then : `/fr24feed/fr24feed_amd64/fr24feed --signup` and follow the instructions, for technical steps, your answer doesn't matter we just need the sharing key at the end.
+
+Finally to see the sharing key run `cat /etc/fr24feed.ini`, you can now exit the container.
 
 Add the environment variable `FR24FEED_FR24KEY` with your sharing key.
 
@@ -90,7 +113,7 @@ Add the environment variable `FR24FEED_FR24KEY` with your sharing key.
 | `FR24FEED_MLAT`                       | `mlat`                   | `no`              |
 | `FR24FEED_MLAT_DASH_WITHOUT_DASH_GPS` | `mlat-without-gps`       | `no`              |
 
-Ex : `-e "FR24FEED_LOGMODE=0"`
+Ex : `-e "FR24FEED_FR24KEY=0123456789"`
 
 ## Add custom properties
 
