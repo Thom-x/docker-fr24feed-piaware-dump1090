@@ -64,7 +64,7 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 FROM debian:buster-slim as serve
 
 ENV RTL_SDR_VERSION 0.6.0
-ENC FR24FEED_VERSION 1.0.18-5
+ENV FR24FEED_VERSION 1.0.18-5
 
 MAINTAINER maugin.thomas@gmail.com
 
