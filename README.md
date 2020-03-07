@@ -110,8 +110,8 @@ Add the environment variable `FR24FEED_FR24KEY` with your sharing key.
 | `FR24FEED_RAW`                        | `raw`                    | `no`              |
 | `FR24FEED_LOGMODE`                    | `logmode`                | `1`               |
 | `FR24FEED_LOGPATH`                    | `logpath`                | `/tmp`            |
-| `FR24FEED_MLAT`                       | `mlat`                   | `no`              |
-| `FR24FEED_MLAT_DASH_WITHOUT_DASH_GPS` | `mlat-without-gps`       | `no`              |
+| `FR24FEED_MLAT`                       | `mlat`                   | `yes`             |
+| `FR24FEED_MLAT_DASH_WITHOUT_DASH_GPS` | `mlat-without-gps`       | `yes`             |
 
 Ex : `-e "FR24FEED_FR24KEY=0123456789"`
 
