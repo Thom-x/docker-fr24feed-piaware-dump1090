@@ -63,12 +63,12 @@ Resgister on https://flightaware.com/account/join/.
 Run :
 ```
 docker run -it --rm \
-	--device=/dev/bus/usb:/dev/bus/usb \
+	-e "SERVICE_ENABLE_DUMP1090=false" \
 	-e "SERVICE_ENABLE_HTTP=false" \
 	-e "SERVICE_ENABLE_FR24FEED=false" \
 	thomx/fr24feed-piaware /bin/bash
 ```
-Wait 5 minutes and you should see a new receiver at https://fr.flightaware.com/adsb/piaware/claim (use the same IP as your docker host), claim it and exit the container.
+When the container starts you should see the feeder id, note it. Wait 5 minutes and you should see a new receiver at https://fr.flightaware.com/adsb/piaware/claim (use the same IP as your docker host), claim it and exit the container.
 
 Add the environment variable `PIAWARE_FEEDER_DASH_ID` with your feeder id.
 
