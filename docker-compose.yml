@@ -1,25 +1,15 @@
 version: "3.7"
 services:
   fr24feed-piaware:
-    build: .
+    image: "thomx/fr24feed-piaware"
     restart: unless-stopped
-    # expose
-    # 30001 - Raw output listen port
-    # 30002 - Feed Dump1090 input listen port
-    # 30003 - TCP BaseStation output listen port
-    # 30004 - TCP Beast input listen port
-    # 30005 - TCP Beast output listen port
-    # 8754 - DUMP1090 server port
-    # 8080 - HTTP server port
-    expose:
-      - "30001"
-      - "30002"
-      - "30003"
-      - "30004"
-      - "30005"
-      - "30104"
-      - "8754"
-      - "8080"
+    environment: 
+      - "FR24FEED_FR24KEY=MY_SHARING_KEY"
+      - "PIAWARE_FEEDER_DASH_ID=MY_FEEDER_ID"
+      - "HTML_SITE_LAT=MY_SITE_LAT"
+      - "HTML_SITE_LON=MY_SITE_LON"
+      - "HTML_SITE_NAME=MY_SITE_NAME"
+      - "PANORAMA_ID=MY_PANORAMA_ID"
     devices:
       - "/dev/bus/usb"
     # ports

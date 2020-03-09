@@ -1,0 +1,12 @@
+{{- range gets "/*" }}
+{{base .Key }}="{{ .Value }}"
+{{- end }}
+{{- range gets "/*/dash/*" }}
+{{base (dir (dir .Key))}}-{{base .Key }}="{{ .Value }}"
+{{- end }}
+{{- range gets "/*/dash/*/dash/*" }}
+{{base (dir (dir (dir (dir .Key))))}}-{{base (dir (dir .Key))}}-{{base .Key }}="{{ .Value }}"
+{{- end }}
+{{- range gets "/*/dash/*/dash/*/dash/*" }}
+{{base (dir (dir (dir (dir (dir (dir .Key))))))}}-{{base (dir (dir (dir (dir .Key))))}}-{{base (dir (dir .Key))}}-{{base .Key }}="{{ .Value }}"
+{{- end }}

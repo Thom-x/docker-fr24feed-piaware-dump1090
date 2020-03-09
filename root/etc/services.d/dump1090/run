@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bash
+if [ "$SERVICE_ENABLE_DUMP1090" != "false" ]
+then
+	/usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet
+else
+	tail -f /dev/null
+fi

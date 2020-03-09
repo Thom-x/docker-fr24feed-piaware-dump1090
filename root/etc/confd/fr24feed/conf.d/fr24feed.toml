@@ -1,0 +1,6 @@
+[template]
+src = "fr24feed.ini.tmpl"
+dest = "/etc/fr24feed.ini"
+keys = [
+    "/"
+]

@@ -16,95 +16,146 @@ Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts 
 
 ![Image of dump1090 webapp](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/screenshot.png)
 
-## Requirements
+# Requirements
 - Docker
 - RTL-SDR DVBT USB Dongle (RTL2832)
 
-## Install from image
-
-### FlightAware
-Register to https://flightaware.com/account/join/.
-
-Download and edit [`piaware.conf`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/piaware.conf)
-
-Replace `feeder-id YOUR_FEEDER_ID` with your feeder id (ex: `feeder-id ffffffff-ffff-ffff-ffff-ffffffffffff`).
-
-And claim it on https://fr.flightaware.com/adsb/piaware/claim.
-
-### FlightRadar24
-Register to https://www.flightradar24.com/share-your-data and get a sharing key.
-
-Download and edit [`fr24feed.ini`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/fr24feed.ini)
-Replace `fr24key="YOUR_KEY_HERE"` with your key (ex: `fr24key="a23165za4za56"`).
-
-### Dump1090
-#### Receiver location
-Download and edit [`config.js`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/config.js) to suite your receiver location and name:
-```javascript
-SiteShow    = true;           // true to show a center marker
-SiteLat     = 47;            // position of the marker
-SiteLon     = 2.5;
-SiteName    = "Home"; // tooltip of the marker
-```
-#### Terrain-limit rings (optional):
-If you don't need this feature ignore this.
-
-Create a panorama for your receiver location on http://www.heywhatsthat.com.
-
-Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=1000,10000 as upintheair.json.
-
-*Note : the "id" value XXXX correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes.*
-### Installation
+# Getting started
 
 Run : 
 ```
 docker run -d -p 8080:8080 -p 8754:8754 \
---device=/dev/bus/usb:/dev/bus/usb \
--v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json \
--v /path/to/your/piaware.conf:/etc/piaware.conf \
--v /path/to/your/config.js:/usr/lib/fr24/public_html/config.js \
--v /path/to/your/fr24feed.ini:/etc/fr24feed.ini \
-thomx/fr24feed-piaware
+	--device=/dev/bus/usb:/dev/bus/usb \
+	-e "FR24FEED_FR24KEY=MY_SHARING_KEY" \
+	-e "PIAWARE_FEEDER_DASH_ID=MY_FEEDER_ID" \
+	-e "HTML_SITE_LAT=MY_SITE_LAT" \
+	-e "HTML_SITE_LON=MY_SITE_LON" \
+	-e "HTML_SITE_NAME=MY_SITE_NAME" \
+	-e "PANORAMA_ID=MY_PANORAMA_ID" \
+	thomx/fr24feed-piaware
 ```
-*Note : remove `-v /path/to/your/upintheair.json:/usr/lib/fr24/public_html/upintheair.json` from the command line if you don't want to use this feature.*
-## Build it yourself
 
-Clone this repo.
+Go to http://dockerhost:8080 to view a map of reveived data.
+Go to http://dockerhost:8754 to view fr24feed configuration panel.
 
-### FlightAware
+*Note : remove `-e "PANORAMA_ID=MY_PANORAMA_ID"` from the command line if you don't want to use this feature.*
 
-Register to https://flightaware.com/account/join/.
+# Configuration
 
-Edit [`piaware.conf`](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/piaware.conf)
+## Common
 
-Replace `feeder-id YOUR_FEEDER_ID` with your feeder id (ex: `feeder-id ffffffff-ffff-ffff-ffff-ffffffffffff`).
+To disable starting a service you can add an environement variable :
 
-And claim it on https://fr.flightaware.com/adsb/piaware/claim.
-### FlightRadar24
-Register to https://www.flightradar24.com/share-your-data and get a sharing key.
+| Environment Variable                  | Value                    | Description               |
+|---------------------------------------|--------------------------|---------------------------|
+| `SERVICE_ENABLE_DUMP1090`             | `false`                  | Disable dump1090 service  |
+| `SERVICE_ENABLE_PIAWARE`              | `false`                  | Disable piaware service   |
+| `SERVICE_ENABLE_FR24FEED`             | `false`                  | Disable fr24feed service  |
+| `SERVICE_ENABLE_HTTP`                 | `false`                  | Disable http service      |
 
-Edit `fr24feed.ini` and replace `fr24key="YOUR_KEY_HERE"` with your key (ex: `fr24key="a23165za4za56"`).
-### Dump1090
-#### Receiver location
-Edit `config.js` to suite your receiver location and name:
-```javascript
-SiteShow    = true;           // true to show a center marker
-SiteLat     = 47;            // position of the marker
-SiteLon     = 2.5;
-SiteName    = "Home"; // tooltip of the marker
+Ex : `-e "SERVICE_ENABLE_HTTP=false"`
+
+
+## FlightAware
+
+Resgister on https://flightaware.com/account/join/.
+
+Run :
 ```
-#### Terrain-limit rings (optional):
+docker run -it --rm \
+	-e "SERVICE_ENABLE_DUMP1090=false" \
+	-e "SERVICE_ENABLE_HTTP=false" \
+	-e "SERVICE_ENABLE_FR24FEED=false" \
+	thomx/fr24feed-piaware /bin/bash
+```
+When the container starts you should see the feeder id, note it. Wait 5 minutes and you should see a new receiver at https://fr.flightaware.com/adsb/piaware/claim (use the same IP as your docker host), claim it and exit the container.
+
+Add the environment variable `PIAWARE_FEEDER_DASH_ID` with your feeder id.
+
+| Environment Variable                  | Configuration property   | Default value     |
+|---------------------------------------|--------------------------|-------------------|
+| `PIAWARE_FEEDER_DASH_ID`              | `feeder-id`              | `YOUR_FEEDER_ID`  |
+| `PIAWARE_RECEIVER_DASH_TYPE`          | `receiver-type`          | `other`           |
+| `PIAWARE_RECEIVER_DASH_HOST`          | `receiver-host`          | `127.0.0.1`       |
+| `PIAWARE_RECEIVER_DASH_PORT`          | `receiver-port`          | `30005`           |
+
+
+Ex : `-e "PIAWARE_RECEIVER_DASH_TYPE=other"`
+
+## FlightRadar24
+
+Run :
+```
+docker run -it --rm \
+	-e "SERVICE_ENABLE_DUMP1090=false" \
+	-e "SERVICE_ENABLE_HTTP=false" \
+	-e "SERVICE_ENABLE_PIAWARE=false" \
+	-e "SERVICE_ENABLE_FR24FEED=false" \
+	thomx/fr24feed-piaware /bin/bash
+```
+
+Then : `/fr24feed/fr24feed_amd64/fr24feed --signup` and follow the instructions, for technical steps, your answer doesn't matter we just need the sharing key at the end.
+
+Finally to see the sharing key run `cat /etc/fr24feed.ini`, you can now exit the container.
+
+Add the environment variable `FR24FEED_FR24KEY` with your sharing key.
+
+
+| Environment Variable                  | Configuration property   | Default value     |
+|---------------------------------------|--------------------------|-------------------|
+| `FR24FEED_RECEIVER`                   | `receiver`               | `beast-tcp`       |
+| `FR24FEED_FR24KEY`                    | `fr24key`                | `YOUR_KEY_HERE`   |
+| `FR24FEED_HOST`                       | `host`                   | `127.0.0.1:30005` |
+| `FR24FEED_BS`                         | `bs`                     | `no`              |
+| `FR24FEED_RAW`                        | `raw`                    | `no`              |
+| `FR24FEED_LOGMODE`                    | `logmode`                | `1`               |
+| `FR24FEED_LOGPATH`                    | `logpath`                | `/tmp`            |
+| `FR24FEED_MLAT`                       | `mlat`                   | `yes`             |
+| `FR24FEED_MLAT_DASH_WITHOUT_DASH_GPS` | `mlat-without-gps`       | `yes`             |
+
+Ex : `-e "FR24FEED_FR24KEY=0123456789"`
+
+## Add custom properties
+
+**Note** : you can add any property to either fr24feed or piaware configuration file by adding an environment variable starting with `PIAWARE_...` or `FR24FEED_...`.
+
+Example :
+
+| Environment Variable                  | Configuration property   | value             | Configuration file      |
+|---------------------------------------|--------------------------|-------------------|-------------------------|
+| `FR24FEED_TEST=value`                 | `test`                   | `value`           | `fr24feed.init`         |
+| `FR24FEED_TEST_DASH_TEST=value`       | `test-test`              | `value2`          | `fr24feed.init`         |
+| `PIAWARE_TEST=value`                  | `test`                   | `value`           | `piaware.conf`          |
+
+## Dump1090
+### Receiver location
+
+| Environment Variable                  | Default value            |
+|---------------------------------------|--------------------------|
+| `HTML_SITE_LAT`                       | `45.0`                   |
+| `HTML_SITE_LON`                       | `9.0`                    |
+| `HTML_SITE_NAME`                      | `My Radar Site`          |
+
+Ex : `-e "HTML_SITE_NAME=My site"`
+
+### Terrain-limit rings (optional):
 If you don't need this feature ignore this.
 
 Create a panorama for your receiver location on http://www.heywhatsthat.com.
 
-Download http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=1000,10000 place the file upintheair.json in this directory and uncomment `#COPY upintheair.json /usr/lib/fr24/...` from Dockerfile.
+| Environment Variable                  | Default value            | Description                                 |
+|---------------------------------------|--------------------------|---------------------------------------------|
+| `PANORAMA_ID`                         |                          | Panorama id                                 |
+| `PANORAMA_ALTS`                       | `1000,10000`             | Comma seperated list of altitudes in meter  |
 
-*Note : the "id" value XXXX correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes.*
-### Installation
-Run : `docker-compose up`
+*Note : the panorama id value correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes.*
 
-## Usage
-Go to http://dockerhost:8080 to view a map of reveived data.
+Ex : `-e "PANORAMA_ID=FRUXK2G7"`
 
-Go to http://dockerhost:8754 to view fr24feed configuration panel.
+If you don't want to download the limit every time you bring up the container you can download `http://www.heywhatsthat.com/api/upintheair.json?id=${PANORAMA_ID}&refraction=0.25&alts=${PANORAMA_ALTS}` as upintheair.json and mount it in `/usr/lib/fr24/public_html/upintheair.json`.
+
+# Build it yourself
+
+Clone this repo.
+
+```docker build . ```

@@ -1,0 +1,8 @@
+#!/usr/bin/with-contenv bash
+if [ "$SERVICE_ENABLE_HTTP" != "false" ]
+then
+	cd /usr/lib/fr24/public_html
+	/usr/bin/python3 -m http.server 8080
+else
+	tail -f /dev/null
+fi

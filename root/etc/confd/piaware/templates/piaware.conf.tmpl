@@ -1,0 +1,18 @@
+# This file configures piaware and related software.
+# You can edit it directly or use piaware-config from the command line
+# to view and change settings.
+#
+# If /boot/piaware-config.txt also exists, then settings present in
+# that file will override settings in this file.
+{{- range gets "/*" }}
+{{base .Key }} {{ .Value }}
+{{- end }}
+{{- range gets "/*/dash/*" }}
+{{base (dir (dir .Key))}}-{{base .Key }} {{ .Value }}
+{{- end }}
+{{- range gets "/*/dash/*/dash/*" }}
+{{base (dir (dir (dir (dir .Key))))}}-{{base (dir (dir .Key))}}-{{base .Key }} {{ .Value }}
+{{- end }}
+{{- range gets "/*/dash/*/dash/*/dash/*" }}
+{{base (dir (dir (dir (dir (dir (dir .Key))))))}}-{{base (dir (dir (dir (dir .Key))))}}-{{base (dir (dir .Key))}}-{{base .Key }} {{ .Value }}
+{{- end }}
