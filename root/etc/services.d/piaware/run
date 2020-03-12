@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bash
 if [ "$SERVICE_ENABLE_PIAWARE" != "false" ]
 then
-	/usr/bin/piaware -plainlog
+	/bin/decoration -c green -p "[piaware] " -e "/usr/bin/piaware" -a "-plainlog"
 else
 	tail -f /dev/null
 fi

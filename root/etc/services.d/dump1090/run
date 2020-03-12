@@ -11,7 +11,7 @@ then
 	}
 	default_value "site_lat" "45.0"
 	default_value "site_lon" "9.0"
-	/usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON}
+	/bin/decoration -c yellow -p "[dump1090] " -e "/usr/lib/fr24/dump1090" -a "--net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON}"
 else
 	tail -f /dev/null
 fi

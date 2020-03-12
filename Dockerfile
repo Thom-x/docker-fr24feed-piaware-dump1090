@@ -134,6 +134,11 @@ RUN mkdir -p /opt/confd/bin && \
     mv /tmp/confd-0.16.0-linux-amd64 /opt/confd/bin/confd && \
     chmod +x /opt/confd/bin/confd
 
+# DECORATION
+ADD https://github.com/Thom-x/Coloring/releases/download/v0.0.1/decoration /tmp/
+RUN mv /tmp/decoration /bin/decoration && \
+    chmod +x /bin/decoration
+
 # S6 OVERLAY
 ADD https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-amd64.tar.gz /tmp/
 RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C / && rm /tmp/s6-overlay-amd64.tar.gz
