@@ -125,8 +125,8 @@ RUN apt-get update && \
 RUN cd /tmp && \
     git clone http://github.com/flightaware/tcltls-rebuild.git && \
     cd tcltls-rebuild && \
-    ./prepare-build.sh buster && \
-    cd package-buster && \
+    ./prepare-build.sh ${DEBIAN_VERSION} && \
+    cd package-${DEBIAN_VERSION} && \
     dpkg-buildpackage -b --no-sign && \
     cd ../ && \
     dpkg -i tcl-tls_*.deb
