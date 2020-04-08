@@ -69,7 +69,7 @@ ENV FR24FEED_VERSION 1.0.18-5
 MAINTAINER maugin.thomas@gmail.com
 
 RUN apt-get update && \
-	# rtl-sdr
+    # rtl-sdr
     apt-get install -y \
     wget \
     devscripts \
@@ -84,14 +84,13 @@ RUN apt-get update && \
     libboost-program-options-dev \
     libboost-regex-dev \
     libboost-filesystem-dev \
-	libtcl \
-	net-tools \
-	tclx \
-	tcl \
-	tcllib \
-	tcl-tls \
-	itcl3 \
-	librtlsdr-dev \
+    libtcl \
+    net-tools \
+    tclx \
+    tcl \
+    tcllib \
+    itcl3 \
+    librtlsdr-dev \
     pkg-config \
     libncurses5-dev \
     libbladerf-dev && \
@@ -112,6 +111,25 @@ RUN mkdir -p /etc/modprobe.d && \
     make install && \
     ldconfig && \
     rm -rf /tmp/rtl-sdr
+    
+# Build & Install dependency tcl-tls from source code.
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y \
+    libssl-dev \
+    tcl-dev \
+    chrpath && \
+    rm -rf /var/lib/apt/lists/*
+
+## Clone source code, build & Install tcl-tls
+RUN cd /tmp && \
+    git clone http://github.com/flightaware/tcltls-rebuild.git && \
+    cd tcltls-rebuild && \
+    ./prepare-build.sh buster &&
+    cd package-buster && \
+    dpkg-buildpackage -b --no-sign && \
+    cd ../ &&
+    dpkg -i tcl-tls_*.deb
 
 # DUMP1090
 RUN mkdir -p /usr/lib/fr24/public_html/data
