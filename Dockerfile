@@ -1,6 +1,6 @@
 FROM debian:buster as dump1090
 
-ENV DUMP1090_VERSION v3.8.0
+ENV DUMP1090_VERSION v3.8.1
 
 # DUMP1090
 RUN apt-get update && \
@@ -24,7 +24,7 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
 FROM debian:buster as piaware
 
 ENV DEBIAN_VERSION buster
-ENV PIAWARE_VERSION v3.8.0
+ENV PIAWARE_VERSION v3.8.1
 
 # PIAWARE
 WORKDIR /tmp
