@@ -63,6 +63,7 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 
 FROM debian:buster-slim as serve
 
+ENV DEBIAN_VERSION buster
 ENV RTL_SDR_VERSION 0.6.0
 ENV FR24FEED_VERSION 1.0.18-5
 
