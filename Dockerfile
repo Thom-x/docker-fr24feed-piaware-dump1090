@@ -1,6 +1,6 @@
 FROM debian:buster as dump1090
 
-ENV DUMP1090_VERSION v3.8.0
+ENV DUMP1090_VERSION v3.8.1
 
 # DUMP1090
 RUN apt-get update && \
@@ -24,7 +24,7 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
 FROM debian:buster as piaware
 
 ENV DEBIAN_VERSION buster
-ENV PIAWARE_VERSION v3.8.0
+ENV PIAWARE_VERSION v3.8.1
 
 # PIAWARE
 WORKDIR /tmp
@@ -63,13 +63,14 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 
 FROM debian:buster-slim as serve
 
+ENV DEBIAN_VERSION buster
 ENV RTL_SDR_VERSION 0.6.0
 ENV FR24FEED_VERSION 1.0.18-5
 
 MAINTAINER maugin.thomas@gmail.com
 
 RUN apt-get update && \
-	# rtl-sdr
+    # rtl-sdr
     apt-get install -y \
     wget \
     devscripts \
@@ -84,14 +85,13 @@ RUN apt-get update && \
     libboost-program-options-dev \
     libboost-regex-dev \
     libboost-filesystem-dev \
-	libtcl \
-	net-tools \
-	tclx \
-	tcl \
-	tcllib \
-	tcl-tls \
-	itcl3 \
-	librtlsdr-dev \
+    libtcl \
+    net-tools \
+    tclx \
+    tcl \
+    tcllib \
+    itcl3 \
+    librtlsdr-dev \
     pkg-config \
     libncurses5-dev \
     libbladerf-dev && \
@@ -112,6 +112,25 @@ RUN mkdir -p /etc/modprobe.d && \
     make install && \
     ldconfig && \
     rm -rf /tmp/rtl-sdr
+    
+# Build & Install dependency tcl-tls from source code.
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y \
+    libssl-dev \
+    tcl-dev \
+    chrpath && \
+    rm -rf /var/lib/apt/lists/*
+
+## Clone source code, build & Install tcl-tls
+RUN cd /tmp && \
+    git clone http://github.com/flightaware/tcltls-rebuild.git && \
+    cd tcltls-rebuild && \
+    ./prepare-build.sh ${DEBIAN_VERSION} && \
+    cd package-${DEBIAN_VERSION} && \
+    dpkg-buildpackage -b --no-sign && \
+    cd ../ && \
+    dpkg -i tcl-tls_*.deb
 
 # DUMP1090
 RUN mkdir -p /usr/lib/fr24/public_html/data
