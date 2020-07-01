@@ -9,9 +9,18 @@ then
 		printf -v $key -- "$value"
 		export $key
 	}
+	default_value2() 
+	{ 
+		key=${1//\-/_DASH_}
+		key=DUMP1090_${key^^}
+		eval "value=\${$key:-\$2}"
+		printf -v $key -- "$value"
+		export $key
+	}
 	default_value "site_lat" "45.0"
 	default_value "site_lon" "9.0"
-	/usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON}
+	default_value2 "additional_args" ""
+	/usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS}
 else
 	tail -f /dev/null
 fi

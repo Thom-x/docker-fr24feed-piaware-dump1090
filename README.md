@@ -127,14 +127,14 @@ Example :
 | `FR24FEED_TEST_DASH_TEST=value`       | `test-test`              | `value2`          | `fr24feed.init`         |
 | `PIAWARE_TEST=value`                  | `test`                   | `value`           | `piaware.conf`          |
 
-## Dump1090
-### Receiver location
+## Dump1090 & Web UI
 
-| Environment Variable                  | Default value            |
-|---------------------------------------|--------------------------|
-| `HTML_SITE_LAT`                       | `45.0`                   |
-| `HTML_SITE_LON`                       | `9.0`                    |
-| `HTML_SITE_NAME`                      | `My Radar Site`          |
+| Environment Variable                  | Default value            | Description                                                       |
+|---------------------------------------|--------------------------|-------------------------------------------------------------------|
+| `HTML_SITE_LAT`                       | `45.0`                   |                                                                   |
+| `HTML_SITE_LON`                       | `9.0`                    |                                                                   |
+| `HTML_SITE_NAME`                      | `My Radar Site`          |                                                                   |
+| `DUMP1090_ADDITIONAL_ARGS`            | empty                    | Additial arguments for dump1090 e.g.: `--json-location-accuracy 2`|
 
 Ex : `-e "HTML_SITE_NAME=My site"`
 
