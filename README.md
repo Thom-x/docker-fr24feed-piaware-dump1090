@@ -135,7 +135,7 @@ Example :
 | `HTML_SITE_LON`                       | `9.0`                    |                                                                   |
 | `HTML_SITE_NAME`                      | `My Radar Site`          |                                                                   |
 | `DUMP1090_ADDITIONAL_ARGS`            | empty                    | Additial arguments for dump1090 e.g.: `--json-location-accuracy 2`|
-| `SERVICE_ENABLE_DUMP1090_OVER_NETCAT` | empty                    | Use dump1090 in combination with netcat to feed data from rtl_tcp server.|
+| `DUMP1090_OVER_NETCAT`                | false                    | Use dump1090 in combination with netcat to feed data from rtl_tcp server. (Requires appox. 35-40Mbit/s)|
 | `DUMP1090_REMOTE_HOST`                | empty                    | IP of rtl_tcp server                                              |
 | `DUMP1090_REMOTE_PORT`                | empty                    | Port of rtl_tcp server                                            |
 
