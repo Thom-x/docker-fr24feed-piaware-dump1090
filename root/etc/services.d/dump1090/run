@@ -24,7 +24,7 @@ then
 	then
                 /usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS}
         else
-	        nc ${REMOTE_DUMP1090_HOST} ${REMOTE_DUMP1090_PORT} | /usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS} --ifile -
+	        /bin/nc ${REMOTE_DUMP1090_HOST} ${REMOTE_DUMP1090_PORT} | /usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS} --ifile -
 	fi
 else
 	tail -f /dev/null
