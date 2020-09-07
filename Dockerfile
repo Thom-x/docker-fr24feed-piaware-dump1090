@@ -13,7 +13,8 @@ RUN apt-get update && \
     pkg-config \
     dh-systemd \
     libncurses5-dev \
-    libbladerf-dev && \
+    libbladerf-dev \
+    netcat && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tmp
