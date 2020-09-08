@@ -52,6 +52,8 @@ To disable starting a service you can add an environement variable :
 | `SERVICE_ENABLE_PIAWARE`              | `false`                  | Disable piaware service   |
 | `SERVICE_ENABLE_FR24FEED`             | `false`                  | Disable fr24feed service  |
 | `SERVICE_ENABLE_HTTP`                 | `false`                  | Disable http service      |
+| `SERVICE_ENABLE_IMPORT_OVER_NETCAT`   | `false`                  | Disable import over netcat|
+
 
 Ex : `-e "SERVICE_ENABLE_HTTP=false"`
 
