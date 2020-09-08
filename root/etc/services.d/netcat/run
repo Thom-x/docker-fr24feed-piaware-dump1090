@@ -2,8 +2,8 @@
 if [ "$SERVICE_ENABLE_IMPORT_OVER_NETCAT" != "false" ]
 then
 	echo "Waiting until dump1090 is listening on configured port..."
-	while ! nc -z localhost ${DUMP1090_LOCAL_PORT}; do sleep 5; echo "wait until local dump1090 is listening"; done
-	while ! nc -z ${DUMP1090_REMOTE_HOST} ${DUMP1090_REMOTE_PORT}; do sleep 5; echo "wait until remote dump1090 is listening"; done
+	while ! nc -z localhost ${DUMP1090_LOCAL_PORT}; do sleep 5; echo "wait until local dump1090 is listening on port ${DUMP1090_LOCAL_PORT}"; done
+	while ! nc -z ${DUMP1090_REMOTE_HOST} ${DUMP1090_REMOTE_PORT}; do sleep 5; echo "wait until remote dump1090 (${DUMP1090_REMOTE_HOST}) is listening on port ${DUMP1090_REMOTE_PORT}"; done
 	echo "local and remote dump1090 is available now. Start forwarding..."
 	
 	while /bin/true; do /bin/nc ${DUMP1090_REMOTE_HOST} ${DUMP1090_REMOTE_PORT} | /bin/nc -q1 localhost ${DUMP1090_LOCAL_PORT}; sleep 15; done
