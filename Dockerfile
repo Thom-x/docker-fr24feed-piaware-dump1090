@@ -142,7 +142,8 @@ RUN apt-get update && \
     apt-get install -y \
     libssl-dev \
     tcl-dev \
-    chrpath && \
+    chrpath \
+    netcat && \
     rm -rf /var/lib/apt/lists/*
 
 ## Clone source code, build & Install tcl-tls
