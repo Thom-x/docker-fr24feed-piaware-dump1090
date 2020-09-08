@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bash
 if [ "$SERVICE_ENABLE_IMPORT_OVER_NETCAT" != "false" ]
 then
-  /bin/nc ${DUMP1090_REMOTE_HOST} ${DUMP1090_REMOTE_PORT} | /bin/nc -q1 localhost ${DUMP1090_LOCAL_PORT}
+	/bin/nc ${DUMP1090_REMOTE_HOST} ${DUMP1090_REMOTE_PORT} | /bin/nc -q1 localhost ${DUMP1090_LOCAL_PORT}
 else
 	tail -f /dev/null
 fi
