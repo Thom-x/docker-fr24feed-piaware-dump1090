@@ -52,6 +52,8 @@ To disable starting a service you can add an environement variable :
 | `SERVICE_ENABLE_PIAWARE`              | `false`                  | Disable piaware service   |
 | `SERVICE_ENABLE_FR24FEED`             | `false`                  | Disable fr24feed service  |
 | `SERVICE_ENABLE_HTTP`                 | `false`                  | Disable http service      |
+| `SERVICE_ENABLE_IMPORT_OVER_NETCAT`   | `false`                  | Disable import over netcat|
+
 
 Ex : `-e "SERVICE_ENABLE_HTTP=false"`
 
@@ -135,12 +137,27 @@ Example :
 | `HTML_SITE_LON`                       | `9.0`                    |                                                                   |
 | `HTML_SITE_NAME`                      | `My Radar Site`          |                                                                   |
 | `DUMP1090_ADDITIONAL_ARGS`            | empty                    | Additial arguments for dump1090 e.g.: `--json-location-accuracy 2`|
-| `DUMP1090_OVER_NETCAT`                | `false`                  | Use dump1090 in combination with netcat to feed data from rtl_tcp server. (Requires appox. 35-40Mbit/s). Example RTL_TCP command: `./rtl_tcp -a 0.0.0.0 -f 1090000000 -s 2400000 -p 30005 -P 28 -g -10`|
-| `DUMP1090_REMOTE_HOST`                | empty                    | IP of rtl_tcp server                                              |
-| `DUMP1090_REMOTE_PORT`                | empty                    | Port of rtl_tcp server                                            |
-
 
 Ex : `-e "HTML_SITE_NAME=My site"`
+
+## DUMP1090 forwarding
+| Environment Variable                  | Default value            | Description                                                       |
+|---------------------------------------|--------------------------|-------------------------------------------------------------------|
+| `SERVICE_ENABLE_IMPORT_OVER_NETCAT`   | `false`                  | Enable netcat forwarding the beast-output of a remote dump1090 server to the local dump1090 beast-input |
+| `DUMP1090_LOCAL_PORT`                 | empty                    | Must be the same port as specified as `--net-bi-port` in  `DUMP1090_ADDITIONAL_ARGS`|
+| `DUMP1090_REMOTE_HOST`                | empty                    | IP of remote dump1090 server                                      |
+| `DUMP1090_REMOTE_PORT`                | empty                    | Port of remote dump190 server specified as argument `--net-bo-port` on remote system|
+
+## RTL_TCP forwarding
+
+**WARNING:** This kind of forwarding is using a lot of bandwidth and could be unstable in WiFi environments.
+
+| Environment Variable                  | Default value            | Description                                                       |
+|---------------------------------------|--------------------------|-------------------------------------------------------------------|
+| `RTL_TCP_OVER_NETCAT`                | `false`                  | Use dump1090 in combination with netcat to feed data from rtl_tcp server. (Requires appox. 35-40Mbit/s). Example RTL_TCP command: `./rtl_tcp -a 0.0.0.0 -f 1090000000 -s 2400000 -p 30005 -P 28 -g -10`|
+| `RTL_TCP_REMOTE_HOST`                | empty                    | IP of rtl_tcp server                                              |
+| `RTL_TCP_REMOTE_PORT`                | empty                    | Port of rtl_tcp server                                            |
+
 
 ### Terrain-limit rings (optional):
 If you don't need this feature ignore this.
