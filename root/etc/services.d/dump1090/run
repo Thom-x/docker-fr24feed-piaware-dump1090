@@ -20,9 +20,9 @@ then
 	default_value "site_lat" "45.0"
 	default_value "site_lon" "9.0"
 	default_value2 "additional_args" ""
-        if [ "$DUMP1090_OVER_NETCAT" == "true" ]
+        if [ "$RTL_TCP_OVER_NETCAT" == "true" ]
 	then
-                /bin/nc ${DUMP1090_REMOTE_HOST} ${DUMP1090_REMOTE_PORT} | /usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS} --ifile -
+                /bin/nc ${RTL_TCP_REMOTE_HOST} ${RTL_TCP_REMOTE_PORT} | /usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS} --ifile -
         else
                 /usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS}
 	fi
