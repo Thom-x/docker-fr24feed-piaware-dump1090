@@ -7,7 +7,7 @@ then
 	while ! nc -z ${DUMP1090_REMOTE_HOST} ${DUMP1090_REMOTE_PORT}; do sleep 5; echo "wait until remote dump1090 (${DUMP1090_REMOTE_HOST}) is listening on port ${DUMP1090_REMOTE_PORT}"; done
 	echo "local and remote dump1090 is available now. Start forwarding..."
 	
-	while /bin/true; do /bin/nc ${DUMP1090_REMOTE_HOST} ${DUMP1090_REMOTE_PORT} | /bin/nc -q1 localhost ${DUMP1090_LOCAL_PORT}; sleep 15; done
+	while /bin/true; do /bin/nc -q1 -w 15 ${DUMP1090_REMOTE_HOST} ${DUMP1090_REMOTE_PORT} | /bin/nc -q1 -w 15 localhost ${DUMP1090_LOCAL_PORT}; sleep 15; done
 else
 	tail -f /dev/null
 fi
