@@ -1,6 +1,6 @@
 FROM debian:buster as dump1090
 
-ENV DUMP1090_VERSION v3.8.1
+ENV DUMP1090_VERSION v4.0
 
 # DUMP1090
 RUN apt-get update && \
@@ -24,7 +24,7 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
 FROM debian:buster as piaware
 
 ENV DEBIAN_VERSION buster
-ENV PIAWARE_VERSION v3.8.1
+ENV PIAWARE_VERSION v4.0
 
 # PIAWARE
 WORKDIR /tmp
@@ -135,7 +135,7 @@ RUN mkdir -p /etc/modprobe.d && \
     make install && \
     ldconfig && \
     rm -rf /tmp/rtl-sdr
-    
+
 # Build & Install dependency tcl-tls from source code.
 # Install dependencies
 RUN apt-get update && \
@@ -148,7 +148,7 @@ RUN apt-get update && \
 
 ## Clone source code, build & Install tcl-tls
 RUN cd /tmp && \
-    git clone http://github.com/flightaware/tcltls-rebuild.git && \
+    git clone --depth 1 http://github.com/flightaware/tcltls-rebuild.git && \
     cd tcltls-rebuild && \
     ./prepare-build.sh ${DEBIAN_VERSION} && \
     cd package-${DEBIAN_VERSION} && \

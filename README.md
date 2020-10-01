@@ -126,7 +126,7 @@ Example :
 | Environment Variable                  | Configuration property   | value             | Configuration file      |
 |---------------------------------------|--------------------------|-------------------|-------------------------|
 | `FR24FEED_TEST=value`                 | `test`                   | `value`           | `fr24feed.init`         |
-| `FR24FEED_TEST_DASH_TEST=value2       | `test-test`              | `value2`          | `fr24feed.init`         |
+| `FR24FEED_TEST_DASH_TEST=value2`       | `test-test`              | `value2`          | `fr24feed.init`         |
 | `PIAWARE_TEST=value`                  | `test`                   | `value`           | `piaware.conf`          |
 
 ## Dump1090 & Web UI
