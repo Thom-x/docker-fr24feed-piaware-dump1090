@@ -1,9 +1,0 @@
-sudo: required #is required to use docker service in travis
-
-language: bash
-
-services:
-  - docker
-
-script:
-  - docker build -f Dockerfile .
