@@ -5,6 +5,9 @@ case $arch in
   armv7l)
     url=https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-armhf.tar.gz
     ;;
+  armv6l)
+    url=https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-armhf.tar.gz
+    ;;
   *)
     url=https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-amd64.tar.gz
     ;;
