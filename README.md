@@ -2,7 +2,7 @@
 
 ![](https://github.com/Thom-x/docker-fr24feed-piaware-dump1090/workflows/Docker/badge.svg?branch=master)
 ![](https://images.microbadger.com/badges/image/thomx/fr24feed-piaware.svg)
-![](https://images.microbadger.com/badges/version/thomx/fr24feed-piaware.svg)
+![](https://img.shields.io/docker/v/thomx/fr24feed-piaware)
 ![GitHub](https://img.shields.io/github/license/Thom-x/docker-fr24feed-piaware-dump1090)
 ![GitHub issues](https://img.shields.io/github/issues/Thom-x/docker-fr24feed-piaware-dump1090)
 
