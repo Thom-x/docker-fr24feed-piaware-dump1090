@@ -1,12 +1,18 @@
 #!/bin/sh
-arch=$(arch)
+arch=$(dpkg --print-architecture)
 
 case $arch in
-  armv7l)
+  armhf)
     url=https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-armhf.tar.gz
     ;;
-  *)
+  armel)
+    url=https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-arm.tar.gz
+    ;;
+  amd64)
     url=https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-amd64.tar.gz
+    ;;
+  *)
+    exit 1
     ;;
 esac
 
