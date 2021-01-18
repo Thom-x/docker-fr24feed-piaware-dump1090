@@ -2,11 +2,11 @@
 arch=$(dpkg --print-architecture)
 case $arch in
   armhf)
-    url=https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_VERSION}_armhf.tgz
+    url=https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_1.0.25-3_armhf.tgz # force version 1.0.25-3 because of broken version for rpi
     dirname=fr24feed_armhf
     ;;
   armel)
-    url=https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_VERSION}_armhf.tgz
+    url=https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_1.0.25-3_armhf.tgz # force version 1.0.25-3 because of broken version for rpi
     dirname=fr24feed_armhf
     ;;
   amd64)
