@@ -1,12 +1,8 @@
 #!/bin/sh
-arch=$(uname -m)
+arch=$(arch)
 
 case $arch in
   armv7l)
-    url=https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_VERSION}_armhf.tgz
-    dirname=fr24feed_armhf
-    ;;
-  armv6l)
     url=https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_VERSION}_armhf.tgz
     dirname=fr24feed_armhf
     ;;
