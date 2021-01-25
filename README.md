@@ -161,7 +161,7 @@ Ex : `-e "HTML_SITE_NAME=My site"`
 | `RTL_TCP_REMOTE_PORT`                | empty                    | Port of rtl_tcp server                                            |
 
 
-### Terrain-limit rings (optional):
+## Terrain-limit rings (optional):
 If you don't need this feature ignore this.
 
 Create a panorama for your receiver location on http://www.heywhatsthat.com.
