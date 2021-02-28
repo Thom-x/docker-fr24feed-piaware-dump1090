@@ -28,7 +28,7 @@ echo "Modifying the web page to include Flightradar24 elements"
 # Copy the FR24 logo to the images folder in the `modified` folder
 cp $DIR/resources/fr24-logo.svg $DIR/modified/public_html/images
 # Patch the files in the `modified` folder
-patch -p1 -ru -d $DIR/modified < $DIR/flightradar24.patch
+patch -p1 -ru --force -d $DIR/modified < $DIR/flightradar24.patch
 
 # Done -- See README.md file if the previous command failed, could happen if upstream changed the same lines in their latest release
 if [ $? -eq 0 ]
