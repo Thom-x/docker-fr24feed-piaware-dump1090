@@ -1,0 +1,36 @@
+diff -ru patch/upstream/dump1090-3.8.1/public_html/index.html patch/modified/dump1090-3.8.1/public_html/index.html
+--- patch/upstream/dump1090-3.8.1/public_html/index.html	2020-03-19 15:21:17.000000000 +0100
++++ patch/modified/dump1090-3.8.1/public_html/index.html	2021-02-28 15:54:07.951345651 +0100
+@@ -49,8 +49,9 @@
+ 		<div id="header" class="infoHeading">
+ 			<div class="logoContainer">
+ 				<a href="http://flightaware.com/" target="_blank"><img src="images/fa_logo_color.png" alt="FlightAware" class="flightawareLogo" srcset="images/fa_logo_color.png 1x, images/fa_logo_color@2x.png 2x, images/fa_logo_color@3x.png 3x"></a>
+-				<img src="images/pa-sa-logo.png" alt="PiAware SkyAware" class="adsbLogo piAwareLogo" srcset="images/pa-sa-logo.png 1x, images/pa-sa-logo@2x.png 2x, images/pa-sa-logo@3x.png 3x">
++				<img src="images/pa-sa-logo.png" alt="PiAware SkyAware" class="adsbLogo piAwareLogo" srcset="images/pa-sa-logo.png 1x, images/pa-sa-logo@2x.png 2x, images/pa-sa-logo@3x.png 3x" style="display: none;">
+ 				<img src="images/ff-sa-logo.png" alt="FlightFeeder SkyAware" class="adsbLogo flightfeederLogo" srcset="images/ff-sa-logo.png 1x, images/ff-sa-logo@2x.png 2x, images/ff-sa-logo@3x.png 3x" style="display: none;">
++				<a href="http://flightradar24.com/" target="_blank"><img src="images/fr24-logo.svg" alt="Flightradar24" class="flightradar24Logo"></a>
+ 			</div>
+ 			<div class="buttonContainer">
+ 				<div class="dateTime" id="clock_div"></div>
+
+
+diff -ru patch/upstream/dump1090-3.8.1/public_html/style.css patch/modified/dump1090-3.8.1/public_html/style.css
+--- patch/upstream/dump1090-3.8.1/public_html/style.css	2020-03-19 15:21:17.000000000 +0100
++++ patch/modified/dump1090-3.8.1/public_html/style.css	2021-02-28 15:57:53.669234721 +0100
+@@ -404,6 +404,16 @@
+     box-shadow:inset -12px 0 12px -12px #000000;
+ }
+
++.flightradar24Logo {
++    padding-top: 7px;
++    padding-bottom: 6px;
++    padding-left: 20px;
++    padding-right: 20px;
++    width: 121px;
++    height: 25px;
++    box-shadow:inset -12px 0 12px -12px #000000;
++}
++
+ .adsbLogo {
+     padding-left: 20px;
+     padding-top: 30px;
