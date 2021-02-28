@@ -3,11 +3,11 @@ diff -ru upstream/dump1090-3.8.1/public_html/config.js modified/dump1090-3.8.1/p
 +++ modified/dump1090-3.8.1/public_html/config.js	2021-02-28 17:38:50.039515389 +0100
 @@ -102,7 +102,7 @@
  DefaultSiteCirclesInterval = 50;
-
+ 
  // Controls page title, righthand pane when nothing is selected
 -PageName = "PiAware SkyAware";
 +PageName = "Dump1090 plane tracker";
-
+ 
  // Show country flags by ICAO addresses?
  ShowFlags = true;
 diff -ru upstream/dump1090-3.8.1/public_html/index.html modified/dump1090-3.8.1/public_html/index.html
@@ -24,8 +24,6 @@ diff -ru upstream/dump1090-3.8.1/public_html/index.html modified/dump1090-3.8.1/
  			</div>
  			<div class="buttonContainer">
  				<div class="dateTime" id="clock_div"></div>
-
-
 diff -ru upstream/dump1090-3.8.1/public_html/script.js modified/dump1090-3.8.1/public_html/script.js
 --- upstream/dump1090-3.8.1/public_html/script.js	2020-03-19 15:21:17.000000000 +0100
 +++ modified/dump1090-3.8.1/public_html/script.js	2021-02-28 17:52:35.087697827 +0100
@@ -52,7 +50,7 @@ diff -ru upstream/dump1090-3.8.1/public_html/style.css modified/dump1090-3.8.1/p
 @@ -404,6 +404,16 @@
      box-shadow:inset -12px 0 12px -12px #000000;
  }
-
+ 
 +.flightradar24Logo {
 +    padding-top: 7px;
 +    padding-bottom: 6px;
