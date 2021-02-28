@@ -1,6 +1,6 @@
-diff -ru patch/upstream/dump1090-3.8.1/public_html/index.html patch/modified/dump1090-3.8.1/public_html/index.html
---- patch/upstream/dump1090-3.8.1/public_html/index.html	2020-03-19 15:21:17.000000000 +0100
-+++ patch/modified/dump1090-3.8.1/public_html/index.html	2021-02-28 15:54:07.951345651 +0100
+diff -ru upstream/dump1090-3.8.1/public_html/index.html modified/dump1090-3.8.1/public_html/index.html
+--- upstream/dump1090-3.8.1/public_html/index.html	2020-03-19 15:21:17.000000000 +0100
++++ modified/dump1090-3.8.1/public_html/index.html	2021-02-28 17:38:19.743139664 +0100
 @@ -49,8 +49,9 @@
  		<div id="header" class="infoHeading">
  			<div class="logoContainer">
@@ -14,9 +14,9 @@ diff -ru patch/upstream/dump1090-3.8.1/public_html/index.html patch/modified/dum
  				<div class="dateTime" id="clock_div"></div>
 
 
-diff -ru patch/upstream/dump1090-3.8.1/public_html/style.css patch/modified/dump1090-3.8.1/public_html/style.css
---- patch/upstream/dump1090-3.8.1/public_html/style.css	2020-03-19 15:21:17.000000000 +0100
-+++ patch/modified/dump1090-3.8.1/public_html/style.css	2021-02-28 15:57:53.669234721 +0100
+diff -ru upstream/dump1090-3.8.1/public_html/style.css modified/dump1090-3.8.1/public_html/style.css
+--- upstream/dump1090-3.8.1/public_html/style.css	2020-03-19 15:21:17.000000000 +0100
++++ modified/dump1090-3.8.1/public_html/style.css	2021-02-28 17:38:19.743139664 +0100
 @@ -404,6 +404,16 @@
      box-shadow:inset -12px 0 12px -12px #000000;
  }
