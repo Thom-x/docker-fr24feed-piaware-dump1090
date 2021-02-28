@@ -4,7 +4,7 @@ This Docker image combines the PiAware and FR24feed programs to upload data simu
 The web UI comes from the [dump1090 version maintained by FA](https://github.com/flightaware/dump1090), and thus (logically ;) ) doesn't contain elements from their competitor FR24. We patch the web UI to provide:
 
 * The logo and link to the FR24 website
-* `[TODO]` A neutral page title
+* A neutral page title
 * `[TODO]` Links to the flights pages for both FA and FR24
   * `[TODO]` Clicking on the flight number link
   * `[TODO]` When a flight is selected
