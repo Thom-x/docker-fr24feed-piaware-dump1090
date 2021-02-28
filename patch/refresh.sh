@@ -31,5 +31,11 @@ cp $DIR/resources/fr24-logo.svg $DIR/modified/public_html/images
 patch -p1 -ru -d $DIR/modified < $DIR/flightradar24.patch
 
 # Done -- See README.md file if the previous command failed, could happen if upstream changed the same lines in their latest release
-echo "\nFiles succesfully patched, open this file in your webbrowser to see the changes:"
-echo "$MODIFIED/public_html/index.html"
+if [ $? -eq 0 ]
+then
+  echo "\nFiles succesfully patched, open this file in your webbrowser to see the changes:"
+  echo "$MODIFIED/public_html/index.html"
+else
+  echo "\nERROR: Patching the files failed, please review the previous output to identify where." >&2
+  echo "It likely means that there were changes made upstream to the same lines that are changed by the patch, see README.md file for a suggestion on how to update the patch file."
+fi
