@@ -141,7 +141,7 @@ RUN mkdir -p /etc/modprobe.d && \
     make install && \
     ldconfig && \
     rm -rf /tmp/rtl-sdr
-    
+
 # Build & Install dependency tcl-tls from source code.
 # Install dependencies
 RUN apt-get update && \
@@ -185,6 +185,6 @@ RUN /build/s6-overlay.sh
 
 COPY /root /
 
-EXPOSE 8754 8080 30001 30002 30003 30004 30005 30104 
+EXPOSE 8754 8080 30001 30002 30003 30004 30005 30104
 
 ENTRYPOINT ["/init"]
