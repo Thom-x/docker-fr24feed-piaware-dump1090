@@ -123,7 +123,7 @@ jobs:
       - name: Get tags list
         id: tags
         run: |
-          TAGS=$IMAGE_NAME:${request.pull_number}
+          TAGS=$IMAGE_NAME:PR-${request.pull_number}
           echo TAGS=$TAGS
           echo "::set-output name=tags::$TAGS"
       - name: Build and push
