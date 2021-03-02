@@ -1,18 +1,13 @@
-name: Docker
+name: Pull Request
 
 on:
-  push:
-    # Publish `master` as Docker `latest` image.
-    branches:
-      - master
-
-    # Publish `1.2.3` tags as releases.
-    tags:
-      - "*.*.*"
+  # Run tests for any PRs.
+  pull_request:
 
 env:
   # TODO: Change variable to your image's name.
   IMAGE_NAME: thomx/fr24feed-piaware
+  PR_NUMBER: ${{ github.event.pull_request.number }}
 
 jobs:
   # Run tests.
@@ -74,15 +69,7 @@ jobs:
       - name: Get tags list
         id: tags
         run: |
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
-          # Strip "v" prefix from tag name
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && TAGS=$IMAGE_NAME:latest
-          [ "$VERSION" != "master" ] && TAGS=$IMAGE_NAME:$VERSION,$IMAGE_NAME:latest
+          TAGS=$IMAGE_NAME:PR-$PR_NUMBER
           echo TAGS=$TAGS
           echo "::set-output name=tags::$TAGS"
       - name: Build and push
