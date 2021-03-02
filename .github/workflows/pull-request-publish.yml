@@ -95,6 +95,7 @@ jobs:
             core.info(`Getting PR #${request.pull_number} from ${request.owner}/${request.repo}`)
             try {
               const result = await github.pulls.get(request)
+              result.data.pull_number = request.pull_number
               return result.data
             } catch (err) {
               core.setFailed(`Request failed with error ${err}`)
@@ -123,7 +124,7 @@ jobs:
       - name: Get tags list
         id: tags
         run: |
-          TAGS=$IMAGE_NAME:PR-${request.pull_number}
+          TAGS=$IMAGE_NAME:PR-${{ fromJSON(steps.get-pr.outputs.result).pull_number }}
           echo TAGS=$TAGS
           echo "::set-output name=tags::$TAGS"
       - name: Build and push
