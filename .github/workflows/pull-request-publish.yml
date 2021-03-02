@@ -13,6 +13,8 @@ jobs:
   # See also https://docs.docker.com/docker-hub/builds/automated-testing/
 
   is_deploy_comment:
+    outputs:
+      is_deploy: ${{ steps.check.outputs.triggered }}
     # Ensure test job passes before pushing image.
     runs-on: ubuntu-latest
     if: github.event.issue.pull_request
@@ -25,11 +27,10 @@ jobs:
           reaction: rocket
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-      - run: exit 1
-        if: steps.check.outputs.triggered != 'true'
 
   test:
     needs: is_deploy_comment
+    if: needs.is_deploy_comment.outputs.is_deploy
     runs-on: ubuntu-latest
     steps:
       - name: Get PR number
