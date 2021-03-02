@@ -30,7 +30,7 @@ jobs:
 
   test:
     needs: is_deploy_comment
-    if: needs.is_deploy_comment.outputs.is_deploy
+    if: needs.is_deploy_comment.outputs.is_deploy == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Get PR number
