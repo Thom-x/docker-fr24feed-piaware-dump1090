@@ -52,13 +52,13 @@ diff -ru upstream/public_html/style.css modified/public_html/style.css
  }
 
 +.flightradar24Logo {
-+    padding-top: 7px;
-+    padding-bottom: 6px;
-+    padding-left: 20px;
-+    padding-right: 20px;
-+    width: 121px;
-+    height: 25px;
-+    box-shadow:inset -12px 0 12px -12px #000000;
++    height: 50%;
++    padding-left: 25px;
++    padding-right: 25px;
++}
++
++.logoContainer > a {
++    vertical-align: middle;
 +}
 +
  .adsbLogo {
