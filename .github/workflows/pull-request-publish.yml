@@ -103,7 +103,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
-          ref: ${{ fromJSON(steps.get-pr.outputs.result).head.sha }} # or .head.ref for branch name
+          ref: ${{ fromJSON(steps.get-pr.outputs.result).head.sha }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -123,8 +123,7 @@ jobs:
       - name: Get tags list
         id: tags
         run: |
-          SHA8=$(echo ${GITHUB_SHA} | cut -c1-8)
-          TAGS=$IMAGE_NAME:$SHA8
+          TAGS=$IMAGE_NAME:${request.pull_number}
           echo TAGS=$TAGS
           echo "::set-output name=tags::$TAGS"
       - name: Build and push
