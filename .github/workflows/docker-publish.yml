@@ -48,7 +48,7 @@ jobs:
   push:
     # Ensure test job passes before pushing image.
     needs: test
-
+    environment: docker
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
 
