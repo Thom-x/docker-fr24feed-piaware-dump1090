@@ -33,28 +33,10 @@ jobs:
     if: needs.is_deploy_comment.outputs.is_deploy == 'true'
     runs-on: ubuntu-latest
     steps:
-      - name: Get PR number
-        uses: actions/github-script@v3
-        id: get-pr
-        with:
-          script: |
-            const request = {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number
-            }
-            core.info(`Getting PR #${request.pull_number} from ${request.owner}/${request.repo}`)
-            try {
-              const result = await github.pulls.get(request)
-              return result.data
-            } catch (err) {
-              core.setFailed(`Request failed with error ${err}`)
-            }
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
-          ref: ${{ fromJSON(steps.get-pr.outputs.result).head.sha }} # or .head.ref for branch name
+          ref: 'refs/pull/${{ github.event.issue.number }}/merge'
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -63,7 +45,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ fromJSON(steps.get-pr.outputs.result).head.sha }}
+          key: ${{ runner.os }}-buildx-PR${{ github.event.issue.number }}
           restore-keys: |
             ${{ runner.os }}-buildx-
       - name: Build
@@ -83,28 +65,10 @@ jobs:
     environment: docker
     runs-on: ubuntu-latest
     steps:
-      - name: Get PR number
-        uses: actions/github-script@v3
-        id: get-pr
-        with:
-          script: |
-            const request = {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number
-            }
-            core.info(`Getting PR #${request.pull_number} from ${request.owner}/${request.repo}`)
-            try {
-              const result = await github.pulls.get(request)
-              return result.data
-            } catch (err) {
-              core.setFailed(`Request failed with error ${err}`)
-            }
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
-          ref: ${{ fromJSON(steps.get-pr.outputs.result).head.sha }}
+          ref: 'refs/pull/${{ github.event.issue.number }}/merge'
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -113,7 +77,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ fromJSON(steps.get-pr.outputs.result).head.sha }}
+          key: ${{ runner.os }}-buildx-PR${{ github.event.issue.number }}
           restore-keys: |
             ${{ runner.os }}-buildx-
       - name: Login to DockerHub
