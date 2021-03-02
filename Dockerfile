@@ -88,9 +88,15 @@ FROM debian:buster-slim as serve
 
 ENV DEBIAN_VERSION buster
 ENV RTL_SDR_VERSION 0.6.0
-ENV FR24FEED_VERSION 1.0.18-5
 
-MAINTAINER maugin.thomas@gmail.com
+# force version 1.0.18-5 for amd64 because mlat is not working anymore for latest versions
+ENV FR24FEED_AMD64_VERSION 1.0.18-5
+# force version 1.0.25-3 for armhf and armel because of broken version for these architectures
+ENV FR24FEED_ARMHF_VERSION 1.0.25-3
+ENV FR24FEED_ARMEL_VERSION 1.0.25-3
+ENV S6_OVERLAY_VERSION v2.1.0.2
+
+LABEL maintainer="maugin.thomas@gmail.com"
 
 RUN apt-get update && \
     # rtl-sdr

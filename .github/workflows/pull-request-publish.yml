@@ -1,14 +1,8 @@
-name: Docker
+name: Pull Request publish
 
 on:
-  push:
-    # Publish `master` as Docker `latest` image.
-    branches:
-      - master
-
-    # Publish `1.2.3` tags as releases.
-    tags:
-      - "*.*.*"
+  issue_comment:
+    types: [created]
 
 env:
   # TODO: Change variable to your image's name.
@@ -17,12 +11,36 @@ env:
 jobs:
   # Run tests.
   # See also https://docs.docker.com/docker-hub/builds/automated-testing/
-  test:
-    runs-on: ubuntu-latest
 
+  is_deploy_comment:
+    outputs:
+      is_deploy: ${{ steps.check.outputs.triggered }}
+    # Ensure test job passes before pushing image.
+    runs-on: ubuntu-latest
+    if: github.event.issue.pull_request
+    steps:
+      - name: If deploy comment
+        uses: khan/pull-request-comment-trigger@master
+        id: check
+        with:
+          trigger: '@deploy'
+          reaction: rocket
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+
+  test:
+    needs: is_deploy_comment
+    if: needs.is_deploy_comment.outputs.is_deploy == 'true'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: 'refs/pull/${{ github.event.issue.number }}/merge'
+      - name: Get commit
+        id: get_commit
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse HEAD)"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -31,7 +49,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-${{ steps.get_commit.outputs.sha_short }}
           restore-keys: |
             ${{ runner.os }}-buildx-
       - name: Build
@@ -50,11 +68,15 @@ jobs:
     needs: test
     environment: docker
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: 'refs/pull/${{ github.event.issue.number }}/merge'
+      - name: Get commit
+        id: get_commit
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse HEAD)"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -63,7 +85,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-${{ steps.get_commit.outputs.sha_short }}
           restore-keys: |
             ${{ runner.os }}-buildx-
       - name: Login to DockerHub
@@ -74,15 +96,7 @@ jobs:
       - name: Get tags list
         id: tags
         run: |
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
-          # Strip "v" prefix from tag name
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && TAGS=$IMAGE_NAME:latest
-          [ "$VERSION" != "master" ] && TAGS=$IMAGE_NAME:$VERSION,$IMAGE_NAME:latest
+          TAGS=$IMAGE_NAME:PR-${{ github.event.issue.number }}
           echo TAGS=$TAGS
           echo "::set-output name=tags::$TAGS"
       - name: Build and push
