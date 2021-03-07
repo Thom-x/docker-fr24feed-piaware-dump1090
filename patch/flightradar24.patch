@@ -1,0 +1,66 @@
+diff -ru upstream/public_html/config.js modified/public_html/config.js
+--- upstream/public_html/config.js	2020-03-19 15:21:17.000000000 +0100
++++ modified/public_html/config.js	2021-02-28 17:38:50.039515389 +0100
+@@ -102,7 +102,7 @@
+ DefaultSiteCirclesInterval = 50;
+
+ // Controls page title, righthand pane when nothing is selected
+-PageName = "PiAware SkyAware";
++PageName = "Dump1090 plane tracker";
+
+ // Show country flags by ICAO addresses?
+ ShowFlags = true;
+diff -ru upstream/public_html/index.html modified/public_html/index.html
+--- upstream/public_html/index.html	2020-03-19 15:21:17.000000000 +0100
++++ modified/public_html/index.html	2021-02-28 17:38:19.743139664 +0100
+@@ -49,8 +49,9 @@
+ 		<div id="header" class="infoHeading">
+ 			<div class="logoContainer">
+ 				<a href="http://flightaware.com/" target="_blank"><img src="images/fa_logo_color.png" alt="FlightAware" class="flightawareLogo" srcset="images/fa_logo_color.png 1x, images/fa_logo_color@2x.png 2x, images/fa_logo_color@3x.png 3x"></a>
+-				<img src="images/pa-sa-logo.png" alt="PiAware SkyAware" class="adsbLogo piAwareLogo" srcset="images/pa-sa-logo.png 1x, images/pa-sa-logo@2x.png 2x, images/pa-sa-logo@3x.png 3x">
++				<img src="images/pa-sa-logo.png" alt="PiAware SkyAware" class="adsbLogo piAwareLogo" srcset="images/pa-sa-logo.png 1x, images/pa-sa-logo@2x.png 2x, images/pa-sa-logo@3x.png 3x" style="display: none;">
+ 				<img src="images/ff-sa-logo.png" alt="FlightFeeder SkyAware" class="adsbLogo flightfeederLogo" srcset="images/ff-sa-logo.png 1x, images/ff-sa-logo@2x.png 2x, images/ff-sa-logo@3x.png 3x" style="display: none;">
++				<a href="http://flightradar24.com/" target="_blank"><img src="images/fr24-logo.svg" alt="Flightradar24" class="flightradar24Logo"></a>
+ 			</div>
+ 			<div class="buttonContainer">
+ 				<div class="dateTime" id="clock_div"></div>
+diff -ru upstream/public_html/script.js modified/public_html/script.js
+--- upstream/public_html/script.js	2020-03-19 15:21:17.000000000 +0100
++++ modified/public_html/script.js	2021-02-28 17:52:35.087697827 +0100
+@@ -1955,6 +1955,8 @@
+
+ // updates the page to replace piaware with flightfeeder references
+ function updatePiAwareOrFlightFeeder() {
++  // PiAware and FlightFeeder logos are not displayed when running fr24feed-piaware
++  /*
+ 	if (isFlightFeeder) {
+ 		$('.piAwareLogo').hide();
+ 		$('.flightfeederLogo').show();
+@@ -1964,6 +1966,7 @@
+ 		$('.piAwareLogo').show();
+ 		PageName = 'PiAware SkyAware';
+ 	}
++  */
+ 	refreshPageTitle();
+ }
+
+diff -ru upstream/public_html/style.css modified/public_html/style.css
+--- upstream/public_html/style.css	2020-03-19 15:21:17.000000000 +0100
++++ modified/public_html/style.css	2021-02-28 17:38:19.743139664 +0100
+@@ -404,6 +404,16 @@
+     box-shadow:inset -12px 0 12px -12px #000000;
+ }
+
++.flightradar24Logo {
++    height: 50%;
++    padding-left: 25px;
++    padding-right: 25px;
++}
++
++.logoContainer > a {
++    vertical-align: middle;
++}
++
+ .adsbLogo {
+     padding-left: 20px;
+     padding-top: 30px;
