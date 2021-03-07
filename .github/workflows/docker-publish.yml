@@ -50,7 +50,6 @@ jobs:
     needs: test
     environment: docker
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
 
     steps:
       - name: Checkout
