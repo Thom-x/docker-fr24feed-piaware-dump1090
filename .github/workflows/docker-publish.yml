@@ -8,7 +8,7 @@ on:
 
   release:
     types:
-      - created
+      - published
 
 env:
   # TODO: Change variable to your image's name.
