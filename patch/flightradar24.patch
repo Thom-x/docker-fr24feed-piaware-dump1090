@@ -24,11 +24,47 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
  			</div>
  			<div class="buttonContainer">
  				<div class="dateTime" id="clock_div"></div>
+@@ -306,6 +307,7 @@
+ 						
+ 								<div class="infoBlockTopSection">
+ 									<span id="selected_flightaware_link" class=""></span>
++									<span id="selected_flightradar24_link" class=""></span>
+ 									<div class="infoRow removePadding">
+ 										<div class="infoHeading infoRowFluid"><span title="The alphanumeric registration code assigned by the country in which the aircraft is registered.">Registration</span>: </div>
+ 										<div class="infoData infoRowFluid"><span id="selected_registration">n/a</span></div>
 diff -ru upstream/public_html/script.js modified/public_html/script.js
 --- upstream/public_html/script.js	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html/script.js	2021-02-28 17:52:35.087697827 +0100
-@@ -1955,6 +1955,8 @@
-
++++ modified/public_html/script.js	2021-03-07 20:56:11.480352082 +0100
+@@ -932,7 +932,8 @@
+         } else {
+                 $('#selected_callsign').text('n/a');
+         }
+-        $('#selected_flightaware_link').html(getFlightAwareModeSLink(selected.icao, selected.flight, "Visit Flight Page"));
++        $('#selected_flightaware_link').html(getFlightAwareModeSLink(selected.icao, selected.flight, "FlightAware Flight Page"));
++        $('#selected_flightradar24_link').html(getFlightradar24IdentLink(selected.flight, "Flightradar24 Flight Page"));
+ 
+         if (selected.registration !== null) {
+                 $('#selected_registration').text(selected.registration);
+@@ -1880,6 +1881,17 @@
+     return "";
+ }
+ 
++function getFlightradar24IdentLink(ident, linkText) {
++    if (ident !== null && ident !== "") {
++        if (!linkText) {
++            linkText = ident;
++        }
++        return "<a target=\"_blank\" href=\"https://flightradar24.com/" + ident.trim() + "\">" + linkText + "</a>";
++    }
++
++    return "";
++}
++
+ function getFlightAwareModeSLink(code, ident, linkText) {
+     if (code !== null && code.length > 0 && code[0] !== '~' && code !== "000000") {
+         if (!linkText) {
+@@ -1955,6 +1967,8 @@
+ 
  // updates the page to replace piaware with flightfeeder references
  function updatePiAwareOrFlightFeeder() {
 +  // PiAware and FlightFeeder logos are not displayed when running fr24feed-piaware
@@ -36,7 +72,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
  	if (isFlightFeeder) {
  		$('.piAwareLogo').hide();
  		$('.flightfeederLogo').show();
-@@ -1964,6 +1966,7 @@
+@@ -1964,6 +1978,7 @@
  		$('.piAwareLogo').show();
  		PageName = 'PiAware SkyAware';
  	}
@@ -64,3 +100,12 @@ diff -ru upstream/public_html/style.css modified/public_html/style.css
  .adsbLogo {
      padding-left: 20px;
      padding-top: 30px;
+@@ -701,7 +711,7 @@
+ 	text-align: center;
+ 	background-color: #eee;
+ }
+-#selected_flightaware_link a {
++#selected_flightaware_link a, #selected_flightradar24_link a {
+ 	background-color: #00a0e2;
+ 	color: white;
+ 	text-decoration: none;
