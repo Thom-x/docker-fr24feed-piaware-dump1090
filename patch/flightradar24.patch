@@ -27,6 +27,16 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
 diff -ru upstream/public_html/script.js modified/public_html/script.js
 --- upstream/public_html/script.js	2020-03-19 15:21:17.000000000 +0100
 +++ modified/public_html/script.js	2021-02-28 17:52:35.087697827 +0100
+@@ -944,7 +944,7 @@
+ function initialize_map() {
+                 });
+ 
+                 for (var i = 0; i < data.rings.length; ++i) {
+-                        var geom = new ol.geom.LineString();
++                        var geom = new ol.geom.LineString([]);
+                         var points = data.rings[i].points;
+                         if (points.length > 0) {
+                                 for (var j = 0; j < points.length; ++j) {
 @@ -2153,6 +2153,8 @@
 
  // updates the page to replace piaware with flightfeeder references
@@ -43,6 +53,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
 +   */
      refreshPageTitle();
  }
+
 
 diff -ru upstream/public_html/style.css modified/public_html/style.css
 --- upstream/public_html/style.css	2020-03-19 15:21:17.000000000 +0100
