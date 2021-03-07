@@ -6,9 +6,9 @@ on:
     branches:
       - master
 
-    # Publish `1.2.3` tags as releases.
-    tags:
-      - "*.*.*"
+  release:
+    types:
+      - published
 
 env:
   # TODO: Change variable to your image's name.
@@ -50,7 +50,6 @@ jobs:
     needs: test
     environment: docker
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
 
     steps:
       - name: Checkout

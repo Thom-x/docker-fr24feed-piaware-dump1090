@@ -16,9 +16,12 @@ RUN apt-get update && \
     libbladerf-dev && \
     rm -rf /var/lib/apt/lists/*
 
+ADD patch /patch
 WORKDIR /tmp
 RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/dump1090 && \
     cd dump1090 && \
+    cp /patch/resources/fr24-logo.svg $PWD/public_html/images && \
+    patch -p1 -ru --force -d $PWD < /patch/flightradar24.patch && \
     make
 
 FROM debian:buster as piaware
@@ -185,6 +188,6 @@ RUN /build/s6-overlay.sh
 
 COPY /root /
 
-EXPOSE 8754 8080 30001 30002 30003 30004 30005 30104 
+EXPOSE 8754 8080 30001 30002 30003 30004 30005 30104
 
 ENTRYPOINT ["/init"]
