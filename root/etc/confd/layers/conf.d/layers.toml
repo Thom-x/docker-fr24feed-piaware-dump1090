@@ -1,0 +1,6 @@
+[template]
+src = "layers.js.tmpl"
+dest = "/usr/lib/fr24/public_html/layers.js"
+keys = [
+    "/"
+]
