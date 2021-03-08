@@ -3,7 +3,7 @@
 ![Build status](https://github.com/Thom-x/docker-fr24feed-piaware-dump1090/workflows/Docker/badge.svg?branch=master)
 ![GitHub issues](https://img.shields.io/github/issues/Thom-x/docker-fr24feed-piaware-dump1090)
 
-![Latest image version](https://img.shields.io/docker/v/thomx/fr24feed-piaware)
+![Latest image version](https://img.shields.io/docker/v/thomx/fr24feed-piaware?sort=semver)
 ![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/thomx/fr24feed-piaware)
 
 ![License](https://img.shields.io/github/license/Thom-x/docker-fr24feed-piaware-dump1090)
