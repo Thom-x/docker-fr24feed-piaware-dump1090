@@ -302,6 +302,23 @@ function createBaseLayers() {
                 attributions: 'https://openweathermap.org/'
         }));
 {{end}}
+	
+	var timeToReturn = new Date();
+        timeToReturn.setMilliseconds(Math.round(timeToReturn.getMilliseconds() / 1000) * 1000);
+        timeToReturn.setSeconds(Math.round(timeToReturn.getSeconds() / 60) * 60);
+        timeToReturn.setMinutes(Math.round(timeToReturn.getMinutes() / 30) * 30);
+        world.push(new ol.layer.Tile({
+                source: new ol.source.OSM({
+                        url : "https://tilecache.rainviewer.com/v2/radar/" + timeToReturn.getTime() / 1000 +"/256/{z}/{x}/{y}/2/1_1.png",
+                        attributions: 'rainviewer.com'
+                }),
+                name: 'rainviewer.com',
+                title: 'rainviewer.com',
+                type: 'overlay',
+                visible: false,
+                zIndex: 99,
+                opacity: 0.9,
+        }));
 
         if (world.length > 0) {
                 layers.push(new ol.layer.Group({
