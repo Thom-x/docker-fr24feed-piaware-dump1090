@@ -304,9 +304,9 @@ function createBaseLayers() {
 {{end}}
 	
         var timeToReturn = new Date();
-        timeToReturn.setMilliseconds(Math.round(timeToReturn.getMilliseconds() / 1000) * 1000);
-        timeToReturn.setSeconds(Math.round(timeToReturn.getSeconds() / 60) * 60);
-        timeToReturn.setMinutes(Math.round(timeToReturn.getMinutes() / 30) * 30);
+        timeToReturn.setMilliseconds(Math.floor(timeToReturn.getMilliseconds() / 1000) * 1000);
+        timeToReturn.setSeconds(Math.floor(timeToReturn.getSeconds() / 60) * 60);
+        timeToReturn.setMinutes(Math.floor(timeToReturn.getMinutes() / 30) * 30);
         world.push(new ol.layer.Tile({
                 source: new ol.source.OSM({
                         url : "https://tilecache.rainviewer.com/v2/radar/" + timeToReturn.getTime() / 1000 +"/256/{z}/{x}/{y}/2/1_1.png",
