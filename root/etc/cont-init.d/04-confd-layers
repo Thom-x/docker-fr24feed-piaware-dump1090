@@ -1,5 +1,4 @@
 #!/usr/bin/with-contenv bash
 if [ ! -f /usr/lib/fr24/public_html/layers.js ]; then
 	/opt/confd/bin/confd -onetime -confdir "/etc/confd/layers" -prefix "layers" -backend env
-	cat /usr/lib/fr24/public_html/layers.js
 fi
