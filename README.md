@@ -138,6 +138,7 @@ Example :
 | `HTML_SITE_LAT`                       | `45.0`                   |                                                                   |
 | `HTML_SITE_LON`                       | `9.0`                    |                                                                   |
 | `HTML_SITE_NAME`                      | `My Radar Site`          |                                                                   |
+| `HTML_DEFAULT_TRACKER`                | `FlightAware`            | Which flight tracker website to use by default. Possible values are `FlightAware` and `Flightradar24`|
 | `DUMP1090_ADDITIONAL_ARGS`            | empty                    | Additial arguments for dump1090 e.g.: `--json-location-accuracy 2`|
 
 Ex : `-e "HTML_SITE_NAME=My site"`
