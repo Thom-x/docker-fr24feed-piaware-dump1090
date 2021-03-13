@@ -48,6 +48,8 @@ if [ $? -eq 0 ]
 then
   echo "\nFiles succesfully patched, open this file in your webbrowser to see the changes:"
   echo "$MODIFIED/public_html/index.html"
+  echo "You can also run a quick-and-dirty web server to serve these files:"
+  echo "python3 -m http.server 8000 --bind 127.0.0.1 --directory $MODIFIED/public_html"
 else
   echo "\nERROR: Patching the files failed, please review the previous output to identify where." >&2
   echo "It likely means that there were changes made upstream to the same lines that are changed by the patch, see README.md file for a suggestion on how to update the patch file."
