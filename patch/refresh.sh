@@ -20,10 +20,17 @@ rm -rf $UPSTREAM
 rm -rf $MODIFIED
 mkdir -p $UPSTREAM
 
-echo "Downloading flightaware/dump1090 release ${DUMP1090_VERSION}"
-wget -O /tmp/flightaware_dump1090_${DUMP1090_VERSION}.tar.gz $URL
-tar xzf /tmp/flightaware_dump1090_${DUMP1090_VERSION}.tar.gz --directory=$UPSTREAM
-rm /tmp/flightaware_dump1090_${DUMP1090_VERSION}.tar.gz
+UPSTREAM_RELEASE_FILE=/tmp/flightaware_dump1090_${DUMP1090_VERSION}.tar.gz
+if [ ! -f "${UPSTREAM_RELEASE_FILE}" ]; then
+  echo "Downloading flightaware/dump1090 release ${DUMP1090_VERSION}"
+  wget -O ${UPSTREAM_RELEASE_FILE} $URL
+fi
+tar xzf ${UPSTREAM_RELEASE_FILE} --directory=$UPSTREAM
+# Don't delete the downloaded file if in DEVEL mode, so as not to have to redownload it
+if [ -z "${DEVEL}" ]; then
+  rm ${UPSTREAM_RELEASE_FILE}
+fi
+
 # Move the upstream files one level up, so as to not keep the version number in the path
 mv $UPSTREAM/dump1090-*/* $UPSTREAM
 rm -r $UPSTREAM/dump1090-*/
