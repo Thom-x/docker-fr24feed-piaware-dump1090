@@ -37,6 +37,19 @@ rm -r $UPSTREAM/dump1090-*/
 # Copy the freshly downloaded release files to the `modified` folder to apply the patches to
 cp -r $UPSTREAM $MODIFIED
 
+# In DEVEL mode, add dummy aircrafts file
+if [ ! -z "${DEVEL}" ]; then
+  DUMMY_AIRCRAFTS_FILE=$DIR/resources/aircraft.json
+  if [ ! -f "${DUMMY_AIRCRAFTS_FILE}" ]; then
+    echo "Downloading dummy aircraft.json file"
+    wget -O ${DUMMY_AIRCRAFTS_FILE} https://docker-fr24feed-piaware-dump1090.netlify.app/data/aircraft.json
+  fi
+  if [ -f "${DUMMY_AIRCRAFTS_FILE}" ]; then
+    mkdir -p $MODIFIED/public_html/data/
+    cp $DUMMY_AIRCRAFTS_FILE $MODIFIED/public_html/data/
+  fi
+fi
+
 echo "Modifying the web page to include Flightradar24 elements"
 # Copy the FR24 logo to the images folder in the `modified` folder
 cp $DIR/resources/fr24-logo.svg $DIR/modified/public_html/images
