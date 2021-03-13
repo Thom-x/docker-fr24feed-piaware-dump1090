@@ -3,6 +3,12 @@
 # This script is used to create a new version of the patch to include FR24 elements in the webpage
 # It downloads the flightaware/dump1090 release indicated in the DUMP1090_VERSION environment variable, adds the FR logo to the HTML source tree and applies the patch
 
+# Exit if the DUMP1090_VERSION environment variable not set
+if [ -z "${DUMP1090_VERSION}" ]; then
+  echo "FATAL: the DUMP1090_VERSION environment variable not defined. Exiting..."
+  exit
+fi
+
 # Define the file to download and the folders to work in
 URL=https://github.com/flightaware/dump1090/archive/${DUMP1090_VERSION}.tar.gz
 DIR=`dirname "$(readlink -f "$0")"`
