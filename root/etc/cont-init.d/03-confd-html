@@ -13,6 +13,8 @@ default_value "site_lat" "45.0"
 default_value "site_lon" "9.0"
 default_value "site_name" "My Radar Site"
 default_value "default_tracker" "FlightAware"
+default_value "receiver_stats_page_flightaware" ""
+default_value "receiver_stats_page_flightradar24" ""
 
 if [ ! -f /usr/lib/fr24/public_html/config.js ]; then
 	/opt/confd/bin/confd -onetime -confdir "/etc/confd/html" -prefix "html" -backend env
