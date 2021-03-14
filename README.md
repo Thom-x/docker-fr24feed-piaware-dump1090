@@ -38,7 +38,7 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 ```
 
 Go to http://dockerhost:8080 to view a map of reveived data.
-Go to http://dockerhost:8754 to view fr24feed configuration panel.
+Go to http://dockerhost:8754 to view the FR24 Feeder configuration panel.
 
 *Note : remove `-e "PANORAMA_ID=MY_PANORAMA_ID"` from the command line if you don't want to use this feature.*
 
@@ -141,6 +141,7 @@ Example :
 | `HTML_DEFAULT_TRACKER`                | `FlightAware`            | Which flight tracker website to use by default. Possible values are `FlightAware` and `Flightradar24`|
 | `HTML_RECEIVER_STATS_PAGE_FLIGHTAWARE`  | empty            | URL of your receiver's stats page on FlightAware. Usually https://flightaware.com/adsb/stats/user/ |
 | `HTML_RECEIVER_STATS_PAGE_FLIGHTRADAR24`  | empty            | URL of your receiver's stats page on Flightradar24. Usually https://www.flightradar24.com/account/feed-stats/?id=<ID> |
+| `HTML_FR24_FEEDER_STATUS_PAGE`  | empty            | URL of your local FR24 Feeder Status page. Usually http://<dockerhost>:8754/ (depends on the port you indicated when starting the container) |
 | `DUMP1090_ADDITIONAL_ARGS`            | empty                    | Additial arguments for dump1090 e.g.: `--json-location-accuracy 2`|
 
 Ex : `-e "HTML_SITE_NAME=My site"`

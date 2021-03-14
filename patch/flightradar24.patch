@@ -1,6 +1,6 @@
 diff -ru upstream/public_html/config.js modified/public_html/config.js
 --- upstream/public_html/config.js	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html/config.js	2021-03-14 15:28:40.750864802 +0100
++++ modified/public_html/config.js	2021-03-14 21:12:22.397993449 +0100
 @@ -28,6 +28,9 @@
  // The google maps zoom level, 0 - 16, lower is further out
  DefaultZoomLvl   = 7;
@@ -11,18 +11,20 @@ diff -ru upstream/public_html/config.js modified/public_html/config.js
  // Center marker. If dump1090 provides a receiver location,
  // that location is used and these settings are ignored.
  
-@@ -36,6 +39,10 @@
+@@ -36,6 +39,12 @@
  SiteLon     = 9.0;
  SiteName    = "My Radar Site"; // tooltip of the marker
  
 +// The receiver's ADS-B Statistics pages on the various flight tracker websites
 +myAdsbStatsSiteUrlFlightAware = "";
 +myAdsbStatsSiteUrlFlightradar24 = "";
++// The local FR24 Feeder Status page
++myFR24FeederStatusUrl = "";
 +
  // -- Marker settings -------------------------------------
  
  // These settings control the coloring of aircraft by altitude.
-@@ -102,7 +109,7 @@
+@@ -102,7 +111,7 @@
  DefaultSiteCirclesInterval = 50;
  
  // Controls page title, righthand pane when nothing is selected
@@ -31,9 +33,11 @@ diff -ru upstream/public_html/config.js modified/public_html/config.js
  
  // Show country flags by ICAO addresses?
  ShowFlags = true;
+Seulement dans modified/public_html: data
+Seulement dans modified/public_html/images: fr24-logo.svg
 diff -ru upstream/public_html/index.html modified/public_html/index.html
 --- upstream/public_html/index.html	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html/index.html	2021-03-14 15:29:34.171507573 +0100
++++ modified/public_html/index.html	2021-03-14 21:03:44.748801508 +0100
 @@ -49,8 +49,9 @@
  		<div id="header" class="infoHeading">
  			<div class="logoContainer">
@@ -45,13 +49,14 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
  			</div>
  			<div class="buttonContainer">
  				<div class="dateTime" id="clock_div"></div>
-@@ -194,11 +195,15 @@
+@@ -194,11 +195,16 @@
  									<table style="width: 100%">
  										<tr class="infoblock_heading">
  											<td>
 -												<div class="button buttonTable" id="show_map_button"><span class="buttonText">Show Map</span></div>
 +												<a id="stats_page_button_fa" target="_blank"><button class="stats_button">My ADS-B Statistics on FlightAware</button></a>
 +												<a id="stats_page_button_fr24" target="_blank"><button class="stats_button">My ADS-B Statistics on Flightradar24</button></a>
++												<a id="fr24_feeder_status_page" target="_blank"><button class="stats_button">My FR24 Feeder Status page</button></a>
  											</td>
  											<td style="text-align: right">
  												<a href="https://github.com/flightaware/dump1090" id="dump1090_version" target="_blank"></a>
@@ -62,7 +67,7 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
  										</tr>
  			
  										<tr class="infoblock_body">
-@@ -306,6 +311,7 @@
+@@ -306,6 +312,7 @@
  						
  								<div class="infoBlockTopSection">
  									<span id="selected_flightaware_link" class=""></span>
@@ -72,8 +77,8 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
  										<div class="infoData infoRowFluid"><span id="selected_registration">n/a</span></div>
 diff -ru upstream/public_html/script.js modified/public_html/script.js
 --- upstream/public_html/script.js	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html/script.js	2021-03-14 15:29:16.459294457 +0100
-@@ -332,6 +332,18 @@
++++ modified/public_html/script.js	2021-03-14 21:04:58.453101668 +0100
+@@ -332,6 +332,24 @@
  		toggleAllPlanes(true);
          })
  
@@ -89,10 +94,16 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
 +                $('#stats_page_button_fr24').css('display', 'none');
 +        }
 +
++        if (myFR24FeederStatusUrl) {
++                $('#fr24_feeder_status_page').attr('href',myFR24FeederStatusUrl);
++        } else {
++                $('#fr24_feeder_status_page').css('display', 'none');
++        }
++
          // Force map to redraw if sidebar container is resized - use a timer to debounce
          var mapResizeTimeout;
          $("#sidebar_container").on("resize", function() {
-@@ -932,7 +944,8 @@
+@@ -932,7 +950,8 @@
          } else {
                  $('#selected_callsign').text('n/a');
          }
@@ -102,7 +113,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
  
          if (selected.registration !== null) {
                  $('#selected_registration').text(selected.registration);
-@@ -1256,11 +1269,15 @@
+@@ -1256,11 +1275,15 @@
  		}			                
  
          // ICAO doesn't change
@@ -121,7 +132,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
          tableplane.tr.cells[3].textContent = (tableplane.registration !== null ? tableplane.registration : "");
          tableplane.tr.cells[4].textContent = (tableplane.icaotype !== null ? tableplane.icaotype : "");
          tableplane.tr.cells[5].textContent = (tableplane.squawk !== null ? tableplane.squawk : "");
-@@ -1880,6 +1897,17 @@
+@@ -1880,6 +1903,17 @@
      return "";
  }
  
@@ -139,7 +150,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
  function getFlightAwareModeSLink(code, ident, linkText) {
      if (code !== null && code.length > 0 && code[0] !== '~' && code !== "000000") {
          if (!linkText) {
-@@ -1955,6 +1983,8 @@
+@@ -1955,6 +1989,8 @@
  
  // updates the page to replace piaware with flightfeeder references
  function updatePiAwareOrFlightFeeder() {
@@ -148,7 +159,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
  	if (isFlightFeeder) {
  		$('.piAwareLogo').hide();
  		$('.flightfeederLogo').show();
-@@ -1964,6 +1994,7 @@
+@@ -1964,6 +2000,7 @@
  		$('.piAwareLogo').show();
  		PageName = 'PiAware SkyAware';
  	}
