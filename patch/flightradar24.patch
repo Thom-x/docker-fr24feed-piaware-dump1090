@@ -1,6 +1,6 @@
-diff -ru upstream/public_html/config.js modified/public_html/config.js
---- upstream/public_html/config.js	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html/config.js	2021-02-28 17:38:50.039515389 +0100
+diff -ru upstream/public_html_merged/config.js modified/public_html_merged/config.js
+--- upstream/public_html_merged/config.js	2020-03-19 15:21:17.000000000 +0100
++++ modified/public_html_merged/config.js	2021-02-28 17:38:50.039515389 +0100
 @@ -102,7 +102,7 @@
  DefaultSiteCirclesInterval = 50;
 
@@ -10,9 +10,9 @@ diff -ru upstream/public_html/config.js modified/public_html/config.js
 
  // Show country flags by ICAO addresses?
  ShowFlags = true;
-diff -ru upstream/public_html/index.html modified/public_html/index.html
---- upstream/public_html/index.html	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html/index.html	2021-02-28 17:38:19.743139664 +0100
+diff -ru upstream/public_html_merged/index.html modified/public_html_merged/index.html
+--- upstream/public_html_merged/index.html	2020-03-19 15:21:17.000000000 +0100
++++ modified/public_html_merged/index.html	2021-02-28 17:38:19.743139664 +0100
 @@ -49,8 +49,9 @@
  		<div id="header" class="infoHeading">
  			<div class="logoContainer">
@@ -24,13 +24,10 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
  			</div>
  			<div class="buttonContainer">
  				<div class="dateTime" id="clock_div"></div>
-diff -ru upstream/public_html/script.js modified/public_html/script.js
---- upstream/public_html/script.js	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html/script.js	2021-02-28 17:52:35.087697827 +0100
-@@ -947,1 +947,1 @@
--                        var geom = new ol.geom.LineString();
-+                        var geom = new ol.geom.LineString([]);
-@@ -2153,6 +2153,8 @@
+diff -ru upstream/public_html_merged/script.js modified/public_html_merged/script.js
+--- upstream/public_html_merged/script.js	2020-03-19 15:21:17.000000000 +0100
++++ modified/public_html_merged/script.js	2021-02-28 17:52:35.087697827 +0100
+@@ -2542,6 +2542,8 @@
 
  // updates the page to replace piaware with flightfeeder references
  function updatePiAwareOrFlightFeeder() {
@@ -39,7 +36,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
      if (isFlightFeeder) {
          $('.piAwareLogo').hide();
          $('.flightfeederLogo').show();
-@@ -2162,6 +2162,7 @@
+@@ -2553,6 +2553,7 @@
          $('.piAwareLogo').show();
          PageName = 'PiAware SkyAware';
      }
@@ -48,9 +45,9 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
  }
 
 
-diff -ru upstream/public_html/style.css modified/public_html/style.css
---- upstream/public_html/style.css	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html/style.css	2021-02-28 17:38:19.743139664 +0100
+diff -ru upstream/public_html_merged/style.css modified/public_html_merged/style.css
+--- upstream/public_html_merged/style.css	2020-03-19 15:21:17.000000000 +0100
++++ modified/public_html_merged/style.css	2021-02-28 17:38:19.743139664 +0100
 @@ -404,6 +404,16 @@
      box-shadow:inset -12px 0 12px -12px #000000;
  }
