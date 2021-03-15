@@ -20,6 +20,7 @@ ADD patch /patch
 WORKDIR /tmp
 RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/dump1090 && \
     cd dump1090 && \
+    sed -i "19s/.*/} __attribute__((__packed__, __aligned__(2))) sc16_t;/" dsp-types.h && \
     cp /patch/resources/fr24-logo.svg $PWD/public_html_merged/images && \
     patch -p1 -ru --force -d $PWD < /patch/flightradar24.patch && \
     make
