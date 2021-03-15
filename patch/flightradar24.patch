@@ -27,6 +27,9 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
 diff -ru upstream/public_html/script.js modified/public_html/script.js
 --- upstream/public_html/script.js	2020-03-19 15:21:17.000000000 +0100
 +++ modified/public_html/script.js	2021-02-28 17:52:35.087697827 +0100
+@@ -947,1 +947,1 @@
+-                        var geom = new ol.geom.LineString();
++                        var geom = new ol.geom.LineString([]);
 @@ -2153,6 +2153,8 @@
 
  // updates the page to replace piaware with flightfeeder references
