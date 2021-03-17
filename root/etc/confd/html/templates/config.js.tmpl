@@ -28,6 +28,9 @@ DefaultCenterLon = {{getv "/site/lon"}};
 // The google maps zoom level, 0 - 16, lower is further out
 DefaultZoomLvl   = 7;
 
+// Which flight tracker website to use by default
+DefaultTracker = "{{getv "/default/tracker"}}";
+
 // Center marker. If dump1090 provides a receiver location,
 // that location is used and these settings are ignored.
 
@@ -35,6 +38,12 @@ SiteShow    = true;           // true to show a center marker
 SiteLat     = {{getv "/site/lat"}};            // position of the marker
 SiteLon     = {{getv "/site/lon"}};
 SiteName    = "{{getv "/site/name"}}"; // tooltip of the marker
+
+// The receiver's ADS-B Statistics pages on the various flight tracker websites
+myAdsbStatsSiteUrlFlightAware = "{{getv "/receiver/stats/page/flightaware"}}";
+myAdsbStatsSiteUrlFlightradar24 = "{{getv "/receiver/stats/page/flightradar24"}}";
+// The local FR24 Feeder Status page
+myFR24FeederStatusUrl = "{{getv "/fr24/feeder/status/page"}}";
 
 // -- Marker settings -------------------------------------
 

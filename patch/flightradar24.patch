@@ -1,19 +1,43 @@
 diff -ru upstream/public_html_merged/config.js modified/public_html_merged/config.js
 --- upstream/public_html_merged/config.js	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html_merged/config.js	2021-02-28 17:38:50.039515389 +0100
-@@ -102,7 +102,7 @@
++++ modified/public_html_merged/config.js	2021-03-14 21:12:22.397993449 +0100
+@@ -28,6 +28,9 @@
+ // The google maps zoom level, 0 - 16, lower is further out
+ DefaultZoomLvl   = 7;
+ 
++// Which flight tracker website to use by default
++DefaultTracker = "FlightAware";
++
+ // Center marker. If dump1090 provides a receiver location,
+ // that location is used and these settings are ignored.
+ 
+@@ -36,6 +39,12 @@
+ SiteLon     = 9.0;
+ SiteName    = "My Radar Site"; // tooltip of the marker
+ 
++// The receiver's ADS-B Statistics pages on the various flight tracker websites
++myAdsbStatsSiteUrlFlightAware = "";
++myAdsbStatsSiteUrlFlightradar24 = "";
++// The local FR24 Feeder Status page
++myFR24FeederStatusUrl = "";
++
+ // -- Marker settings -------------------------------------
+ 
+ // These settings control the coloring of aircraft by altitude.
+@@ -102,7 +111,7 @@
+ DefaultSiteCirclesBaseDistance = 100;
  DefaultSiteCirclesInterval = 50;
-
+ 
  // Controls page title, righthand pane when nothing is selected
 -PageName = "PiAware SkyAware";
 +PageName = "Dump1090 plane tracker";
-
+ 
  // Show country flags by ICAO addresses?
  ShowFlags = true;
 diff -ru upstream/public_html_merged/index.html modified/public_html_merged/index.html
 --- upstream/public_html_merged/index.html	2020-03-19 15:21:17.000000000 +0100
 +++ modified/public_html_merged/index.html	2021-02-28 17:38:19.743139664 +0100
-@@ -49,8 +49,9 @@
+@@ -52,8 +52,9 @@
  		<div id="header" class="infoHeading">
  			<div class="logoContainer">
  				<a href="http://flightaware.com/" target="_blank"><img src="images/fa_logo_color.png" alt="FlightAware" class="flightawareLogo" srcset="images/fa_logo_color.png 1x, images/fa_logo_color@2x.png 2x, images/fa_logo_color@3x.png 3x"></a>
@@ -24,11 +48,83 @@ diff -ru upstream/public_html_merged/index.html modified/public_html_merged/inde
  			</div>
  			<div class="buttonContainer">
  				<div class="dateTime" id="clock_div"></div>
+@@ -202,6 +203,9 @@
+ 										<tr class="infoblock_heading">
+ 											<td>
+ 												<button id="stats_page_button" class="stats_button">Go to My ADS-B Statistics Page</button>
++												<a id="stats_page_button_fa" target="_blank"><button class="stats_button">My ADS-B Statistics on FlightAware</button></a>
++												<a id="stats_page_button_fr24" target="_blank"><button class="stats_button">My ADS-B Statistics on Flightradar24</button></a>
++												<a id="fr24_feeder_status_page" target="_blank"><button class="stats_button">My FR24 Feeder Status page</button></a>
+ 											</td>
+ 											</td>
+ 											<td style="text-align: right">
+@@ -452,6 +456,7 @@
+ 						
+ 								<div class="infoBlockTopSection">
+ 									<span id="selected_flightaware_link" class=""></span>
++									<span id="selected_flightradar24_link" class=""></span>
+ 									<div class="infoRow removePadding">
+ 										<div class="infoHeading infoRowFluid"><span title="The alphanumeric registration code assigned by the country in which the aircraft is registered.">Registration</span>: </div>
+ 										<div class="infoData infoRowFluid"><span id="selected_registration">n/a</span></div>
+
 diff -ru upstream/public_html_merged/script.js modified/public_html_merged/script.js
 --- upstream/public_html_merged/script.js	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html_merged/script.js	2021-02-28 17:52:35.087697827 +0100
-@@ -2542,6 +2542,8 @@
-
++++ modified/public_html_merged/script.js	2021-03-14 21:04:58.453101668 +0100
+@@ -461,6 +461,24 @@
+                 });
+         });
+ 
++        if (myAdsbStatsSiteUrlFlightAware) {
++                $('#stats_page_button_fa').attr('href',myAdsbStatsSiteUrlFlightAware);
++        } else {
++                $('#stats_page_button_fa').css('display', 'none');
++        }
++
++        if (myAdsbStatsSiteUrlFlightradar24) {
++                $('#stats_page_button_fr24').attr('href',myAdsbStatsSiteUrlFlightradar24);
++        } else {
++                $('#stats_page_button_fr24').css('display', 'none');
++        }
++
++        if (myFR24FeederStatusUrl) {
++                $('#fr24_feeder_status_page').attr('href',myFR24FeederStatusUrl);
++        } else {
++                $('#fr24_feeder_status_page').css('display', 'none');
++        }
++
+         // Force map to redraw if sidebar container is resized - use a timer to debounce
+         var mapResizeTimeout;
+         $("#sidebar_container").on("resize", function() {
+@@ -1337,7 +1355,8 @@
+         } else {
+                 $('#selected_callsign').text('n/a');
+         }
+-        $('#selected_flightaware_link').html(getFlightAwareModeSLink(selected.icao, selected.flight, "Visit Flight Page"));
++        $('#selected_flightaware_link').html(getFlightAwareModeSLink(selected.icao, selected.flight, "FlightAware Flight Page"));
++        $('#selected_flightradar24_link').html(getFlightradar24IdentLink(selected.flight, "Flightradar24 Flight Page"));
+ 
+         if (selected.registration !== null) {
+                 $('#selected_registration').text(selected.registration);
+@@ -2451,6 +2470,17 @@
+     return "";
+ }
+ 
++function getFlightradar24IdentLink(ident, linkText) {
++    if (ident !== null && ident !== "") {
++        if (!linkText) {
++            linkText = ident;
++        }
++        return "<a target=\"_blank\" href=\"https://flightradar24.com/" + ident.trim() + "\">" + linkText + "</a>";
++    }
++
++    return "";
++}
++
+ function getFlightAwareModeSLink(code, ident, linkText) {
+     if (code !== null && code.length > 0 && code[0] !== '~' && code !== "000000") {
+         if (!linkText) {
+@@ -2542,6 +2572,8 @@
+ 
  // updates the page to replace piaware with flightfeeder references
  function updatePiAwareOrFlightFeeder() {
 +   // PiAware and FlightFeeder logos are not displayed when running fr24feed-piaware
@@ -36,22 +132,21 @@ diff -ru upstream/public_html_merged/script.js modified/public_html_merged/scrip
      if (isFlightFeeder) {
          $('.piAwareLogo').hide();
          $('.flightfeederLogo').show();
-@@ -2553,6 +2553,7 @@
+@@ -2551,6 +2583,7 @@
          $('.piAwareLogo').show();
          PageName = 'PiAware SkyAware';
      }
 +   */
      refreshPageTitle();
  }
-
-
+ 
 diff -ru upstream/public_html_merged/style.css modified/public_html_merged/style.css
 --- upstream/public_html_merged/style.css	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html_merged/style.css	2021-02-28 17:38:19.743139664 +0100
++++ modified/public_html_merged/style.css	2021-03-14 13:40:24.103993882 +0100
 @@ -404,6 +404,16 @@
      box-shadow:inset -12px 0 12px -12px #000000;
  }
-
+ 
 +.flightradar24Logo {
 +    height: 50%;
 +    padding-left: 25px;
@@ -65,3 +160,12 @@ diff -ru upstream/public_html_merged/style.css modified/public_html_merged/style
  .adsbLogo {
      padding-left: 20px;
      padding-top: 30px;
+@@ -701,7 +711,7 @@
+ 	text-align: center;
+ 	background-color: #eee;
+ }
+-#selected_flightaware_link a {
++#selected_flightaware_link a, #selected_flightradar24_link a {
+ 	background-color: #00a0e2;
+ 	color: white;
+ 	text-decoration: none;

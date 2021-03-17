@@ -3,7 +3,7 @@
 ![Build status](https://github.com/Thom-x/docker-fr24feed-piaware-dump1090/workflows/Docker/badge.svg?branch=master)
 ![GitHub issues](https://img.shields.io/github/issues/Thom-x/docker-fr24feed-piaware-dump1090)
 
-![Latest image version](https://img.shields.io/docker/v/thomx/fr24feed-piaware)
+![Latest image version](https://img.shields.io/docker/v/thomx/fr24feed-piaware?sort=semver)
 ![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/thomx/fr24feed-piaware)
 
 ![License](https://img.shields.io/github/license/Thom-x/docker-fr24feed-piaware-dump1090)
@@ -34,13 +34,14 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 	-e "HTML_SITE_LON=MY_SITE_LON" \
 	-e "HTML_SITE_NAME=MY_SITE_NAME" \
 	-e "PANORAMA_ID=MY_PANORAMA_ID" \
+	-e "LAYERS_OWM_API_KEY=MY_OWM_API_KEY" \
 	thomx/fr24feed-piaware
 ```
 
 Go to http://dockerhost:8080 to view a map of reveived data.
-Go to http://dockerhost:8754 to view fr24feed configuration panel.
+Go to http://dockerhost:8754 to view the FR24 Feeder configuration panel.
 
-*Note : remove `-e "PANORAMA_ID=MY_PANORAMA_ID"` from the command line if you don't want to use this feature.*
+*Note : remove `-e "PANORAMA_ID=MY_PANORAMA_ID"` or `-e "LAYERS_OWM_API_KEY=MY_OWM_API_KEY"` from the command line if you don't want to use this feature.*
 
 # Configuration
 
@@ -138,6 +139,10 @@ Example :
 | `HTML_SITE_LAT`                       | `45.0`                   |                                                                   |
 | `HTML_SITE_LON`                       | `9.0`                    |                                                                   |
 | `HTML_SITE_NAME`                      | `My Radar Site`          |                                                                   |
+| `HTML_DEFAULT_TRACKER`                | `FlightAware`            | Which flight tracker website to use by default. Possible values are `FlightAware` and `Flightradar24`|
+| `HTML_RECEIVER_STATS_PAGE_FLIGHTAWARE`  | empty            | URL of your receiver's stats page on FlightAware. Usually https://flightaware.com/adsb/stats/user/ |
+| `HTML_RECEIVER_STATS_PAGE_FLIGHTRADAR24`  | empty            | URL of your receiver's stats page on Flightradar24. Usually https://www.flightradar24.com/account/feed-stats/?id=<ID> |
+| `HTML_FR24_FEEDER_STATUS_PAGE`  | empty            | URL of your local FR24 Feeder Status page. Usually http://<dockerhost>:8754/ (depends on the port you indicated when starting the container) |
 | `DUMP1090_ADDITIONAL_ARGS`            | empty                    | Additial arguments for dump1090 e.g.: `--json-location-accuracy 2`|
 
 Ex : `-e "HTML_SITE_NAME=My site"`
@@ -160,7 +165,6 @@ Ex : `-e "HTML_SITE_NAME=My site"`
 | `RTL_TCP_REMOTE_HOST`                | empty                    | IP of rtl_tcp server                                              |
 | `RTL_TCP_REMOTE_PORT`                | empty                    | Port of rtl_tcp server                                            |
 
-
 ## Terrain-limit rings (optional):
 If you don't need this feature ignore this.
 
@@ -176,6 +180,18 @@ Create a panorama for your receiver location on http://www.heywhatsthat.com.
 Ex : `-e "PANORAMA_ID=FRUXK2G7"`
 
 If you don't want to download the limit every time you bring up the container you can download `http://www.heywhatsthat.com/api/upintheair.json?id=${PANORAMA_ID}&refraction=0.25&alts=${PANORAMA_ALTS}` as upintheair.json and mount it in `/usr/lib/fr24/public_html/upintheair.json`.
+
+## Open Weather Map layers:
+If you don't need this feature ignore this.
+
+If you provide an API key OWM layers will be available.
+Create an account and get an API key on https://home.openweathermap.org/users/sign_up.
+
+| Environment Variable                  | Default value            | Description                                 |
+|---------------------------------------|--------------------------|---------------------------------------------|
+| `LAYERS_OWM_API_KEY`                  |                          | Open Weather Map API Key                    |
+
+Ex : `-e "LAYERS_OWM_API_KEY=dsf1ds65f4d2f65g"`
 
 # Build it yourself
 
