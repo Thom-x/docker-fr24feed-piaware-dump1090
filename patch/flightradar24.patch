@@ -1,18 +1,43 @@
 diff -ru upstream/public_html/config.js modified/public_html/config.js
 --- upstream/public_html/config.js	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html/config.js	2021-02-28 17:38:50.039515389 +0100
-@@ -102,7 +102,7 @@
++++ modified/public_html/config.js	2021-03-14 21:12:22.397993449 +0100
+@@ -28,6 +28,9 @@
+ // The google maps zoom level, 0 - 16, lower is further out
+ DefaultZoomLvl   = 7;
+ 
++// Which flight tracker website to use by default
++DefaultTracker = "FlightAware";
++
+ // Center marker. If dump1090 provides a receiver location,
+ // that location is used and these settings are ignored.
+ 
+@@ -36,6 +39,12 @@
+ SiteLon     = 9.0;
+ SiteName    = "My Radar Site"; // tooltip of the marker
+ 
++// The receiver's ADS-B Statistics pages on the various flight tracker websites
++myAdsbStatsSiteUrlFlightAware = "";
++myAdsbStatsSiteUrlFlightradar24 = "";
++// The local FR24 Feeder Status page
++myFR24FeederStatusUrl = "";
++
+ // -- Marker settings -------------------------------------
+ 
+ // These settings control the coloring of aircraft by altitude.
+@@ -102,7 +111,7 @@
  DefaultSiteCirclesInterval = 50;
-
+ 
  // Controls page title, righthand pane when nothing is selected
 -PageName = "PiAware SkyAware";
 +PageName = "Dump1090 plane tracker";
-
+ 
  // Show country flags by ICAO addresses?
  ShowFlags = true;
+Seulement dans modified/public_html: data
+Seulement dans modified/public_html/images: fr24-logo.svg
 diff -ru upstream/public_html/index.html modified/public_html/index.html
 --- upstream/public_html/index.html	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html/index.html	2021-02-28 17:38:19.743139664 +0100
++++ modified/public_html/index.html	2021-03-14 21:03:44.748801508 +0100
 @@ -49,8 +49,9 @@
  		<div id="header" class="infoHeading">
  			<div class="logoContainer">
@@ -24,11 +49,109 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
  			</div>
  			<div class="buttonContainer">
  				<div class="dateTime" id="clock_div"></div>
+@@ -194,11 +195,16 @@
+ 									<table style="width: 100%">
+ 										<tr class="infoblock_heading">
+ 											<td>
+-												<div class="button buttonTable" id="show_map_button"><span class="buttonText">Show Map</span></div>
++												<a id="stats_page_button_fa" target="_blank"><button class="stats_button">My ADS-B Statistics on FlightAware</button></a>
++												<a id="stats_page_button_fr24" target="_blank"><button class="stats_button">My ADS-B Statistics on Flightradar24</button></a>
++												<a id="fr24_feeder_status_page" target="_blank"><button class="stats_button">My FR24 Feeder Status page</button></a>
+ 											</td>
+ 											<td style="text-align: right">
+ 												<a href="https://github.com/flightaware/dump1090" id="dump1090_version" target="_blank"></a>
+ 											</td>
++											<td>
++												<div class="button buttonTable" id="show_map_button"><span class="buttonText">Show Map</span></div>
++											</td>
+ 										</tr>
+ 			
+ 										<tr class="infoblock_body">
+@@ -306,6 +312,7 @@
+ 						
+ 								<div class="infoBlockTopSection">
+ 									<span id="selected_flightaware_link" class=""></span>
++									<span id="selected_flightradar24_link" class=""></span>
+ 									<div class="infoRow removePadding">
+ 										<div class="infoHeading infoRowFluid"><span title="The alphanumeric registration code assigned by the country in which the aircraft is registered.">Registration</span>: </div>
+ 										<div class="infoData infoRowFluid"><span id="selected_registration">n/a</span></div>
 diff -ru upstream/public_html/script.js modified/public_html/script.js
 --- upstream/public_html/script.js	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html/script.js	2021-02-28 17:52:35.087697827 +0100
-@@ -1955,6 +1955,8 @@
-
++++ modified/public_html/script.js	2021-03-14 21:04:58.453101668 +0100
+@@ -332,6 +332,24 @@
+ 		toggleAllPlanes(true);
+         })
+ 
++        if (myAdsbStatsSiteUrlFlightAware) {
++                $('#stats_page_button_fa').attr('href',myAdsbStatsSiteUrlFlightAware);
++        } else {
++                $('#stats_page_button_fa').css('display', 'none');
++        }
++
++        if (myAdsbStatsSiteUrlFlightradar24) {
++                $('#stats_page_button_fr24').attr('href',myAdsbStatsSiteUrlFlightradar24);
++        } else {
++                $('#stats_page_button_fr24').css('display', 'none');
++        }
++
++        if (myFR24FeederStatusUrl) {
++                $('#fr24_feeder_status_page').attr('href',myFR24FeederStatusUrl);
++        } else {
++                $('#fr24_feeder_status_page').css('display', 'none');
++        }
++
+         // Force map to redraw if sidebar container is resized - use a timer to debounce
+         var mapResizeTimeout;
+         $("#sidebar_container").on("resize", function() {
+@@ -932,7 +950,8 @@
+         } else {
+                 $('#selected_callsign').text('n/a');
+         }
+-        $('#selected_flightaware_link').html(getFlightAwareModeSLink(selected.icao, selected.flight, "Visit Flight Page"));
++        $('#selected_flightaware_link').html(getFlightAwareModeSLink(selected.icao, selected.flight, "FlightAware Flight Page"));
++        $('#selected_flightradar24_link').html(getFlightradar24IdentLink(selected.flight, "Flightradar24 Flight Page"));
+ 
+         if (selected.registration !== null) {
+                 $('#selected_registration').text(selected.registration);
+@@ -1256,11 +1275,15 @@
+ 		}			                
+ 
+         // ICAO doesn't change
++        var flightURL =  "";
+         if (tableplane.flight) {
+-                tableplane.tr.cells[2].innerHTML = getFlightAwareModeSLink(tableplane.icao, tableplane.flight, tableplane.flight);
+-        } else {
+-                tableplane.tr.cells[2].innerHTML = "";
++                if (DefaultTracker === "Flightradar24") {
++                        flightURL = getFlightradar24IdentLink(tableplane.flight, tableplane.flight);
++                } else {
++                        flightURL = getFlightAwareModeSLink(tableplane.icao, tableplane.flight, tableplane.flight);
++                }
+         }
++        tableplane.tr.cells[2].innerHTML = flightURL;
+         tableplane.tr.cells[3].textContent = (tableplane.registration !== null ? tableplane.registration : "");
+         tableplane.tr.cells[4].textContent = (tableplane.icaotype !== null ? tableplane.icaotype : "");
+         tableplane.tr.cells[5].textContent = (tableplane.squawk !== null ? tableplane.squawk : "");
+@@ -1880,6 +1903,17 @@
+     return "";
+ }
+ 
++function getFlightradar24IdentLink(ident, linkText) {
++    if (ident !== null && ident !== "") {
++        if (!linkText) {
++            linkText = ident;
++        }
++        return "<a target=\"_blank\" href=\"https://flightradar24.com/" + ident.trim() + "\">" + linkText + "</a>";
++    }
++
++    return "";
++}
++
+ function getFlightAwareModeSLink(code, ident, linkText) {
+     if (code !== null && code.length > 0 && code[0] !== '~' && code !== "000000") {
+         if (!linkText) {
+@@ -1955,6 +1989,8 @@
+ 
  // updates the page to replace piaware with flightfeeder references
  function updatePiAwareOrFlightFeeder() {
 +  // PiAware and FlightFeeder logos are not displayed when running fr24feed-piaware
@@ -36,21 +159,21 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
  	if (isFlightFeeder) {
  		$('.piAwareLogo').hide();
  		$('.flightfeederLogo').show();
-@@ -1964,6 +1966,7 @@
+@@ -1964,6 +2000,7 @@
  		$('.piAwareLogo').show();
  		PageName = 'PiAware SkyAware';
  	}
 +  */
  	refreshPageTitle();
  }
-
+ 
 diff -ru upstream/public_html/style.css modified/public_html/style.css
 --- upstream/public_html/style.css	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html/style.css	2021-02-28 17:38:19.743139664 +0100
++++ modified/public_html/style.css	2021-03-14 13:40:24.103993882 +0100
 @@ -404,6 +404,16 @@
      box-shadow:inset -12px 0 12px -12px #000000;
  }
-
+ 
 +.flightradar24Logo {
 +    height: 50%;
 +    padding-left: 25px;
@@ -64,3 +187,36 @@ diff -ru upstream/public_html/style.css modified/public_html/style.css
  .adsbLogo {
      padding-left: 20px;
      padding-top: 30px;
+@@ -701,7 +711,7 @@
+ 	text-align: center;
+ 	background-color: #eee;
+ }
+-#selected_flightaware_link a {
++#selected_flightaware_link a, #selected_flightradar24_link a {
+ 	background-color: #00a0e2;
+ 	color: white;
+ 	text-decoration: none;
+@@ -733,6 +743,23 @@
+ 	display: block;
+ }
+ 
++.stats_button {
++    position: relative;
++    background-color: rgba(0, 160, 226, 1);
++    color: #FFFFFF;
++    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
++    font-weight: bold;
++    font-size: 12px;
++    cursor: pointer;
++    width: auto;
++    border-radius: 4px;
++    -webkit-border-radius: 4px;
++    -moz-border-radius: 4px;
++    margin-top: 5px;
++    padding: 5px 8px 5px 8px;
++
++}
++
+ /* Retina 2x images */
+ @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { 
+     .settingsCloseBox {
