@@ -10,9 +10,9 @@ case $arch in
     dirname=fr24feed_armhf
     dpkg --add-architecture armhf
     apt update
-    apt dist-upgrade
     apt install libc6:armhf libstdc++6:armhf libusb-1.0-0:armhf
     ldconfig
+    rm -rf /var/lib/apt/lists/*
     ;;
   armel)
     url=https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_ARMEL_VERSION}_armhf.tgz # force version 1.0.25-3 because of broken version for rpi
