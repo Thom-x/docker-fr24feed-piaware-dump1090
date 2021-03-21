@@ -5,6 +5,15 @@ case $arch in
     url=https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_ARMHF_VERSION}_armhf.tgz # force version 1.0.25-3 because of broken version for rpi
     dirname=fr24feed_armhf
     ;;
+  arm64)
+    url=https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_ARMHF_VERSION}_armhf.tgz # force version 1.0.25-3 because of broken version for rpi
+    dirname=fr24feed_armhf
+    dpkg --add-architecture armhf
+    apt update
+    apt install libc6:armhf libstdc++6:armhf libusb-1.0-0:armhf
+    ldconfig
+    rm -rf /var/lib/apt/lists/*
+    ;;
   armel)
     url=https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24FEED_ARMEL_VERSION}_armhf.tgz # force version 1.0.25-3 because of broken version for rpi
     dirname=fr24feed_armhf
@@ -18,6 +27,7 @@ case $arch in
     ;;
 esac
 
+echo 'downloading for $arch - $url'
 mkdir /fr24feed && \
 wget -O /fr24feed/fr24feed.tgz $url && \
 cd /fr24feed && \
