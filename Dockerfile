@@ -1,6 +1,6 @@
 FROM debian:buster as dump1090
 
-ENV DUMP1090_VERSION v3.8.1
+ENV DUMP1090_VERSION v5.0
 
 # DUMP1090
 RUN apt-get update && \
@@ -20,14 +20,14 @@ ADD patch /patch
 WORKDIR /tmp
 RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/dump1090 && \
     cd dump1090 && \
-    cp /patch/resources/fr24-logo.svg $PWD/public_html/images && \
+    cp /patch/resources/fr24-logo.svg $PWD/public_html_merged/images && \
     patch -p1 -ru --force -d $PWD < /patch/flightradar24.patch && \
-    make
+    make CPUFEATURES=no
 
 FROM debian:buster as piaware
 
 ENV DEBIAN_VERSION buster
-ENV PIAWARE_VERSION v3.8.1
+ENV PIAWARE_VERSION v5.0
 
 # PIAWARE
 WORKDIR /tmp
@@ -157,7 +157,7 @@ RUN apt-get update && \
 
 ## Clone source code, build & Install tcl-tls
 RUN cd /tmp && \
-    git clone http://github.com/flightaware/tcltls-rebuild.git && \
+    git clone --depth 1 http://github.com/flightaware/tcltls-rebuild.git && \
     cd tcltls-rebuild && \
     ./prepare-build.sh ${DEBIAN_VERSION} && \
     cd package-${DEBIAN_VERSION} && \
@@ -168,7 +168,7 @@ RUN cd /tmp && \
 # DUMP1090
 RUN mkdir -p /usr/lib/fr24/public_html/data
 COPY --from=dump1090 /tmp/dump1090/dump1090 /usr/lib/fr24/
-COPY --from=dump1090 /tmp/dump1090/public_html /usr/lib/fr24/public_html
+COPY --from=dump1090 /tmp/dump1090/public_html_merged /usr/lib/fr24/public_html
 RUN rm /usr/lib/fr24/public_html/config.js
 RUN rm /usr/lib/fr24/public_html/layers.js
 
