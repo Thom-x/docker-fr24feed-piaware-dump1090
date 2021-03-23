@@ -49,9 +49,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ steps.get_commit.outputs.sha_short }}
+          key: all-buildx-${{ steps.get_commit.outputs.sha_short }}
           restore-keys: |
-            ${{ runner.os }}-buildx-
+            all-buildx-
       - name: Build
         uses: docker/build-push-action@v2
         with:
@@ -85,9 +85,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ steps.get_commit.outputs.sha_short }}
+          key: all-buildx-${{ steps.get_commit.outputs.sha_short }}
           restore-keys: |
-            ${{ runner.os }}-buildx-
+            all-buildx-
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
