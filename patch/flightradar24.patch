@@ -105,6 +105,43 @@ diff -ru upstream/public_html_merged/script.js modified/public_html_merged/scrip
  
          if (selected.registration !== null) {
                  $('#selected_registration').text(selected.registration);
+@@ -1705,18 +1724,30 @@
+                         }
+
+                         // ICAO doesn't change
++                        var flightURL = "";
++                        var flightClassName = "";
+                         if (tableplane.flight) {
+-                                tableplane.tr.cells[2].innerHTML = getFlightAwareModeSLink(tableplane.icao, tableplane.flight, tableplane.flight);
+-                               tableplane.tr.cells[2].className = "ident_normal";
++                                flightClassName = "ident_normal";
++                                if (DefaultTracker === "Flightradar24") {
++                                        flightURL = getFlightradar24IdentLink(tableplane.flight, tableplane.flight);
++                                } else {
++                                        flightURL = getFlightAwareModeSLink(tableplane.icao, tableplane.flight, tableplane.flight);
++                                }
+                         } else if (tableplane.registration !== null) {
+                                 // Show registration with special styling if ident is not present
+-                               tableplane.tr.cells[2].innerHTML = getFlightAwareIdentLink(tableplane.registration, tableplane.registration);
+-                               tableplane.tr.cells[2].className = "ident_fallback";
++                                if (DefaultTracker === "Flightradar24") {
++                                        flightURL = "";
++                                        flightClassName = "";
+                         } else {
+-                               tableplane.tr.cells[2].innerHTML = "";
+-                               tableplane.tr.cells[2].className = "";
++                                        flightURL = getFlightAwareIdentLink(tableplane.registration, tableplane.registration);
++                                        flightClassName = "ident_fallback";
+                        }
+
++                        } else {
++                                flightURL = "";
++                                flightClassName = "";
++                        }
++                        tableplane.tr.cells[2].innerHTML = flightURL;
+                         tableplane.tr.cells[3].textContent = (tableplane.registration !== null ? tableplane.registration : "");
+                         tableplane.tr.cells[4].textContent = (tableplane.icaotype !== null ? tableplane.icaotype : "");
+                         tableplane.tr.cells[5].textContent = (tableplane.squawk !== null ? tableplane.squawk : "");
 @@ -2451,6 +2470,17 @@
      return "";
  }
