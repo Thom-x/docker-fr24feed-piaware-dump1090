@@ -1,6 +1,6 @@
 FROM debian:buster as dump1090
 
-ENV DUMP1090_VERSION v5.0
+ENV DUMP1090_VERSION v6.0
 
 # DUMP1090
 RUN apt-get update && \
