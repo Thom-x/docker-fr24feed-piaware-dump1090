@@ -27,7 +27,7 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
 FROM debian:buster as piaware
 
 ENV DEBIAN_VERSION buster
-ENV PIAWARE_VERSION v5.0
+ENV PIAWARE_VERSION v6.0
 
 # PIAWARE
 WORKDIR /tmp
