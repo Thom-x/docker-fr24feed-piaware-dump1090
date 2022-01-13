@@ -42,6 +42,8 @@ RUN apt-get update && \
     tcl8.6-dev \
     autoconf \
     python3-dev \
+    python3-setuptools \
+    patchelf \
     python-virtualenv \
     libz-dev \
     dh-systemd \
