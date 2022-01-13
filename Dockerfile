@@ -58,6 +58,7 @@ RUN apt-get update && \
     libboost-filesystem-dev && \
     rm -rf /var/lib/apt/lists/*
 
+RUN git config --global http.sslVerify false && git config --global http.postBuffer 1048576000
 RUN git clone -b ${PIAWARE_VERSION} --depth 1 https://github.com/flightaware/piaware_builder.git piaware_builder
 WORKDIR /tmp/piaware_builder
 RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
