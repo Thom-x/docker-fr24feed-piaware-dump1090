@@ -65,23 +65,20 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 	dpkg-buildpackage -b
 
 # CONF
-FROM debian:buster as confd
+FROM golang:1.9-alpine as confd
 
-ENV CONFD_VERSION v0.16.0
+ARG CONFD_VERSION=0.16.0
 
-WORKDIR /tmp
-RUN apt-get update -y && \
-	apt-get install -y \
-	sudo \
-	git-core \
-	build-essential \
-	golang && \
-	rm -rf /var/lib/apt/lists/*
+ADD https://github.com/kelseyhightower/confd/archive/v${CONFD_VERSION}.tar.gz /tmp/
 
-RUN git clone -b ${CONFD_VERSION} --depth 1 https://github.com/kelseyhightower/confd.git && \
-	cd confd && \
-	export GOPATH=/tmp/go && \
-	make
+RUN apk add --no-cache \
+    bzip2 \
+    make && \
+  mkdir -p /go/src/github.com/kelseyhightower/confd && \
+  cd /go/src/github.com/kelseyhightower/confd && \
+  tar --strip-components=1 -zxf /tmp/v${CONFD_VERSION}.tar.gz && \
+  go install github.com/kelseyhightower/confd && \
+  rm -rf /tmp/v${CONFD_VERSION}.tar.gz
 
 FROM debian:buster-slim as serve
 
@@ -177,7 +174,7 @@ ADD build /build
 RUN /build/fr24feed.sh
 
 # CONFD
-COPY --from=confd /tmp/confd/bin/confd /opt/confd/bin/confd
+COPY --from=confd /go/bin/confd /opt/confd/bin/confd
 
 # S6 OVERLAY
 RUN /build/s6-overlay.sh
