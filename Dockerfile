@@ -37,6 +37,7 @@ RUN apt-get update && \
     git-core \
     wget \
     build-essential \
+    devscripts \
     debhelper \
     tcl8.6-dev \
     autoconf \
