@@ -81,11 +81,6 @@ RUN apt-get update -y && \
 RUN git clone -b ${CONFD_VERSION} --depth 1 https://github.com/kelseyhightower/confd.git && \
 	cd confd && \
 	export GOPATH=/tmp/go && \
-        go mod init local/build && \
-	go get github.com/BurntSushi/toml@v1.0.0 && \
-	go get github.com/kelseyhightower/confd/backends && \
-	go get github.com/kelseyhightower/confd/log && \
-	go get github.com/kelseyhightower/confd/resource/template && \
 	make
 
 FROM debian:buster-slim as serve
