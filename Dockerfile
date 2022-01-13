@@ -74,6 +74,7 @@ ADD https://github.com/kelseyhightower/confd/archive/v${CONFD_VERSION}.tar.gz /t
 
 RUN apk add --no-cache \
     bzip2 \
+    build-base \
     make && \
   mkdir -p /go/src/github.com/kelseyhightower/confd && \
   cd /go/src/github.com/kelseyhightower/confd && \
