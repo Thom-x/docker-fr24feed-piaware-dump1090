@@ -162,8 +162,8 @@ ADD build /build
 RUN /build/fr24feed.sh
 
 # CONFD
-ADD confd /opt/confd/bin/
-RUN ARCH=$(dpkg --print-architecture) && cp "/opt/confd/bin/confd-$ARCH" /opt/confd/bin/confd && rm /opt/confd/bin/confd-* && ls  /opt/confd/bin/
+ADD confd/confd.tar.gz /opt/confd/
+RUN ARCH=$(dpkg --print-architecture) && cp "/opt/confd/bin/confd-$ARCH" /opt/confd/bin/confd && rm /opt/confd/bin/confd-*
 
 # S6 OVERLAY
 RUN /build/s6-overlay.sh
