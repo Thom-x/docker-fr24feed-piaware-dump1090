@@ -65,25 +65,21 @@ RUN git config --global http.sslVerify false && git config --global http.postBuf
 RUN git clone -b ${PIAWARE_VERSION} --depth 1 https://github.com/flightaware/piaware_builder.git piaware_builder
 WORKDIR /tmp/piaware_builder
 RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
-	cd package-${DEBIAN_VERSION} && \
-	dpkg-buildpackage -b
+    cd package-${DEBIAN_VERSION} && \
+    dpkg-buildpackage -b
 
-# CONF
-FROM golang:1.9-alpine as confd
+# CONFD
+FROM golang:1.9 as confd
 
 ARG CONFD_VERSION=0.16.0
 
 ADD https://github.com/kelseyhightower/confd/archive/v${CONFD_VERSION}.tar.gz /tmp/
 
-RUN apk add --no-cache \
-    bzip2 \
-    build-base \
-    make && \
-  mkdir -p /go/src/github.com/kelseyhightower/confd && \
-  cd /go/src/github.com/kelseyhightower/confd && \
-  tar --strip-components=1 -zxf /tmp/v${CONFD_VERSION}.tar.gz && \
-  go install github.com/kelseyhightower/confd && \
-  rm -rf /tmp/v${CONFD_VERSION}.tar.gz
+RUN mkdir -p /go/src/github.com/kelseyhightower/confd && \
+    cd /go/src/github.com/kelseyhightower/confd && \
+    tar --strip-components=1 -zxf /tmp/v${CONFD_VERSION}.tar.gz && \
+    go install github.com/kelseyhightower/confd && \
+    rm -rf /tmp/v${CONFD_VERSION}.tar.gz
 
 FROM debian:buster-slim as serve
 
@@ -130,9 +126,9 @@ RUN apt-get update && \
 WORKDIR /tmp
 RUN mkdir -p /etc/modprobe.d && \
     echo 'blacklist r820t' >> /etc/modprobe.d/raspi-blacklist.conf && \
-	echo 'blacklist rtl2832' >> /etc/modprobe.d/raspi-blacklist.conf && \
-	echo 'blacklist rtl2830' >> /etc/modprobe.d/raspi-blacklist.conf && \
-	echo 'blacklist dvb_usb_rtl28xxu' >> /etc/modprobe.d/raspi-blacklist.conf && \
+    echo 'blacklist rtl2832' >> /etc/modprobe.d/raspi-blacklist.conf && \
+    echo 'blacklist rtl2830' >> /etc/modprobe.d/raspi-blacklist.conf && \
+    echo 'blacklist dvb_usb_rtl28xxu' >> /etc/modprobe.d/raspi-blacklist.conf && \
     git clone -b ${RTL_SDR_VERSION} --depth 1 https://github.com/osmocom/rtl-sdr.git && \
     mkdir rtl-sdr/build && \
     cd rtl-sdr/build && \
