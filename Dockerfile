@@ -1,4 +1,4 @@
-FROM debian:buster as dump1090
+FROM debian:bullseye as dump1090
 
 ENV DUMP1090_VERSION v7.1
 
@@ -11,7 +11,6 @@ RUN apt-get update && \
     debhelper \
     librtlsdr-dev \
     pkg-config \
-    dh-systemd \
     libncurses5-dev \
     libbladerf-dev && \
     rm -rf /var/lib/apt/lists/*
@@ -24,9 +23,9 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
     patch --ignore-whitespace -p1 -ru --force -d $PWD < /patch/flightradar24.patch && \
     make CPUFEATURES=no
 
-FROM debian:buster as piaware
+FROM debian:bullseye as piaware
 
-ENV DEBIAN_VERSION buster
+ENV DEBIAN_VERSION bullseye
 ENV PIAWARE_VERSION v7.1
 
 # PIAWARE
@@ -44,16 +43,14 @@ RUN apt-get update && \
     python3-dev \
     python3-setuptools \
     patchelf \
-    python-virtualenv \
+    python3-virtualenv \
     libz-dev \
-    dh-systemd \
     net-tools \
     tclx8.4 \
     tcllib \
     tcl-tls \
     itcl3 \
     python3-venv \
-    dh-systemd \
     init-system-helpers \
     libboost-system-dev \
     libboost-program-options-dev \
@@ -68,9 +65,9 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
     cd package-${DEBIAN_VERSION} && \
     dpkg-buildpackage -b
 
-FROM debian:buster-slim as serve
+FROM debian:bullseye-slim as serve
 
-ENV DEBIAN_VERSION buster
+ENV DEBIAN_VERSION bullseye
 ENV RTL_SDR_VERSION 0.6.0
 
 ENV FR24FEED_AMD64_VERSION 1.0.25-3
@@ -131,19 +128,10 @@ RUN apt-get update && \
     apt-get install -y \
     libssl-dev \
     tcl-dev \
+    tcl-tls \
     chrpath \
     netcat && \
     rm -rf /var/lib/apt/lists/*
-
-## Clone source code, build & Install tcl-tls
-RUN cd /tmp && \
-    git clone --depth 1 http://github.com/flightaware/tcltls-rebuild.git && \
-    cd tcltls-rebuild && \
-    ./prepare-build.sh ${DEBIAN_VERSION} && \
-    cd package-${DEBIAN_VERSION} && \
-    dpkg-buildpackage -b --no-sign && \
-    cd ../ && \
-    dpkg -i tcl-tls_*.deb
 
 # DUMP1090
 RUN mkdir -p /usr/lib/fr24/public_html/data
