@@ -68,19 +68,6 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
     cd package-${DEBIAN_VERSION} && \
     dpkg-buildpackage -b
 
-# CONFD
-FROM golang:1.9 as confd
-
-ARG CONFD_VERSION=0.16.0
-
-ADD https://github.com/kelseyhightower/confd/archive/v${CONFD_VERSION}.tar.gz /tmp/
-
-RUN mkdir -p /go/src/github.com/kelseyhightower/confd && \
-    cd /go/src/github.com/kelseyhightower/confd && \
-    tar --strip-components=1 -zxf /tmp/v${CONFD_VERSION}.tar.gz && \
-    go install github.com/kelseyhightower/confd && \
-    rm -rf /tmp/v${CONFD_VERSION}.tar.gz
-
 FROM debian:buster-slim as serve
 
 ENV DEBIAN_VERSION buster
@@ -175,7 +162,8 @@ ADD build /build
 RUN /build/fr24feed.sh
 
 # CONFD
-COPY --from=confd /go/bin/confd /opt/confd/bin/confd
+ADD confd /opt/confd/bin/
+RUN ARCH=$(dpkg --print-architecture) && cp "/opt/confd/bin/confd-$ARCH" /opt/confd/bin/confd && rm /opt/confd/bin/confd-* && ls  /opt/confd/bin/
 
 # S6 OVERLAY
 RUN /build/s6-overlay.sh
