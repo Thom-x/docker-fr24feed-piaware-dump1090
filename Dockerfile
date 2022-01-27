@@ -1,6 +1,6 @@
 FROM debian:buster as dump1090
 
-ENV DUMP1090_VERSION v6.0
+ENV DUMP1090_VERSION v7.1
 
 # DUMP1090
 RUN apt-get update && \
@@ -27,7 +27,7 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
 FROM debian:buster as piaware
 
 ENV DEBIAN_VERSION buster
-ENV PIAWARE_VERSION v6.0
+ENV PIAWARE_VERSION v7.1
 
 # PIAWARE
 WORKDIR /tmp
@@ -37,10 +37,13 @@ RUN apt-get update && \
     git-core \
     wget \
     build-essential \
+    devscripts \
     debhelper \
     tcl8.6-dev \
     autoconf \
     python3-dev \
+    python3-setuptools \
+    patchelf \
     python-virtualenv \
     libz-dev \
     dh-systemd \
@@ -58,34 +61,12 @@ RUN apt-get update && \
     libboost-filesystem-dev && \
     rm -rf /var/lib/apt/lists/*
 
+RUN git config --global http.sslVerify false && git config --global http.postBuffer 1048576000
 RUN git clone -b ${PIAWARE_VERSION} --depth 1 https://github.com/flightaware/piaware_builder.git piaware_builder
 WORKDIR /tmp/piaware_builder
 RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
-	cd package-${DEBIAN_VERSION} && \
-	dpkg-buildpackage -b
-
-# CONF
-FROM debian:buster as confd
-
-ENV CONFD_VERSION v0.16.0
-
-WORKDIR /tmp
-RUN apt-get update -y && \
-	apt-get install -y \
-	sudo \
-	git-core \
-	build-essential \
-	golang && \
-	rm -rf /var/lib/apt/lists/*
-
-RUN git clone -b ${CONFD_VERSION} --depth 1 https://github.com/kelseyhightower/confd.git && \
-	cd confd && \
-	export GOPATH=/tmp/go && \
-	go get github.com/BurntSushi/toml && \
-	go get github.com/kelseyhightower/confd/backends && \
-	go get github.com/kelseyhightower/confd/log && \
-	go get github.com/kelseyhightower/confd/resource/template && \
-	make
+    cd package-${DEBIAN_VERSION} && \
+    dpkg-buildpackage -b
 
 FROM debian:buster-slim as serve
 
@@ -132,9 +113,9 @@ RUN apt-get update && \
 WORKDIR /tmp
 RUN mkdir -p /etc/modprobe.d && \
     echo 'blacklist r820t' >> /etc/modprobe.d/raspi-blacklist.conf && \
-	echo 'blacklist rtl2832' >> /etc/modprobe.d/raspi-blacklist.conf && \
-	echo 'blacklist rtl2830' >> /etc/modprobe.d/raspi-blacklist.conf && \
-	echo 'blacklist dvb_usb_rtl28xxu' >> /etc/modprobe.d/raspi-blacklist.conf && \
+    echo 'blacklist rtl2832' >> /etc/modprobe.d/raspi-blacklist.conf && \
+    echo 'blacklist rtl2830' >> /etc/modprobe.d/raspi-blacklist.conf && \
+    echo 'blacklist dvb_usb_rtl28xxu' >> /etc/modprobe.d/raspi-blacklist.conf && \
     git clone -b ${RTL_SDR_VERSION} --depth 1 https://github.com/osmocom/rtl-sdr.git && \
     mkdir rtl-sdr/build && \
     cd rtl-sdr/build && \
@@ -181,7 +162,8 @@ ADD build /build
 RUN /build/fr24feed.sh
 
 # CONFD
-COPY --from=confd /tmp/confd/bin/confd /opt/confd/bin/confd
+ADD confd/confd.tar.gz /opt/confd/
+RUN ARCH=$(dpkg --print-architecture) && cp "/opt/confd/bin/confd-$ARCH" /opt/confd/bin/confd && chmod +x /opt/confd/bin/confd && rm /opt/confd/bin/confd-*
 
 # S6 OVERLAY
 RUN /build/s6-overlay.sh
