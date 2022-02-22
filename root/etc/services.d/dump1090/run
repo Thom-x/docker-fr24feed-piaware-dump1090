@@ -24,7 +24,9 @@ then
 	then
                 /bin/nc ${RTL_TCP_REMOTE_HOST} ${RTL_TCP_REMOTE_PORT} | /usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS} --ifile -
         else
-                /usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS}
+                /usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS} 2>&1 | stdbuf -o0 sed --unbuffered '/^$/d' | mawk -W interactive '{printf "%c[31m [dump1090]%c[0m " $0 "\n", 27, 27}'
+                # stdbuf ...  --  (remove blank lines from output)
+                # awk -W interactive ...  (prefix log messages with color and "[dump1090]")
 	fi
 else
 	tail -f /dev/null
