@@ -1,0 +1,7 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_HTTP" != "false" ]; then
+	if [ ! -f /usr/lib/fr24/public_html/layers.js ]; then
+		/opt/confd/bin/confd -onetime -confdir "/etc/confd/layers" -prefix "layers" -backend env
+	fi
+fi

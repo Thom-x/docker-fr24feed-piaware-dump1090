@@ -1,0 +1,3 @@
+#!/command/with-contenv bash
+
+/etc/s6-overlay/s6-rc.d/confd-layers/script

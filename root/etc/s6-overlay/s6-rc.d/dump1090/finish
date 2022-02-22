@@ -1,0 +1,4 @@
+#!/command/with-contenv bash
+
+# exit container stop s6
+kill 1
