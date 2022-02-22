@@ -21,7 +21,7 @@ WORKDIR /tmp
 RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/dump1090 && \
     cd dump1090 && \
     cp /patch/resources/fr24-logo.svg $PWD/public_html_merged/images && \
-    patch --ignore-whitespace -p1 -ru --force -d $PWD < /patch/flightradar24.patch && \
+    patch --ignore-whitespace -p1 -ru --force --no-backup-if-mismatch -d $PWD < /patch/flightradar24.patch && \
     make CPUFEATURES=no
 
 FROM debian:buster as piaware
@@ -67,6 +67,24 @@ WORKDIR /tmp/piaware_builder
 RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
     cd package-${DEBIAN_VERSION} && \
     dpkg-buildpackage -b
+
+# THTTPD
+FROM alpine:3.13.2 AS thttpd
+
+ARG THTTPD_VERSION=2.29
+
+# Install all dependencies required for compiling thttpd
+RUN apk add gcc musl-dev make
+
+# Download thttpd sources
+RUN wget http://www.acme.com/software/thttpd/thttpd-${THTTPD_VERSION}.tar.gz \
+  && tar xzf thttpd-${THTTPD_VERSION}.tar.gz \
+  && mv /thttpd-${THTTPD_VERSION} /thttpd
+
+# Compile thttpd to a static binary which we can copy around
+RUN cd /thttpd \
+  && ./configure \
+  && make CCOPT='-O2 -s -static' thttpd
 
 FROM debian:buster-slim as serve
 
@@ -143,18 +161,27 @@ RUN cd /tmp && \
     cd package-${DEBIAN_VERSION} && \
     dpkg-buildpackage -b --no-sign && \
     cd ../ && \
-    dpkg -i tcl-tls_*.deb
+    dpkg -i tcl-tls_*.deb && \
+    rm -rf /tmp/tcltls-rebuild
 
 # DUMP1090
 RUN mkdir -p /usr/lib/fr24/public_html/data
 COPY --from=dump1090 /tmp/dump1090/dump1090 /usr/lib/fr24/
 COPY --from=dump1090 /tmp/dump1090/public_html_merged /usr/lib/fr24/public_html
-RUN rm /usr/lib/fr24/public_html/config.js
-RUN rm /usr/lib/fr24/public_html/layers.js
+RUN rm /usr/lib/fr24/public_html/config.js && \
+    rm /usr/lib/fr24/public_html/layers.js
 
 # PIAWARE
 COPY --from=piaware /tmp/piaware_builder /tmp/piaware_builder
-RUN cd /tmp/piaware_builder && dpkg -i piaware_*_*.deb && rm -rf /tmp/piaware && rm /etc/piaware.conf
+RUN cd /tmp/piaware_builder && \
+    dpkg -i piaware_*_*.deb && \
+    rm /etc/piaware.conf && \
+    rm -rf /tmp/piaware_builder
+
+# THTTPD
+COPY --from=thttpd /thttpd/thttpd /
+RUN find /usr/lib/fr24/public_html -type d -print0 | xargs -0 chmod 0755 && \
+    find /usr/lib/fr24/public_html -type f -print0 | xargs -0 chmod 0644
 
 ADD build /build
 
@@ -163,7 +190,10 @@ RUN /build/fr24feed.sh
 
 # CONFD
 ADD confd/confd.tar.gz /opt/confd/
-RUN ARCH=$(dpkg --print-architecture) && cp "/opt/confd/bin/confd-$ARCH" /opt/confd/bin/confd && chmod +x /opt/confd/bin/confd && rm /opt/confd/bin/confd-*
+RUN ARCH=$(dpkg --print-architecture) && \
+    cp "/opt/confd/bin/confd-$ARCH" /opt/confd/bin/confd && \
+    chmod +x /opt/confd/bin/confd && \
+    rm /opt/confd/bin/confd-*
 
 # S6 OVERLAY
 RUN /build/s6-overlay.sh
