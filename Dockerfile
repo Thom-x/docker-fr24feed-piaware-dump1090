@@ -68,6 +68,24 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
     cd package-${DEBIAN_VERSION} && \
     dpkg-buildpackage -b
 
+# THTTPD
+FROM alpine:3.13.2 AS thttpd
+
+ARG THTTPD_VERSION=2.29
+
+# Install all dependencies required for compiling thttpd
+RUN apk add gcc musl-dev make
+
+# Download thttpd sources
+RUN wget http://www.acme.com/software/thttpd/thttpd-${THTTPD_VERSION}.tar.gz \
+  && tar xzf thttpd-${THTTPD_VERSION}.tar.gz \
+  && mv /thttpd-${THTTPD_VERSION} /thttpd
+
+# Compile thttpd to a static binary which we can copy around
+RUN cd /thttpd \
+  && ./configure \
+  && make CCOPT='-O2 -s -static' thttpd
+
 FROM debian:buster-slim as serve
 
 ENV DEBIAN_VERSION buster
@@ -160,6 +178,9 @@ ADD build /build
 
 # FR24FEED
 RUN /build/fr24feed.sh
+
+# THTTPD
+COPY --from=thttpd /thttpd/thttpd /
 
 # CONFD
 ADD confd/confd.tar.gz /opt/confd/
