@@ -3,6 +3,8 @@ services:
   fr24feed-piaware:
     image: "thomx/fr24feed-piaware"
     restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro # needed to sync time for MLAT
     environment: 
       - "FR24FEED_FR24KEY=MY_SHARING_KEY"
       - "PIAWARE_FEEDER_DASH_ID=MY_FEEDER_ID"

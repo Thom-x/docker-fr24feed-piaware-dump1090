@@ -28,6 +28,7 @@ Run :
 ```
 docker run -d -p 8080:8080 -p 8754:8754 \
 	--device=/dev/bus/usb:/dev/bus/usb \
+	-v "/etc/localtime:/etc/localtime:ro" \
 	-e "FR24FEED_FR24KEY=MY_SHARING_KEY" \
 	-e "PIAWARE_FEEDER_DASH_ID=MY_FEEDER_ID" \
 	-e "HTML_SITE_LAT=MY_SITE_LAT" \
@@ -42,6 +43,7 @@ Go to http://dockerhost:8080 to view a map of reveived data.
 Go to http://dockerhost:8754 to view the FR24 Feeder configuration panel.
 
 *Note : remove `-e "PANORAMA_ID=MY_PANORAMA_ID"` or `-e "LAYERS_OWM_API_KEY=MY_OWM_API_KEY"` from the command line if you don't want to use this feature.*
+*Note : `-v "/etc/localtime:/etc/localtime:ro"` is needed for MLAT, or you can have issues with time synchronization.*
 
 # Configuration
 
