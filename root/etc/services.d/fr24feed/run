@@ -1,8 +1,8 @@
 #!/usr/bin/with-contenv bash
 if [ "$SERVICE_ENABLE_FR24FEED" != "false" ]
 then
-	/fr24feed/fr24feed/fr24feed 2>&1 | stdbuf -o0 sed --unbuffered '/^$/d' | mawk -W interactive '{printf "%c[34m [fr24feed]%c[0m " $0 "\n", 27, 27}'
-	# stdbuf ...  --  (remove blank lines from output)
+	set -eo pipefail
+	/fr24feed/fr24feed/fr24feed 2>&1 | mawk -W interactive '{printf "%c[34m [fr24feed]%c[0m %s%s\n", 27, 27, $0}'
 	# awk -W interactive ...  (prefix log messages with color and "[fr24feed]")
 else
 	tail -f /dev/null
