@@ -1,16 +1,13 @@
 #!/usr/bin/with-contenv bash
-if [ "$SERVICE_ENABLE_DUMP1090" != "false" ]
-then
-	default_value() 
-	{ 
+if [ "$SERVICE_ENABLE_DUMP1090" != "false" ]; then
+	default_value() {
 		key=${1//\-/_DASH_}
 		key=HTML_${key^^}
 		eval "value=\${$key:-\$2}"
 		printf -v $key -- "$value"
 		export $key
 	}
-	default_value2() 
-	{ 
+	default_value2() {
 		key=${1//\-/_DASH_}
 		key=DUMP1090_${key^^}
 		eval "value=\${$key:-\$2}"
@@ -20,13 +17,13 @@ then
 	default_value "site_lat" "45.0"
 	default_value "site_lon" "9.0"
 	default_value2 "additional_args" ""
-        if [ "$RTL_TCP_OVER_NETCAT" == "true" ]
-	then
-                /bin/nc ${RTL_TCP_REMOTE_HOST} ${RTL_TCP_REMOTE_PORT} | /usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS} --ifile -
-        else
-                /usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS} 2>&1 | stdbuf -o0 sed --unbuffered '/^$/d' | mawk -W interactive '{printf "%c[31m [dump1090]%c[0m " $0 "\n", 27, 27}'
-                # stdbuf ...  --  (remove blank lines from output)
-                # awk -W interactive ...  (prefix log messages with color and "[dump1090]")
+	if [ "$RTL_TCP_OVER_NETCAT" == "true" ]; then
+		set -eo pipefail
+		/bin/nc ${RTL_TCP_REMOTE_HOST} ${RTL_TCP_REMOTE_PORT} | /usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS} --ifile -
+	else
+		set -eo pipefail
+		/usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS} 2>&1 | mawk -W interactive '{printf "%c[31m [dump1090]%c[0m %s%s\n", 27, 27, $0}'
+		# awk -W interactive ...  (prefix log messages with color and "[dump1090]")
 	fi
 else
 	tail -f /dev/null
