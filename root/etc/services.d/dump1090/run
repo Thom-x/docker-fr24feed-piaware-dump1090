@@ -22,7 +22,7 @@ if [ "$SERVICE_ENABLE_DUMP1090" != "false" ]; then
 		/bin/nc ${RTL_TCP_REMOTE_HOST} ${RTL_TCP_REMOTE_PORT} | /usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS} --ifile -
 	else
 		set -eo pipefail
-		/usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS} 2>&1 | mawk -W interactive '{printf "%c[31m [dump1090]%c[0m %s%s\n", 27, 27, $0}'
+		/usr/lib/fr24/dump1090 --net --write-json /usr/lib/fr24/public_html/data --raw --quiet --lat ${HTML_SITE_LAT} --lon ${HTML_SITE_LON} ${DUMP1090_ADDITIONAL_ARGS} 2>&1 | mawk -W interactive '{printf "%c[31m [dump1090]%c[0m %s\n", 27, 27, $0}'
 		# awk -W interactive ...  (prefix log messages with color and "[dump1090]")
 	fi
 else
