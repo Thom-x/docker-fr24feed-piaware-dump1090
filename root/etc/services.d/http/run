@@ -2,7 +2,7 @@
 if [ "$SERVICE_ENABLE_HTTP" != "false" ]
 then
 	set -eo pipefail
-	/thttpd -D -h 0.0.0.0 -p 8080 -d /usr/lib/fr24/public_html -l - -M 60  2>&1 | mawk -W interactive '{printf "%c[32m [http]%c[0m %s%s\n", 27, 27, $0}'
+	/thttpd -D -h 0.0.0.0 -p 8080 -d /usr/lib/fr24/public_html -l - -M 60  2>&1 | mawk -W interactive '{printf "%c[32m [http]%c[0m %s\n", 27, 27, $0}'
 	# awk -W interactive ...  (prefix log messages with color and "[http]")
 else
 	tail -f /dev/null
