@@ -206,8 +206,7 @@ RUN apt-get update && \
     pkg-config \
     git-core \
     cmake \
-    build-essential \
-    netcat && \
+    build-essential && \
     apt autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
