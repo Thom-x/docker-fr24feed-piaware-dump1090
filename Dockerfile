@@ -201,7 +201,6 @@ RUN apt-get update && \
 # CLEAN
     rm -rf /build && \
     apt-get purge -y \
-    wget \
     xz-utils \
     devscripts \
     pkg-config \
