@@ -150,7 +150,6 @@ RUN apt-get update && \
     pkg-config \
     libncurses5-dev \
     libbladerf-dev && \
-    rm -rf /var/lib/apt/lists/* && \
     # RTL-SDR
     cd /tmp && \
     mkdir -p /etc/modprobe.d && \
@@ -168,13 +167,11 @@ RUN apt-get update && \
     rm -rf /tmp/rtl-sdr && \
     # Build & Install dependency tcl-tls from source code.
     # Install dependencies
-    apt-get update && \
     apt-get install -y \
     libssl-dev \
     tcl-dev \
     chrpath \
     netcat && \
-    rm -rf /var/lib/apt/lists/* && \
     # Clone source code, build & Install tcl-tls
     cd /tmp && \
     git clone --depth 1 http://github.com/flightaware/tcltls-rebuild.git && \
@@ -202,7 +199,18 @@ RUN apt-get update && \
 # S6 OVERLAY
     /build/s6-overlay.sh && \
 # CLEAN
-    rm -rf /build
+    rm -rf /build && \
+    apt-get purge -y \
+    wget \
+    xz-utils \
+    devscripts \
+    pkg-config \
+    git-core \
+    cmake \
+    build-essential \
+    netcat && \
+    apt autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY /root /
 
