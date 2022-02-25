@@ -86,6 +86,27 @@ RUN cd /thttpd \
   && ./configure \
   && make CCOPT='-O2 -s -static' thttpd
 
+# CONFD
+FROM debian:buster-slim as confd
+
+ADD confd/confd.tar.gz /opt/confd/
+RUN ARCH=$(dpkg --print-architecture) && \
+    cp "/opt/confd/bin/confd-$ARCH" /opt/confd/bin/confd && \
+    chmod +x /opt/confd/bin/confd && \
+    rm /opt/confd/bin/confd-*
+
+# ONE STAGE COPY ALL
+FROM debian:buster-slim as copyall
+
+COPY --from=dump1090 /tmp/dump1090/dump1090 /copy_root/usr/lib/fr24/
+COPY --from=dump1090 /tmp/dump1090/public_html_merged /copy_root/usr/lib/fr24/public_html
+COPY --from=piaware /tmp/piaware_builder /copy_root/piaware_builder
+RUN mv /copy_root/piaware_builder/piaware_*_*.deb /copy_root/piaware.deb && \
+    rm -rf /copy_root/piaware_builder
+COPY --from=thttpd /thttpd/thttpd /copy_root/
+COPY --from=confd /opt/confd/bin/confd /copy_root/opt/confd/bin/
+ADD build /copy_root/build
+
 FROM debian:buster-slim as serve
 
 ENV DEBIAN_VERSION buster
@@ -98,6 +119,9 @@ ENV FR24FEED_ARMEL_VERSION 1.0.25-3
 ENV S6_OVERLAY_VERSION 3.0.0.2-2
 
 LABEL maintainer="maugin.thomas@gmail.com"
+
+# COPY ALL
+COPY --from=copyall /copy_root/ /
 
 RUN apt-get update && \
     # rtl-sdr
@@ -160,36 +184,21 @@ RUN apt-get update && \
     dpkg-buildpackage -b --no-sign && \
     cd ../ && \
     dpkg -i tcl-tls_*.deb && \
-    rm -rf /tmp/tcltls-rebuild
-
-# COPY ALL
-COPY --from=dump1090 /tmp/dump1090/dump1090 /usr/lib/fr24/
-COPY --from=dump1090 /tmp/dump1090/public_html_merged /usr/lib/fr24/public_html
-COPY --from=piaware /tmp/piaware_builder /tmp/piaware_builder
-COPY --from=thttpd /thttpd/thttpd /
-ADD build /build
-ADD confd/confd.tar.gz /opt/confd/
-
-
+    rm -rf /tmp/tcltls-rebuild && \
 # DUMP1090
-RUN mkdir -p /usr/lib/fr24/public_html/data && \
+    mkdir -p /usr/lib/fr24/public_html/data && \
     rm /usr/lib/fr24/public_html/config.js && \
     rm /usr/lib/fr24/public_html/layers.js && \
 # PIAWARE
-    cd /tmp/piaware_builder && \
-    dpkg -i piaware_*_*.deb && \
+    cd / && \
+    dpkg -i piaware.deb && \
     rm /etc/piaware.conf && \
-    rm -rf /tmp/piaware_builder && \
+    rm /piaware.deb && \
 # THTTPD
     find /usr/lib/fr24/public_html -type d -print0 | xargs -0 chmod 0755 && \
     find /usr/lib/fr24/public_html -type f -print0 | xargs -0 chmod 0644 && \
 # FR24FEED
     /build/fr24feed.sh && \
-# CONFD
-    ARCH=$(dpkg --print-architecture) && \
-    cp "/opt/confd/bin/confd-$ARCH" /opt/confd/bin/confd && \
-    chmod +x /opt/confd/bin/confd && \
-    rm /opt/confd/bin/confd-* && \
 # S6 OVERLAY
     /build/s6-overlay.sh && \
 # CLEAN
