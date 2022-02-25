@@ -1,9 +1,0 @@
-#!/usr/bin/with-contenv bash
-if [ "$SERVICE_ENABLE_FR24FEED" != "false" ]
-then
-	set -eo pipefail
-	/fr24feed/fr24feed/fr24feed 2>&1 | mawk -W interactive '{printf "%c[34m [fr24feed]%c[0m %s\n", 27, 27, $0}'
-	# awk -W interactive ...  (prefix log messages with color and "[fr24feed]")
-else
-	tail -f /dev/null
-fi

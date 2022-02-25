@@ -71,7 +71,7 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 # THTTPD
 FROM alpine:3.13.2 AS thttpd
 
-ARG THTTPD_VERSION=2.29
+ENV THTTPD_VERSION=2.29
 
 # Install all dependencies required for compiling thttpd
 RUN apk add gcc musl-dev make
@@ -95,7 +95,7 @@ ENV FR24FEED_AMD64_VERSION 1.0.25-3
 # force version 1.0.25-3 for armhf and armel because of broken version for these architectures
 ENV FR24FEED_ARMHF_VERSION 1.0.25-3
 ENV FR24FEED_ARMEL_VERSION 1.0.25-3
-ENV S6_OVERLAY_VERSION v2.1.0.2
+ENV S6_OVERLAY_VERSION 3.0.0.2-2
 
 LABEL maintainer="maugin.thomas@gmail.com"
 
@@ -103,6 +103,7 @@ RUN apt-get update && \
     # rtl-sdr
     apt-get install -y \
     wget \
+    xz-utils \
     devscripts \
     libusb-1.0-0-dev \
     pkg-config \
@@ -125,11 +126,10 @@ RUN apt-get update && \
     pkg-config \
     libncurses5-dev \
     libbladerf-dev && \
-    rm -rf /var/lib/apt/lists/*
-
-# RTL-SDR
-WORKDIR /tmp
-RUN mkdir -p /etc/modprobe.d && \
+    rm -rf /var/lib/apt/lists/* && \
+    # RTL-SDR
+    cd /tmp && \
+    mkdir -p /etc/modprobe.d && \
     echo 'blacklist r820t' >> /etc/modprobe.d/raspi-blacklist.conf && \
     echo 'blacklist rtl2832' >> /etc/modprobe.d/raspi-blacklist.conf && \
     echo 'blacklist rtl2830' >> /etc/modprobe.d/raspi-blacklist.conf && \
@@ -141,20 +141,18 @@ RUN mkdir -p /etc/modprobe.d && \
     make && \
     make install && \
     ldconfig && \
-    rm -rf /tmp/rtl-sdr
-
-# Build & Install dependency tcl-tls from source code.
-# Install dependencies
-RUN apt-get update && \
+    rm -rf /tmp/rtl-sdr && \
+    # Build & Install dependency tcl-tls from source code.
+    # Install dependencies
+    apt-get update && \
     apt-get install -y \
     libssl-dev \
     tcl-dev \
     chrpath \
     netcat && \
-    rm -rf /var/lib/apt/lists/*
-
-## Clone source code, build & Install tcl-tls
-RUN cd /tmp && \
+    rm -rf /var/lib/apt/lists/* && \
+    # Clone source code, build & Install tcl-tls
+    cd /tmp && \
     git clone --depth 1 http://github.com/flightaware/tcltls-rebuild.git && \
     cd tcltls-rebuild && \
     ./prepare-build.sh ${DEBIAN_VERSION} && \
@@ -164,39 +162,38 @@ RUN cd /tmp && \
     dpkg -i tcl-tls_*.deb && \
     rm -rf /tmp/tcltls-rebuild
 
-# DUMP1090
-RUN mkdir -p /usr/lib/fr24/public_html/data
+# COPY ALL
 COPY --from=dump1090 /tmp/dump1090/dump1090 /usr/lib/fr24/
 COPY --from=dump1090 /tmp/dump1090/public_html_merged /usr/lib/fr24/public_html
-RUN rm /usr/lib/fr24/public_html/config.js && \
-    rm /usr/lib/fr24/public_html/layers.js
-
-# PIAWARE
 COPY --from=piaware /tmp/piaware_builder /tmp/piaware_builder
-RUN cd /tmp/piaware_builder && \
+COPY --from=thttpd /thttpd/thttpd /
+ADD build /build
+ADD confd/confd.tar.gz /opt/confd/
+
+
+# DUMP1090
+RUN mkdir -p /usr/lib/fr24/public_html/data && \
+    rm /usr/lib/fr24/public_html/config.js && \
+    rm /usr/lib/fr24/public_html/layers.js && \
+# PIAWARE
+    cd /tmp/piaware_builder && \
     dpkg -i piaware_*_*.deb && \
     rm /etc/piaware.conf && \
-    rm -rf /tmp/piaware_builder
-
+    rm -rf /tmp/piaware_builder && \
 # THTTPD
-COPY --from=thttpd /thttpd/thttpd /
-RUN find /usr/lib/fr24/public_html -type d -print0 | xargs -0 chmod 0755 && \
-    find /usr/lib/fr24/public_html -type f -print0 | xargs -0 chmod 0644
-
-ADD build /build
-
+    find /usr/lib/fr24/public_html -type d -print0 | xargs -0 chmod 0755 && \
+    find /usr/lib/fr24/public_html -type f -print0 | xargs -0 chmod 0644 && \
 # FR24FEED
-RUN /build/fr24feed.sh
-
+    /build/fr24feed.sh && \
 # CONFD
-ADD confd/confd.tar.gz /opt/confd/
-RUN ARCH=$(dpkg --print-architecture) && \
+    ARCH=$(dpkg --print-architecture) && \
     cp "/opt/confd/bin/confd-$ARCH" /opt/confd/bin/confd && \
     chmod +x /opt/confd/bin/confd && \
-    rm /opt/confd/bin/confd-*
-
+    rm /opt/confd/bin/confd-* && \
 # S6 OVERLAY
-RUN /build/s6-overlay.sh
+    /build/s6-overlay.sh && \
+# CLEAN
+    rm -rf /build
 
 COPY /root /
 

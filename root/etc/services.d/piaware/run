@@ -1,9 +1,0 @@
-#!/usr/bin/with-contenv bash
-if [ "$SERVICE_ENABLE_PIAWARE" != "false" ]
-then
-	set -eo pipefail
-	/usr/bin/piaware -plainlog 2>&1 | mawk -W interactive '{printf "%c[33m [piaware]%c[0m %s\n", 27, 27, $0}'
-	# awk -W interactive ...  (prefix log messages with color and "[piaware]")
-else
-	tail -f /dev/null
-fi

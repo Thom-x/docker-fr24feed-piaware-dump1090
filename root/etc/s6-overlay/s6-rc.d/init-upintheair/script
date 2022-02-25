@@ -1,0 +1,20 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_HTTP" != "false" ]; then
+	default_value() {
+		key=${1//\-/_DASH_}
+		key=PANORAMA_${key^^}
+		eval "value=\${$key:-\$2}"
+		printf -v $key -- "$value"
+		export $key
+	}
+
+	default_value "id" ""
+	default_value "alts" "1000,10000"
+
+	if [ ! -f /usr/lib/fr24/public_html/upintheair.json ]; then
+		if [ "$PANORAMA_ID" != "" ]; then
+			wget -O /usr/lib/fr24/public_html/upintheair.json "http://www.heywhatsthat.com/api/upintheair.json?id=$PANORAMA_ID&refraction=0.25&alts=$PANORAMA_ALTS"
+		fi
+	fi
+fi
