@@ -188,6 +188,8 @@ If you don't need this feature ignore this.
 
 If you provide an API key OWM layers will be available.
 Create an account and get an API key on https://home.openweathermap.org/users/sign_up.
+Be aware that OWM provides a free trier for its API, after some time you will have to pay.
+See: https://openweathermap.org/price
 
 | Environment Variable                  | Default value            | Description                                 |
 |---------------------------------------|--------------------------|---------------------------------------------|
