@@ -301,7 +301,7 @@ function createBaseLayers() {
 
         world.push(new ol.layer.Tile({
                 source: new ol.source.XYZ({
-                        "url" : "https://a.sat.owm.io/vane/2.0/weather/TA2/{z}/{x}/{y}?appid={{getv "/owm/api/key"}}&fill_bound"
+                        "url" : "https://a.sat.owm.io/vane/2.0/weather/TA2/{z}/{x}/{y}?appid={{getv "/owm/api/key"}}"
                 }),
                 name: 'OWM Temp',
                 title: 'OWM Temp',
