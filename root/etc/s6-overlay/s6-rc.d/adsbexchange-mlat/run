@@ -1,0 +1,22 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ] && (( ${#ADSBEXCHANGE_UUID} > 29 )); then
+    set -eo pipefail
+
+    /usr/local/share/adsbexchange/venv/bin/mlat-client \
+        --input-type dump1090 --no-udp \
+        --input-connect 127.0.0.1:30005 \
+        --server feed.adsbexchange.com:31090 \
+        --lat "${EXACT_LAT}" --lon "${EXACT_LON}" \
+        --alt "${ALTITUDE_MSL_METERS}" \
+        --user "${ADSBEXCHANGE_STATION_NAME}" \
+        --results beast,connect,localhost:30104 \ # pushes into dump1090?
+        --results basestation,listen,31003 \ # listen for user purposes
+        --results beast,listen,30157 \ # listen for user puproses
+        --results beast,connect,localhost:30154 \ # pushes into adsbexchange-feed so adsbexchange-stats can push a json with MLAT results for the anywhere map
+        2>&1 | mawk -W interactive '{printf "%c[32m[adsbexchange-mlat]%c[0m %s\n", 27, 27, $0}'
+
+    # awk -W interactive ...  (prefix log messages with color and "[adsbexchange-mlat]")
+else
+    tail -f /dev/null
+fi
