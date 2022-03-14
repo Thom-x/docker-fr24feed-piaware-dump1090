@@ -68,6 +68,74 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
     cd package-${DEBIAN_VERSION} && \
     dpkg-buildpackage -b
 
+#ADSBEXCHANGE
+# pinned commits, feel free to update to most recent commit, no major versions usually
+
+FROM debian:buster as adsbexchange_packages
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+WORKDIR /tmp
+RUN set -x && \
+    apt-get update && \
+    apt-get install -y --no-install-suggests --no-install-recommends \
+    jq \
+    uuid-runtime \
+    wget \
+    make \
+    gcc \
+    ncurses-dev \
+    ncurses-bin \
+    zlib1g-dev \
+    zlib1g \
+    python3-venv \
+    python3-dev
+
+FROM adsbexchange_packages as adsbexchange
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+WORKDIR /tmp
+RUN set -x && \
+    mkdir -p /usr/local/share/adsbexchange/ && \
+    SRCTMP=/srctmp && \
+    # readsb as a feed client
+    URL=https://github.com/adsbxchange/readsb && \
+    COMMIT=da57fe341a2485fbeb645147f3738c565c38c312 && \
+    mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
+    pushd ${SRCTMP} && \
+    echo "$COMMIT" > READSB_VERSION && \
+    cat READSB_VERSION && \
+    make -j "$(nproc)" AIRCRAFT_HASH_BITS=12 && \
+    cp -v -T readsb /usr/local/share/adsbexchange/readsb && \
+    popd && \
+    rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
+    # mlat-client
+    URL=https://github.com/adsbxchange/mlat-client &&\
+    COMMIT=8d8b5a784727526620d5608c6d581fe3082deb79 && \
+    mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
+    pushd ${SRCTMP} && \
+    VENV="/usr/local/share/adsbexchange/venv" && \
+    python3 -m venv "${VENV}" && \
+    source "${VENV}/bin/activate" && \
+    ./setup.py build && \
+    ./setup.py install && \
+    deactivate && \
+    popd && \
+    ldconfig && \
+    rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
+    # adsbexchange-stats
+    URL=https://github.com/adsbxchange/adsbexchange-stats && \
+    COMMIT=6b9fe07ba728de5e732fe87fa3ae0afdbb390709 && \
+    mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
+    cp -v -T ${SRCTMP}/json-status /usr/local/share/adsbexchange/json-status && \
+    rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
+    # Clean-up
+    apt-get remove -y ${TEMP_PACKAGES[@]} && \
+    apt-get autoremove -y && \
+    rm -rf /tmp/* /var/lib/apt/lists/* && \
+    # readsb: simple tests
+    /usr/local/share/adsbexchange/readsb --version && \
+    # mlat-client: simple test
+    /usr/local/share/adsbexchange/venv/bin/python3 -c 'import mlat.client'
+
 # THTTPD
 FROM alpine:3.13.2 AS thttpd
 
@@ -101,6 +169,7 @@ FROM debian:buster-slim as copyall
 COPY --from=dump1090 /tmp/dump1090/dump1090 /copy_root/usr/lib/fr24/
 COPY --from=dump1090 /tmp/dump1090/public_html_merged /copy_root/usr/lib/fr24/public_html
 COPY --from=piaware /tmp/piaware_builder /copy_root/piaware_builder
+COPY --from=adsbexchange  /usr/local/share/adsbexchange /copy_root/usr/local/share/adsbexchange
 RUN mv /copy_root/piaware_builder/piaware_*_*.deb /copy_root/piaware.deb && \
     rm -rf /copy_root/piaware_builder
 COPY --from=thttpd /thttpd/thttpd /copy_root/
@@ -149,7 +218,14 @@ RUN apt-get update && \
     librtlsdr-dev \
     pkg-config \
     libncurses5-dev \
-    libbladerf-dev && \
+    libbladerf-dev \
+    # adsbexchange
+    jq \
+    uuid-runtime \
+    ncurses-bin \
+    zlib1g \
+    python3-venv \
+    && \
     # RTL-SDR
     cd /tmp && \
     mkdir -p /etc/modprobe.d && \
