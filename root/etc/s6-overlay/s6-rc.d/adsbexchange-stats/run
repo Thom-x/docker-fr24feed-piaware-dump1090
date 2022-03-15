@@ -1,11 +1,12 @@
 #!/command/with-contenv bash
 
-if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ] && (( ${#ADSBEXCHANGE_UUID} > 29 )); then
+if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ]; then
     set -eo pipefail
 
-    /usr/local/share/adsbexchange/json-status 2>&1 | mawk -W interactive '{printf "%c[32m[adsbexchange-feed]%c[0m %s\n", 27, 27, $0}'
+    mkdir -p /run/adsbexchange-stats/
+    /usr/local/share/adsbexchange/json-status 2>&1 | mawk -W interactive '{printf "%c[32m[adsbexchange-stats]%c[0m %s\n", 27, 27, $0}'
 
-    # awk -W interactive ...  (prefix log messages with color and "[adsbexchange-feed]")
+    # awk -W interactive ...  (prefix log messages with color and "[adsbexchange-stats]")
 else
     tail -f /dev/null
 fi

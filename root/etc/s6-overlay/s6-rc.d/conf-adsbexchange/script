@@ -1,5 +1,5 @@
 #!/command/with-contenv bash
 
-if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ] && (( ${#ADSBEXCHANGE_UUID} > 29 )); then
+if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ]; then
     echo "${ADSBEXCHANGE_UUID}" > /usr/local/share/adsbexchange/adsbx-uuid
 fi

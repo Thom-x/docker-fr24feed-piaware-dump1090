@@ -1,6 +1,6 @@
 #!/command/with-contenv bash
 
-if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ] && (( ${#ADSBEXCHANGE_UUID} > 29 )); then
+if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ]; then
     set -eo pipefail
 
     /usr/local/share/adsbexchange/readsb --net-only --debug=n --quiet \
