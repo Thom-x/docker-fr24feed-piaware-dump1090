@@ -1,5 +1,13 @@
 #!/command/with-contenv bash
 
 if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ]; then
-    echo "${ADSBEXCHANGE_UUID}" > /usr/local/share/adsbexchange/adsbx-uuid
+    if (( ${#ADSBEXCHANGE_UUID} == 36 )); then
+        echo "${ADSBEXCHANGE_UUID}" > /usr/local/share/adsbexchange/adsbx-uuid
+        # delay other adsbexchange services a little bit to produce less error messages on startup
+        sleep 1.5
+    else
+        sleep 2.5
+        echo "ADSB_EXCHANGE_UUID not set or invalid, adsbexchange client won't start!" | mawk -W interactive '{printf "%c[32m[adsbexchange-conf]%c[0m %s\n", 27, 27, $0}'
+        exit 1
+    fi
 fi

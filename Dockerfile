@@ -221,10 +221,11 @@ RUN apt-get update && \
     libbladerf-dev \
     # adsbexchange
     jq \
-    uuid-runtime \
     ncurses-bin \
     zlib1g \
     python3-venv \
+    curl \
+    gzip \
     && \
     # RTL-SDR
     cd /tmp && \
