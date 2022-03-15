@@ -3,8 +3,6 @@
 if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ]; then
     set -eo pipefail
 
-    mkdir -p /run/adsbexchange-feed
-
     /usr/local/share/adsbexchange/readsb --net-only --debug=n --quiet \
         --net-beast-reduce-interval 0.5 --net-connector feed.adsbexchange.com,30004,beast_reduce_out,feed.adsbexchange.com,64004 \
         --write-json /run/adsbexchange-feed \

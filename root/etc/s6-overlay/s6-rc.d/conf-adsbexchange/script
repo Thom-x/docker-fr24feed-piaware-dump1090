@@ -2,7 +2,12 @@
 
 if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ]; then
     if (( ${#ADSBEXCHANGE_UUID} == 36 )); then
+        set -eo pipefail
+
         echo "${ADSBEXCHANGE_UUID}" > /usr/local/share/adsbexchange/adsbx-uuid
+        mkdir -p /run/adsbexchange-stats
+        mkdir -p /run/adsbexchange-feed
+
         # delay other adsbexchange services a little bit to produce less error messages on startup
         sleep 1.5
     else

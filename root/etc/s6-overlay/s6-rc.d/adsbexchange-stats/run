@@ -3,7 +3,6 @@
 if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ]; then
     set -eo pipefail
 
-    mkdir -p /run/adsbexchange-stats/
     /usr/local/share/adsbexchange/json-status 2>&1 | mawk -W interactive '{printf "%c[32m[adsbexchange-stats]%c[0m %s\n", 27, 27, $0}'
 
     # awk -W interactive ...  (prefix log messages with color and "[adsbexchange-stats]")
