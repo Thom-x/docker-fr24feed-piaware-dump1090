@@ -1,11 +1,7 @@
 #!/command/with-contenv bash
 
-if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ]; then
-    set -eo pipefail
+set -eo pipefail
 
-    /usr/local/share/adsbexchange/json-status 2>&1 | mawk -W interactive '{printf "%c[32m[adsbexchange-stats]%c[0m %s\n", 27, 27, $0}'
+/usr/local/share/adsbexchange/json-status 2>&1 | mawk -W interactive '{printf "%c[32m[adsbexchange-stats]%c[0m %s\n", 27, 27, $0}'
 
-    # awk -W interactive ...  (prefix log messages with color and "[adsbexchange-stats]")
-else
-    tail -f /dev/null
-fi
+# awk -W interactive ...  (prefix log messages with color and "[adsbexchange-stats]")
