@@ -164,6 +164,8 @@ Get your exact coordinates and altitude above sealevel in meters from one these 
 
 It's important for MLAT accuracy that these aren't off by more than about 10 m / 30 ft.
 
+| Environment Variable                  | Configuration property   | Default value     |
+|---------------------------------------|--------------------------|-------------------|
 | `MLAT_EXACT_LAT`                      | `decimal latitude`       | `none`            |
 | `MLAT_EXACT_LON`                      | `decimal longitude`      | `none`            |
 | `MLAT_ALTITUDE_MSL_METERS`            | `altitude above MSL in m`| `none`            |
