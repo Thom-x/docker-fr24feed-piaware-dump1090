@@ -42,6 +42,8 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 	-e "MLAT_EXACT_LAT=MY_EXACT_SITE_LAT" \
 	-e "MLAT_EXACT_LON=MY_EXACT_SITE_LON" \
 	-e "MLAT_ALTITUDE_MSL_METERS=MY_SITE_ALT_MSL_METERS" \
+	--tmpfs /run:exec,size=32M \
+	--tmpfs /usr/lib/fr24/public_html/data:size=32M \
 	thomx/fr24feed-piaware
 ```
 
@@ -49,6 +51,7 @@ Go to http://dockerhost:8080 to view a map of reveived data.
 Go to http://dockerhost:8754 to view the FR24 Feeder configuration panel.
 
 *Note : remove `-e "PANORAMA_ID=MY_PANORAMA_ID"` or `-e "LAYERS_OWM_API_KEY=MY_OWM_API_KEY"` from the command line if you don't want to use this feature.*
+*Note : `--tmpfs` is used to avoid writing data on HDD/SD Card*
 *Note : `-v "/etc/localtime:/etc/localtime:ro"` is needed for MLAT, or you can have issues with time synchronization.*
 
 # Configuration
@@ -57,14 +60,14 @@ Go to http://dockerhost:8754 to view the FR24 Feeder configuration panel.
 
 To disable starting a service you can add an environement variable :
 
-| Environment Variable                  | Value                    | Description               |
-|---------------------------------------|--------------------------|---------------------------|
-| `SERVICE_ENABLE_DUMP1090`             | `false`                  | Disable dump1090 service  |
-| `SERVICE_ENABLE_PIAWARE`              | `false`                  | Disable piaware service   |
-| `SERVICE_ENABLE_FR24FEED`             | `false`                  | Disable fr24feed service  |
-| `SERVICE_ENABLE_HTTP`                 | `false`                  | Disable http service      |
-| `SERVICE_ENABLE_IMPORT_OVER_NETCAT`   | `false`                  | Disable import over netcat|
-| `SERVICE_ENABLE_ADSBEXCHANGE`         | `false`                  | Disable adsbexchange feed |
+| Environment Variable                  | Value                    | Description               | Default value     |
+|---------------------------------------|--------------------------|---------------------------|-------------------|
+| `SERVICE_ENABLE_DUMP1090`             | `false`                  | Disable dump1090 service  | `true`            |
+| `SERVICE_ENABLE_PIAWARE`              | `false`                  | Disable piaware service   | `true`            |
+| `SERVICE_ENABLE_FR24FEED`             | `false`                  | Disable fr24feed service  | `true`            |
+| `SERVICE_ENABLE_HTTP`                 | `false`                  | Disable http service      | `true`            |
+| `SERVICE_ENABLE_IMPORT_OVER_NETCAT`   | `false`                  | Disable import over netcat| `false`           |
+| `SERVICE_ENABLE_ADSBEXCHANGE`         | `false`                  | Disable adsbexchange feed | `false`           |
 
 
 Ex : `-e "SERVICE_ENABLE_HTTP=false"`

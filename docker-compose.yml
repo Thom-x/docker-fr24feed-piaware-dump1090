@@ -16,6 +16,13 @@ services:
       - "HTML_RECEIVER_STATS_PAGE_FLIGHTRADAR24=https://www.flightradar24.com/account/feed-stats/?id=<YOUR_RECEIVERS_ID>"
       - "HTML_FR24_FEEDER_STATUS_PAGE=http://<dockerhost>:8754/"
       - "PANORAMA_ID=MY_PANORAMA_ID"
+      - "LAYERS_OWM_API_KEY=MY_OWM_API_KEY"
+      - "SERVICE_ENABLE_ADSBEXCHANGE=true"
+      - "ADSBEXCHANGE_UUID=MY_UUID"
+      - "ADSBEXCHANGE_STATION_NAME=MY_STATION_NAME"
+      - "MLAT_EXACT_LAT=MY_EXACT_SITE_LAT"
+      - "MLAT_EXACT_LON=MY_EXACT_SITE_LON"
+      - "MLAT_ALTITUDE_MSL_METERS=MY_SITE_ALT_MSL_METERS"
     devices:
       - "/dev/bus/usb"
     # ports

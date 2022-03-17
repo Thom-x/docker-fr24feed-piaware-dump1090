@@ -1,36 +1,40 @@
 #!/command/with-contenv bash
 
-if [ "$ADSBEXCHANGE_MLAT" == "no" ] || [ "$ADSBEXCHANGE_MLAT" == "false" ]; then
+SERVICE_ENABLE_ADSBEXCHANGE=${SERVICE_ENABLE_ADSBEXCHANGE:-false}
+if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ]; then
+    if [ "$ADSBEXCHANGE_MLAT" == "no" ] || [ "$ADSBEXCHANGE_MLAT" == "false" ]; then
+        tail -f /dev/null
+        exit 0
+    fi
+
+    set -eo pipefail
+
+    MLAT_ALTITUDE_MSL_METERS="$(echo "${MLAT_ALTITUDE_MSL_METERS}" | tr --delete ' m')"
+
+    if [ -z "$MLAT_EXACT_LAT" ] || [ -z "$MLAT_EXACT_LON" ] || [ -z "$MLAT_ALTITUDE_MSL_METERS" ] || [ -z "$ADSBEXCHANGE_STATION_NAME" ]; then
+        for i in {1..5}; do
+            echo "FATAL: MLAT_EXACT_LAT or MLAT_EXACT_LON or MLAT_ALTITUDE_MSL_METERS or ADSBEXCHANGE_STATION_NAME not set!" | mawk -W interactive '{printf "%c[32m[adsbexchange-conf]%c31m %s\n", 27, 27, $0}'
+        done
+        kill 1
+        exit 1
+    fi
+    # pushes MLAT results into dump1090 via port 30104
+    # listens on 31003 to provide MLAT results as SBS / basestation
+    # listens on 30157 to provide MLAT results as beast
+    # pushes MLAT results into adsbexchange-feed so adsbexchange-stats can push a json with MLAT results for the anywhere map
+    /usr/local/share/adsbexchange/venv/bin/mlat-client \
+        --input-type dump1090 --no-udp \
+        --input-connect 127.0.0.1:30005 \
+        --server feed.adsbexchange.com:31090 \
+        --lat "${MLAT_EXACT_LAT}" --lon "${MLAT_EXACT_LON}" \
+        --alt "${MLAT_ALTITUDE_MSL_METERS}" \
+        --user "${ADSBEXCHANGE_STATION_NAME}" \
+        --results beast,connect,127.0.0.1:30104 \
+        --results basestation,listen,31003 \
+        --results beast,listen,30157 \
+        --results beast,connect,127.0.0.1:30154 \
+        2>&1 | mawk -W interactive '{printf "%c[35m[adsbexchange-mlat]%c[0m %s\n", 27, 27, $0}'
+    # awk -W interactive ...  (prefix log messages with color and "[adsbexchange-mlat]")
+else
     tail -f /dev/null
-    exit 0
 fi
-
-set -eo pipefail
-
-MLAT_ALTITUDE_MSL_METERS="$( echo "${MLAT_ALTITUDE_MSL_METERS}" | tr --delete ' m')"
-
-if [ -z "$MLAT_EXACT_LAT" ] || [ -z "$MLAT_EXACT_LON" ] || [ -z "$MLAT_ALTITUDE_MSL_METERS" ] || [ -z "$ADSBEXCHANGE_STATION_NAME" ]; then
-    for i in {1..5}; do
-        echo "FATAL: MLAT_EXACT_LAT or MLAT_EXACT_LON or MLAT_ALTITUDE_MSL_METERS or ADSBEXCHANGE_STATION_NAME not set!" | mawk -W interactive '{printf "%c[32m[adsbexchange-conf]%c31m %s\n", 27, 27, $0}'
-    done
-    kill 1
-    exit 1
-fi
-# pushes MLAT results into dump1090 via port 30104
-# listens on 31003 to provide MLAT results as SBS / basestation
-# listens on 30157 to provide MLAT results as beast
-# pushes MLAT results into adsbexchange-feed so adsbexchange-stats can push a json with MLAT results for the anywhere map
-/usr/local/share/adsbexchange/venv/bin/mlat-client \
-    --input-type dump1090 --no-udp \
-    --input-connect 127.0.0.1:30005 \
-    --server feed.adsbexchange.com:31090 \
-    --lat "${MLAT_EXACT_LAT}" --lon "${MLAT_EXACT_LON}" \
-    --alt "${MLAT_ALTITUDE_MSL_METERS}" \
-    --user "${ADSBEXCHANGE_STATION_NAME}" \
-    --results beast,connect,127.0.0.1:30104 \
-    --results basestation,listen,31003 \
-    --results beast,listen,30157 \
-    --results beast,connect,127.0.0.1:30154 \
-    2>&1 | mawk -W interactive '{printf "%c[32m[adsbexchange-mlat]%c[0m %s\n", 27, 27, $0}'
-
-# awk -W interactive ...  (prefix log messages with color and "[adsbexchange-mlat]")
