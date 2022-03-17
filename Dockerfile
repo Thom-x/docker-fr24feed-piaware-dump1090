@@ -181,6 +181,10 @@ ENV FR24FEED_AMD64_VERSION 1.0.25-3
 # force version 1.0.25-3 for armhf and armel because of broken version for these architectures
 ENV FR24FEED_ARMHF_VERSION 1.0.25-3
 ENV FR24FEED_ARMEL_VERSION 1.0.25-3
+
+ENV PLANEFINDER_AMD64_VERSION 5.0.162
+ENV PLANEFINDER_ARMHF_VERSION 5.0.161
+
 ENV S6_OVERLAY_VERSION 3.0.0.2-2
 
 LABEL maintainer="maugin.thomas@gmail.com"
