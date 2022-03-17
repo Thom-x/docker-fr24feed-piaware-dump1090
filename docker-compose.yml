@@ -27,3 +27,6 @@ services:
     logging:
       options:
         max-size: "30m"
+    tmpfs:
+      - /run:exec,size=32M
+      - /usr/lib/fr24/public_html/data:size=32M

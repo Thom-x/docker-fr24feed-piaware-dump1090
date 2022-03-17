@@ -1,0 +1,16 @@
+#!/command/with-contenv bash
+
+set -eo pipefail
+
+/usr/local/share/adsbexchange/readsb --net-only --debug=n --quiet \
+    --net-beast-reduce-interval 0.5 --net-connector feed.adsbexchange.com,30004,beast_reduce_out,feed.adsbexchange.com,64004 \
+    --write-json /run/adsbexchange-feed \
+    --write-json-every 1 \
+    --write-prom /run/adsbexchange-feed/stats.prom \
+    --net-heartbeat 60 --net-ro-size 1280 --net-ro-interval 0.2 \
+    --net-bi-port 30154 \
+    --net-connector 127.0.0.1,30005,beast_in \
+    --lat "${HTML_SITE_LAT}" --lon "${HTML_SITE_LON}" \
+    2>&1 | mawk -W interactive '{printf "%c[32m[adsbexchange-feed]%c[0m %s\n", 27, 27, $0}'
+
+# awk -W interactive ...  (prefix log messages with color and "[adsbexchange-feed]")
