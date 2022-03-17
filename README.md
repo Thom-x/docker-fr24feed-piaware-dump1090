@@ -160,7 +160,7 @@ The ADS-B Exchange Anywhere map will be available at: <https://www.adsbexchange.
 
 Ex : `-e "SERVICE_ENABLE_ADSBEXCHANGE=true" -e "ADSBEXCHANGE_UUID=8398f51e-a61d-11ec-b909-0242ac120002" -e "ADSBEXCHANGE_STATION_NAME=MyStation"`
 
-## Plane Finer
+## Plane Finder
 
 First-time users should obtain a PlaneFinder Share Code.
 
