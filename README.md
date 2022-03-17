@@ -55,7 +55,9 @@ Go to http://dockerhost:8080 to view a map of reveived data.
 Go to http://dockerhost:8754 to view the FR24 Feeder configuration panel.
 
 _Note : remove `-e "PANORAMA_ID=MY_PANORAMA_ID"` or `-e "LAYERS_OWM_API_KEY=MY_OWM_API_KEY"` from the command line if you don't want to use this feature._
+
 _Note : `--tmpfs` is used to avoid writing data on HDD/SD Card_
+
 _Note : `-v "/etc/localtime:/etc/localtime:ro"` is needed for MLAT, or you can have issues with time synchronization._
 
 # Configuration
@@ -281,9 +283,9 @@ If you don't want to download the limit every time you bring up the container yo
 
 If you don't need this feature ignore this.
 
-If you provide an API key OWM layers will be available.
-Create an account and get an API key on https://home.openweathermap.org/users/sign_up.
-Be aware that OWM provides a free trier for its API, after some time you will have to pay.
+If you provide an API key OWM layers will be available.  
+Create an account and get an API key on https://home.openweathermap.org/users/sign_up.  
+Be aware that OWM provides a free trier for its API, after some time you will have to pay.  
 See: https://openweathermap.org/price
 
 | Environment Variable | Default value | Description              |
