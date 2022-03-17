@@ -19,12 +19,14 @@ Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts 
 ![Image of dump1090 webapp](https://raw.githubusercontent.com/Thom-x/docker-fr24feed-piaware-dump1090/master/screenshot.png)
 
 # Requirements
+
 - Docker
 - RTL-SDR DVBT USB Dongle (RTL2832)
 
 # Getting started
 
-Run : 
+Run :
+
 ```
 docker run -d -p 8080:8080 -p 8754:8754 \
 	--device=/dev/bus/usb:/dev/bus/usb \
@@ -52,9 +54,9 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 Go to http://dockerhost:8080 to view a map of reveived data.
 Go to http://dockerhost:8754 to view the FR24 Feeder configuration panel.
 
-*Note : remove `-e "PANORAMA_ID=MY_PANORAMA_ID"` or `-e "LAYERS_OWM_API_KEY=MY_OWM_API_KEY"` from the command line if you don't want to use this feature.*
-*Note : `--tmpfs` is used to avoid writing data on HDD/SD Card*
-*Note : `-v "/etc/localtime:/etc/localtime:ro"` is needed for MLAT, or you can have issues with time synchronization.*
+_Note : remove `-e "PANORAMA_ID=MY_PANORAMA_ID"` or `-e "LAYERS_OWM_API_KEY=MY_OWM_API_KEY"` from the command line if you don't want to use this feature._
+_Note : `--tmpfs` is used to avoid writing data on HDD/SD Card_
+_Note : `-v "/etc/localtime:/etc/localtime:ro"` is needed for MLAT, or you can have issues with time synchronization._
 
 # Configuration
 
@@ -62,24 +64,23 @@ Go to http://dockerhost:8754 to view the FR24 Feeder configuration panel.
 
 To disable starting a service you can add an environement variable :
 
-| Environment Variable                  | Value                    | Description               | Default value     |
-|---------------------------------------|--------------------------|---------------------------|-------------------|
-| `SERVICE_ENABLE_DUMP1090`             | `false`                  | Disable dump1090 service  | `true`            |
-| `SERVICE_ENABLE_PIAWARE`              | `false`                  | Disable piaware service   | `true`            |
-| `SERVICE_ENABLE_FR24FEED`             | `false`                  | Disable fr24feed service  | `true`            |
-| `SERVICE_ENABLE_HTTP`                 | `false`                  | Disable http service      | `true`            |
-| `SERVICE_ENABLE_IMPORT_OVER_NETCAT`   | `false`                  | Disable import over netcat| `false`           |
-| `SERVICE_ENABLE_ADSBEXCHANGE`         | `false`                  | Disable adsbexchange feed | `false`           |
-
+| Environment Variable                | Value   | Description                | Default value |
+| ----------------------------------- | ------- | -------------------------- | ------------- |
+| `SERVICE_ENABLE_DUMP1090`           | `false` | Disable dump1090 service   | `true`        |
+| `SERVICE_ENABLE_PIAWARE`            | `false` | Disable piaware service    | `true`        |
+| `SERVICE_ENABLE_FR24FEED`           | `false` | Disable fr24feed service   | `true`        |
+| `SERVICE_ENABLE_HTTP`               | `false` | Disable http service       | `true`        |
+| `SERVICE_ENABLE_IMPORT_OVER_NETCAT` | `false` | Disable import over netcat | `false`       |
+| `SERVICE_ENABLE_ADSBEXCHANGE`       | `false` | Disable adsbexchange feed  | `false`       |
 
 Ex : `-e "SERVICE_ENABLE_HTTP=false"`
-
 
 ## FlightAware
 
 Resgister on https://flightaware.com/account/join/.
 
 Run :
+
 ```
 docker run -it --rm \
 	-e "SERVICE_ENABLE_DUMP1090=false" \
@@ -88,23 +89,24 @@ docker run -it --rm \
 	-e "SERVICE_ENABLE_PIAWARE=false" \
 	thomx/fr24feed-piaware /usr/bin/piaware -plainlog
 ```
+
 When the container starts you should see the feeder id, note it. Wait 5 minutes and you should see a new receiver at https://fr.flightaware.com/adsb/piaware/claim (use the same IP as your docker host), claim it and exit the container.
 
 Add the environment variable `PIAWARE_FEEDER_DASH_ID` with your feeder id.
 
-| Environment Variable                  | Configuration property   | Default value     |
-|---------------------------------------|--------------------------|-------------------|
-| `PIAWARE_FEEDER_DASH_ID`              | `feeder-id`              | `YOUR_FEEDER_ID`  |
-| `PIAWARE_RECEIVER_DASH_TYPE`          | `receiver-type`          | `other`           |
-| `PIAWARE_RECEIVER_DASH_HOST`          | `receiver-host`          | `127.0.0.1`       |
-| `PIAWARE_RECEIVER_DASH_PORT`          | `receiver-port`          | `30005`           |
-
+| Environment Variable         | Configuration property | Default value |
+| ---------------------------- | ---------------------- | ------------- |
+| `PIAWARE_FEEDER_DASH_ID`     | `feeder-id (required)` | empty         |
+| `PIAWARE_RECEIVER_DASH_TYPE` | `receiver-type`        | `other`       |
+| `PIAWARE_RECEIVER_DASH_HOST` | `receiver-host`        | `127.0.0.1`   |
+| `PIAWARE_RECEIVER_DASH_PORT` | `receiver-port`        | `30005`       |
 
 Ex : `-e "PIAWARE_RECEIVER_DASH_TYPE=other"`
 
 ## FlightRadar24
 
 Run :
+
 ```
 docker run -it --rm \
 	-e "SERVICE_ENABLE_DUMP1090=false" \
@@ -120,18 +122,17 @@ Finally to see the sharing key run `cat /etc/fr24feed.ini`, you can now exit the
 
 Add the environment variable `FR24FEED_FR24KEY` with your sharing key.
 
-
-| Environment Variable                  | Configuration property   | Default value     |
-|---------------------------------------|--------------------------|-------------------|
-| `FR24FEED_RECEIVER`                   | `receiver`               | `beast-tcp`       |
-| `FR24FEED_FR24KEY`                    | `fr24key`                | `YOUR_KEY_HERE`   |
-| `FR24FEED_HOST`                       | `host`                   | `127.0.0.1:30005` |
-| `FR24FEED_BS`                         | `bs`                     | `no`              |
-| `FR24FEED_RAW`                        | `raw`                    | `no`              |
-| `FR24FEED_LOGMODE`                    | `logmode`                | `1`               |
-| `FR24FEED_LOGPATH`                    | `logpath`                | `/tmp`            |
-| `FR24FEED_MLAT`                       | `mlat`                   | `yes`             |
-| `FR24FEED_MLAT_DASH_WITHOUT_DASH_GPS` | `mlat-without-gps`       | `yes`             |
+| Environment Variable                  | Configuration property | Default value     |
+| ------------------------------------- | ---------------------- | ----------------- |
+| `FR24FEED_RECEIVER`                   | `receiver`             | `beast-tcp`       |
+| `FR24FEED_FR24KEY`                    | `fr24key (required)`   | empty             |
+| `FR24FEED_HOST`                       | `host`                 | `127.0.0.1:30005` |
+| `FR24FEED_BS`                         | `bs`                   | `no`              |
+| `FR24FEED_RAW`                        | `raw`                  | `no`              |
+| `FR24FEED_LOGMODE`                    | `logmode`              | `1`               |
+| `FR24FEED_LOGPATH`                    | `logpath`              | `/tmp`            |
+| `FR24FEED_MLAT`                       | `mlat`                 | `yes`             |
+| `FR24FEED_MLAT_DASH_WITHOUT_DASH_GPS` | `mlat-without-gps`     | `yes`             |
 
 Ex : `-e "FR24FEED_FR24KEY=0123456789"`
 
@@ -142,13 +143,12 @@ In case of multiple receivers, please use a different UUID for each receiver.
 
 Add the environment variable `SERVICE_ENABLE_ADSBEXCHANGE` and set it to `true`.
 
-
-| Environment Variable                  | Configuration property   | Default value     |
-|---------------------------------------|--------------------------|-------------------|
-| `SERVICE_ENABLE_ADSBEXCHANGE`         | `enable this feed client`| `false`           |
-| `ADSBEXCHANGE_UUID`                   | `uuid (required)`        | `none`            |
-| `ADSBEXCHANGE_STATION_NAME`           | `station name`           | `none`            |
-| `ADSBEXCHANGE_MLAT`                   | `mlat`                   | `true`            |
+| Environment Variable          | Configuration property    | Default value |
+| ----------------------------- | ------------------------- | ------------- |
+| `SERVICE_ENABLE_ADSBEXCHANGE` | `enable this feed client` | `false`       |
+| `ADSBEXCHANGE_UUID`           | `uuid (required)`         | empty         |
+| `ADSBEXCHANGE_STATION_NAME`   | `station name`            | empty         |
+| `ADSBEXCHANGE_MLAT`           | `mlat`                    | `true`        |
 
 Configure the MLAT coordinates so that adsbexchange MLAT can work. (see its own section below)
 If you don't want to supply your exact coordinates, please set the `ADSBEXCHANGE_MLAT` environment variable to `false`. (you won't get MLAT results and won't contribute to MLAT)
@@ -161,6 +161,21 @@ The ADS-B Exchange Anywhere map will be available at: <https://www.adsbexchange.
 
 Ex : `-e "SERVICE_ENABLE_ADSBEXCHANGE=true" -e "ADSBEXCHANGE_UUID=8398f51e-a61d-11ec-b909-0242ac120002" -e "ADSBEXCHANGE_STATION_NAME=MyStation"`
 
+## Exact coordinates for MLAT
+
+Get your exact coordinates and altitude above sealevel in meters from one these websites:
+
+- <https://www.freemaptools.com/elevation-finder.htm>
+- <https://www.mapcoordinates.net/en>
+
+It's important for MLAT accuracy that these aren't off by more than about 10 m / 30 ft.
+
+| Environment Variable       | Configuration property    | Default value |
+| -------------------------- | ------------------------- | ------------- |
+| `MLAT_EXACT_LAT`           | `decimal latitude`        | empty         |
+| `MLAT_EXACT_LON`           | `decimal longitude`       | empty         |
+| `MLAT_ALTITUDE_MSL_METERS` | `altitude above MSL in m` | empty         |
+
 ## Plane Finder
 
 First-time users should obtain a PlaneFinder Share Code.
@@ -168,6 +183,7 @@ First-time users should obtain a PlaneFinder Share Code.
 In order to obtain a PlaneFinder Share Code, we will start a temporary container running `pfclient`, which will run through a configuration wizard and generate a share code.
 
 Run :
+
 ```
 docker run -it --rm \
 	-p 30053:30053 \
@@ -192,26 +208,11 @@ You can now kill the container by pressing `CTRL-C`.
 
 Add the environment variable `SERVICE_ENABLE_PLANEFINDER` and set it to `true`.
 
-
-| Environment Variable                  | Configuration property   | Default value     |
-|---------------------------------------|--------------------------|-------------------|
-| `PLANEFINDER_SHARECODE`               | `generated share code`   | `none`            |
+| Environment Variable    | Configuration property            | Default value |
+| ----------------------- | --------------------------------- | ------------- |
+| `PLANEFINDER_SHARECODE` | `generated share code (required)` | empty         |
 
 Ex : `-e "SERVICE_ENABLE_PLANEFINDER=true" -e "PLANEFINDER_SHARECODE=65dsfsd56f"`
-
-## Exact coordinates for MLAT
-
-Get your exact coordinates and altitude above sealevel in meters from one these websites:
- - <https://www.freemaptools.com/elevation-finder.htm>
- - <https://www.mapcoordinates.net/en>
-
-It's important for MLAT accuracy that these aren't off by more than about 10 m / 30 ft.
-
-| Environment Variable                  | Configuration property   | Default value     |
-|---------------------------------------|--------------------------|-------------------|
-| `MLAT_EXACT_LAT`                      | `decimal latitude`       | `none`            |
-| `MLAT_EXACT_LON`                      | `decimal longitude`      | `none`            |
-| `MLAT_ALTITUDE_MSL_METERS`            | `altitude above MSL in m`| `none`            |
 
 ## Add custom properties
 
@@ -219,62 +220,65 @@ It's important for MLAT accuracy that these aren't off by more than about 10 m /
 
 Example :
 
-| Environment Variable                  | Configuration property   | value             | Configuration file      |
-|---------------------------------------|--------------------------|-------------------|-------------------------|
-| `FR24FEED_TEST=value`                 | `test`                   | `value`           | `fr24feed.init`         |
-| `FR24FEED_TEST_DASH_TEST=value2`      | `test-test`              | `value2`          | `fr24feed.init`         |
-| `PIAWARE_TEST=value`                  | `test`                   | `value`           | `piaware.conf`          |
+| Environment Variable             | Configuration property | value    | Configuration file |
+| -------------------------------- | ---------------------- | -------- | ------------------ |
+| `FR24FEED_TEST=value`            | `test`                 | `value`  | `fr24feed.init`    |
+| `FR24FEED_TEST_DASH_TEST=value2` | `test-test`            | `value2` | `fr24feed.init`    |
+| `PIAWARE_TEST=value`             | `test`                 | `value`  | `piaware.conf`     |
 
 ## Dump1090 & Web UI
 
-| Environment Variable                  | Default value            | Description                                                       |
-|---------------------------------------|--------------------------|-------------------------------------------------------------------|
-| `HTML_SITE_LAT`                       | `45.0`                   |                                                                   |
-| `HTML_SITE_LON`                       | `9.0`                    |                                                                   |
-| `HTML_SITE_NAME`                      | `My Radar Site`          |                                                                   |
-| `HTML_DEFAULT_TRACKER`                | `FlightAware`            | Which flight tracker website to use by default. Possible values are `FlightAware` and `Flightradar24`|
-| `HTML_RECEIVER_STATS_PAGE_FLIGHTAWARE`  | empty            | URL of your receiver's stats page on FlightAware. Usually https://flightaware.com/adsb/stats/user/ |
-| `HTML_RECEIVER_STATS_PAGE_FLIGHTRADAR24`  | empty            | URL of your receiver's stats page on Flightradar24. Usually https://www.flightradar24.com/account/feed-stats/?id=<ID> |
-| `HTML_FR24_FEEDER_STATUS_PAGE`  | empty            | URL of your local FR24 Feeder Status page. Usually http://<dockerhost>:8754/ (depends on the port you indicated when starting the container) |
-| `DUMP1090_ADDITIONAL_ARGS`            | empty                    | Additial arguments for dump1090 e.g.: `--json-location-accuracy 2`|
+| Environment Variable                     | Default value   | Description                                                                                                                                  |
+| ---------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HTML_SITE_LAT`                          | `45.0`          |                                                                                                                                              |
+| `HTML_SITE_LON`                          | `9.0`           |                                                                                                                                              |
+| `HTML_SITE_NAME`                         | `My Radar Site` |                                                                                                                                              |
+| `HTML_DEFAULT_TRACKER`                   | `FlightAware`   | Which flight tracker website to use by default. Possible values are `FlightAware` and `Flightradar24`                                        |
+| `HTML_RECEIVER_STATS_PAGE_FLIGHTAWARE`   | empty           | URL of your receiver's stats page on FlightAware. Usually https://flightaware.com/adsb/stats/user/                                           |
+| `HTML_RECEIVER_STATS_PAGE_FLIGHTRADAR24` | empty           | URL of your receiver's stats page on Flightradar24. Usually https://www.flightradar24.com/account/feed-stats/?id=<ID>                        |
+| `HTML_FR24_FEEDER_STATUS_PAGE`           | empty           | URL of your local FR24 Feeder Status page. Usually http://<dockerhost>:8754/ (depends on the port you indicated when starting the container) |
+| `DUMP1090_ADDITIONAL_ARGS`               | empty           | Additial arguments for dump1090 e.g.: `--json-location-accuracy 2`                                                                           |
 
 Ex : `-e "HTML_SITE_NAME=My site"`
 
 ## DUMP1090 forwarding
-| Environment Variable                  | Default value            | Description                                                       |
-|---------------------------------------|--------------------------|-------------------------------------------------------------------|
-| `SERVICE_ENABLE_IMPORT_OVER_NETCAT`   | `false`                  | Enable netcat forwarding the beast-output of a remote dump1090 server to the local dump1090 beast-input |
-| `DUMP1090_LOCAL_PORT`                 | empty                    | Must be the same port as specified as `--net-bi-port` in  `DUMP1090_ADDITIONAL_ARGS`|
-| `DUMP1090_REMOTE_HOST`                | empty                    | IP of remote dump1090 server                                      |
-| `DUMP1090_REMOTE_PORT`                | empty                    | Port of remote dump190 server specified as argument `--net-bo-port` on remote system|
+
+| Environment Variable                | Default value | Description                                                                                             |
+| ----------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------- |
+| `SERVICE_ENABLE_IMPORT_OVER_NETCAT` | `false`       | Enable netcat forwarding the beast-output of a remote dump1090 server to the local dump1090 beast-input |
+| `DUMP1090_LOCAL_PORT`               | empty         | Must be the same port as specified as `--net-bi-port` in `DUMP1090_ADDITIONAL_ARGS`                     |
+| `DUMP1090_REMOTE_HOST`              | empty         | IP of remote dump1090 server                                                                            |
+| `DUMP1090_REMOTE_PORT`              | empty         | Port of remote dump190 server specified as argument `--net-bo-port` on remote system                    |
 
 ## RTL_TCP forwarding
 
 **WARNING:** This kind of forwarding is using a lot of bandwidth and could be unstable in WiFi environments.
 
-| Environment Variable                  | Default value            | Description                                                       |
-|---------------------------------------|--------------------------|-------------------------------------------------------------------|
-| `RTL_TCP_OVER_NETCAT`                | `false`                  | Use dump1090 in combination with netcat to feed data from rtl_tcp server. (Requires appox. 35-40Mbit/s). Example RTL_TCP command: `./rtl_tcp -a 0.0.0.0 -f 1090000000 -s 2400000 -p 30005 -P 28 -g -10`|
-| `RTL_TCP_REMOTE_HOST`                | empty                    | IP of rtl_tcp server                                              |
-| `RTL_TCP_REMOTE_PORT`                | empty                    | Port of rtl_tcp server                                            |
+| Environment Variable  | Default value | Description                                                                                                                                                                                             |
+| --------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `RTL_TCP_OVER_NETCAT` | `false`       | Use dump1090 in combination with netcat to feed data from rtl_tcp server. (Requires appox. 35-40Mbit/s). Example RTL_TCP command: `./rtl_tcp -a 0.0.0.0 -f 1090000000 -s 2400000 -p 30005 -P 28 -g -10` |
+| `RTL_TCP_REMOTE_HOST` | empty         | IP of rtl_tcp server                                                                                                                                                                                    |
+| `RTL_TCP_REMOTE_PORT` | empty         | Port of rtl_tcp server                                                                                                                                                                                  |
 
 ## Terrain-limit rings (optional):
+
 If you don't need this feature ignore this.
 
 Create a panorama for your receiver location on http://www.heywhatsthat.com.
 
-| Environment Variable                  | Default value            | Description                                 |
-|---------------------------------------|--------------------------|---------------------------------------------|
-| `PANORAMA_ID`                         |                          | Panorama id                                 |
-| `PANORAMA_ALTS`                       | `1000,10000`             | Comma seperated list of altitudes in meter  |
+| Environment Variable | Default value | Description                                |
+| -------------------- | ------------- | ------------------------------------------ |
+| `PANORAMA_ID`        |               | Panorama id                                |
+| `PANORAMA_ALTS`      | `1000,10000`  | Comma seperated list of altitudes in meter |
 
-*Note : the panorama id value correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes.*
+_Note : the panorama id value correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes._
 
 Ex : `-e "PANORAMA_ID=FRUXK2G7"`
 
 If you don't want to download the limit every time you bring up the container you can download `http://www.heywhatsthat.com/api/upintheair.json?id=${PANORAMA_ID}&refraction=0.25&alts=${PANORAMA_ALTS}` as upintheair.json and mount it in `/usr/lib/fr24/public_html/upintheair.json`.
 
 ## Open Weather Map layers:
+
 If you don't need this feature ignore this.
 
 If you provide an API key OWM layers will be available.
@@ -282,9 +286,9 @@ Create an account and get an API key on https://home.openweathermap.org/users/si
 Be aware that OWM provides a free trier for its API, after some time you will have to pay.
 See: https://openweathermap.org/price
 
-| Environment Variable                  | Default value            | Description                                 |
-|---------------------------------------|--------------------------|---------------------------------------------|
-| `LAYERS_OWM_API_KEY`                  |                          | Open Weather Map API Key                    |
+| Environment Variable | Default value | Description              |
+| -------------------- | ------------- | ------------------------ |
+| `LAYERS_OWM_API_KEY` |               | Open Weather Map API Key |
 
 Ex : `-e "LAYERS_OWM_API_KEY=dsf1ds65f4d2f65g"`
 
@@ -292,4 +296,4 @@ Ex : `-e "LAYERS_OWM_API_KEY=dsf1ds65f4d2f65g"`
 
 Clone this repo.
 
-```docker build . ```
+`docker build . `

@@ -24,7 +24,7 @@ services:
       - "MLAT_EXACT_LON=MY_EXACT_SITE_LON"
       - "MLAT_ALTITUDE_MSL_METERS=MY_SITE_ALT_MSL_METERS"
       - "SERVICE_ENABLE_PLANEFINDER=true"
-      - "PLANEFINDER_SHARECODE=ds544ds65f65"
+      - "PLANEFINDER_SHARECODE=MY_SHARE_CODE"
     devices:
       - "/dev/bus/usb"
     # ports
