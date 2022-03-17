@@ -169,7 +169,7 @@ In order to obtain a PlaneFinder Share Code, we will start a temporary container
 Run :
 ```
 docker run -it --rm \
-    -p 30053:30053 \
+	-p 30053:30053 \
 	-e "SERVICE_ENABLE_DUMP1090=false" \
 	-e "SERVICE_ENABLE_HTTP=false" \
 	-e "SERVICE_ENABLE_PIAWARE=false" \

@@ -9,14 +9,13 @@ if [ "$SERVICE_ENABLE_PIAWARE" != "false" ]; then
 		export $key
 	}
 
-	
 	if [ -z "$PIAWARE_FEEDER_DASH_ID" ]; then
-        for i in {1..5}; do
-            echo "FATAL: PIAWARE_FEEDER_DASH_ID not set!" | mawk -W interactive '{printf "%c[33m[piaware]%c[0m %s\n", 27, 27, $0}'
-        done
-        kill 1
-        exit 1
-    fi
+		for i in {1..5}; do
+			echo "FATAL: PIAWARE_FEEDER_DASH_ID not set!" | mawk -W interactive '{printf "%c[33m[piaware]%c[0m %s\n", 27, 27, $0}'
+		done
+		kill 1
+		exit 1
+	fi
 
 	default_value "feeder-id" "YOUR_FEEDER_ID"
 	default_value "receiver-type" "other"
