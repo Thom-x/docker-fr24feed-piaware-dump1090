@@ -1,6 +1,5 @@
 #!/command/with-contenv bash
 
-SERVICE_ENABLE_PLANEFINDER=${SERVICE_ENABLE_PLANEFINDER:-false}
 if [ "$SERVICE_ENABLE_PLANEFINDER" != "false" ]; then
     set -eo pipefail
 

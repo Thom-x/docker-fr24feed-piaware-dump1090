@@ -1,6 +1,5 @@
 #!/command/with-contenv bash
 
-SERVICE_ENABLE_ADSBEXCHANGE=${SERVICE_ENABLE_ADSBEXCHANGE:-false}
 if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ]; then
     if ((${#ADSBEXCHANGE_UUID} == 36)); then
         set -eo pipefail

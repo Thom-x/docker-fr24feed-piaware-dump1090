@@ -1,6 +1,5 @@
 #!/command/with-contenv bash
 
-SERVICE_ENABLE_IMPORT_OVER_NETCAT=${SERVICE_ENABLE_IMPORT_OVER_NETCAT:-false}
 if [ "$SERVICE_ENABLE_IMPORT_OVER_NETCAT" != "false" ]; then
 	echo "Waiting until dump1090 is listening on configured port..."
 	while ! nc -z localhost ${DUMP1090_LOCAL_PORT}; do

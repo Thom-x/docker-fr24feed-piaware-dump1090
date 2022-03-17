@@ -72,6 +72,7 @@ To disable starting a service you can add an environement variable :
 | `SERVICE_ENABLE_HTTP`               | `false` | Disable http service       | `true`        |
 | `SERVICE_ENABLE_IMPORT_OVER_NETCAT` | `false` | Disable import over netcat | `false`       |
 | `SERVICE_ENABLE_ADSBEXCHANGE`       | `false` | Disable adsbexchange feed  | `false`       |
+| `SERVICE_ENABLE_PLANEFINDER`        | `false` | Disable plane finder feed  | `false`       |
 
 Ex : `-e "SERVICE_ENABLE_HTTP=false"`
 
