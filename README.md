@@ -54,10 +54,8 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 Go to http://dockerhost:8080 to view a map of reveived data.
 Go to http://dockerhost:8754 to view the FR24 Feeder configuration panel.
 
-_Note : remove `-e "PANORAMA_ID=MY_PANORAMA_ID"` or `-e "LAYERS_OWM_API_KEY=MY_OWM_API_KEY"` from the command line if you don't want to use this feature._
-
-_Note : `--tmpfs` is used to avoid writing data on HDD/SD Card_
-
+_Note : remove `-e "PANORAMA_ID=MY_PANORAMA_ID"` or `-e "LAYERS_OWM_API_KEY=MY_OWM_API_KEY"` from the command line if you don't want to use this feature._  
+_Note : `--tmpfs` is used to avoid writing data on HDD/SD Card_  
 _Note : `-v "/etc/localtime:/etc/localtime:ro"` is needed for MLAT, or you can have issues with time synchronization._
 
 # Configuration
