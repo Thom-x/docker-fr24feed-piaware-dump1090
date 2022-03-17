@@ -269,6 +269,8 @@ RUN apt-get update && \
     find /usr/lib/fr24/public_html -type f -print0 | xargs -0 chmod 0644 && \
 # FR24FEED
     /build/fr24feed.sh && \
+# PLANEFINDER
+    /build/planefinder.sh && \
 # S6 OVERLAY
     /build/s6-overlay.sh && \
 # CLEAN

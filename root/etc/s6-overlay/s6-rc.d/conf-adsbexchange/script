@@ -13,7 +13,7 @@ if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ]; then
         sleep 1.5
     else
         for i in {1..5}; do
-            echo "FATAL: ADSB_EXCHANGE_UUID not set or invalid!" | mawk -W interactive '{printf "%c[35m[adsbexchange-conf]%c[31m %s\n", 27, 27, $0}'
+            echo "FATAL: ADSBEXCHANGE_UUID not set or invalid!" | mawk -W interactive '{printf "%c[35m[adsbexchange-conf]%c[31m %s\n", 27, 27, $0}'
         done
         kill 1
         exit 1
