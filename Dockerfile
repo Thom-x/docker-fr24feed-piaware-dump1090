@@ -127,10 +127,6 @@ RUN set -x && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     cp -v -T ${SRCTMP}/json-status /usr/local/share/adsbexchange/json-status && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
-    # Clean-up
-    apt-get remove -y ${TEMP_PACKAGES[@]} && \
-    apt-get autoremove -y && \
-    rm -rf /tmp/* /var/lib/apt/lists/* && \
     # readsb: simple tests
     /usr/local/share/adsbexchange/readsb --version && \
     # mlat-client: simple test
