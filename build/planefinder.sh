@@ -6,9 +6,6 @@ case $arch in
     ;;
   arm64)
     url=http://client.planefinder.net/pfclient_${PLANEFINDER_ARMHF_VERSION}_armhf.tar.gz
-    dpkg --add-architecture armhf
-    apt update
-    apt install libc6:armhf libstdc++6:armhf libusb-1.0-0:armhf
     ;;
   armel)
     url=http://client.planefinder.net/pfclient_${PLANEFINDER_ARMHF_VERSION}_armhf.tar.gz
