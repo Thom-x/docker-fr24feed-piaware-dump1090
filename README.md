@@ -47,6 +47,7 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 	-e "SERVICE_ENABLE_PLANEFINDER=true" \
 	-e "PLANEFINDER_SHARECODE=dslmfksdlmk" \
 	--tmpfs /run:exec,size=32M \
+	--tmpfs /planefinder/log:exec,size=32M \
 	--tmpfs /usr/lib/fr24/public_html/data:size=32M \
 	thomx/fr24feed-piaware
 ```
