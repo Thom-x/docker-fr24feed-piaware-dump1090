@@ -245,8 +245,6 @@ RUN arch=$(dpkg --print-architecture) && \
     curl \
     gzip \
     && \
-    # planefinder
-    /planefinder/pfclient --version > /dev/null 2>&1 && echo "planefinder OK" || apt install -y qemu-user-static && \
     # RTL-SDR
     cd /tmp && \
     mkdir -p /etc/modprobe.d && \
@@ -283,18 +281,28 @@ RUN arch=$(dpkg --print-architecture) && \
     mkdir -p /usr/lib/fr24/public_html/data && \
     rm /usr/lib/fr24/public_html/config.js && \
     rm /usr/lib/fr24/public_html/layers.js && \
+    /usr/lib/fr24/dump1090 --version && \
     # PIAWARE
     cd / && \
     dpkg -i piaware.deb && \
     rm /etc/piaware.conf && \
     rm /piaware.deb && \
+    /usr/bin/piaware -v && \
     # THTTPD
     find /usr/lib/fr24/public_html -type d -print0 | xargs -0 chmod 0755 && \
     find /usr/lib/fr24/public_html -type f -print0 | xargs -0 chmod 0644 && \
+    /thttpd -V && \
     # FR24FEED
     /build/fr24feed.sh && \
+    /fr24feed/fr24feed/fr24feed --version && \
+    # ADSBEXCHANGE
+    /usr/local/share/adsbexchange/venv/bin/mlat-client --help && \
+    /usr/local/share/adsbexchange/readsb --version && \
     # PLANEFINDER
     /build/planefinder.sh && \
+    /planefinder/pfclient --version && \
+    # CONFD
+    /opt/confd/bin/confd --version && \
     # S6 OVERLAY
     /build/s6-overlay.sh && \
     # CLEAN
