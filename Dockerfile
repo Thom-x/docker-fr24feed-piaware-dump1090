@@ -205,7 +205,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN arch=$(dpkg --print-architecture) && \
     if [ "$arch" == "arm64" ] ; then \
-    dpkg --add-architecture armhf; \
+    dpkg --add-architecture armhf && \
     apt-get update && \
     apt-get install -y libc6:armhf libstdc++6:armhf libusb-1.0-0:armhf lsb-base:armhf; \
     ldconfig; \
@@ -300,7 +300,10 @@ RUN arch=$(dpkg --print-architecture) && \
     /usr/local/share/adsbexchange/readsb --version && \
     # PLANEFINDER
     /build/planefinder.sh && \
-    /planefinder/pfclient --version && \
+    # not working on armel
+    if [ "$arch" != "armel" ] ; then \
+    /planefinder/pfclient --version; \
+    fi && \
     # CONFD
     /opt/confd/bin/confd --version && \
     # S6 OVERLAY
