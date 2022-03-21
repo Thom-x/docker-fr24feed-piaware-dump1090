@@ -23,6 +23,8 @@ services:
       - "MLAT_EXACT_LAT=MY_EXACT_SITE_LAT"
       - "MLAT_EXACT_LON=MY_EXACT_SITE_LON"
       - "MLAT_ALTITUDE_MSL_METERS=MY_SITE_ALT_MSL_METERS"
+      - "SERVICE_ENABLE_PLANEFINDER=true"
+      - "PLANEFINDER_SHARECODE=MY_SHARE_CODE"
     devices:
       - "/dev/bus/usb"
     # ports
@@ -36,4 +38,5 @@ services:
         max-size: "30m"
     tmpfs:
       - /run:exec,size=32M
+      - /planefinder/log:exec,size=32M
       - /usr/lib/fr24/public_html/data:size=32M

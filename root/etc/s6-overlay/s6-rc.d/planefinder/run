@@ -1,0 +1,21 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_PLANEFINDER" != "false" ]; then
+    set -eo pipefail
+
+    /planefinder/pfclient \
+        --connection_type=1 \
+        --address="127.0.0.1" \
+        --port="30005" \
+        --data_format=1 \
+        --sharecode="${PLANEFINDER_SHARECODE}" \
+        --lat="${HTML_SITE_LAT}" \
+        --lon="${HTML_SITE_LON}" \
+        --pid_file=/run/pfclient.pid \
+        --config_path=/planefinder/config/pfclient-config.json \
+        --log_path=/planefinder/log \
+        2>&1 | mawk -W interactive '{printf "%c[36m[planefinder]%c[0m %s\n", 27, 27, $0}'
+    # awk -W interactive ...  (prefix log messages with color and "[planefinder]")
+else
+    tail -f /dev/null
+fi

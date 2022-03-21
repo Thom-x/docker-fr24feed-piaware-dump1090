@@ -1,0 +1,22 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_PLANEFINDER" != "false" ]; then
+    set -eo pipefail
+
+    if [ -z "$PLANEFINDER_SHARECODE" ]; then
+        for i in {1..5}; do
+            echo "FATAL: PLANEFINDER_SHARECODE not set!" | mawk -W interactive '{printf "%c[36m[planefinder]%c[0m %s\n", 27, 27, $0}'
+        done
+        kill 1
+        exit 1
+    fi
+
+    # Ensure config exist
+    mkdir -p /planefinder/config
+
+    # Ensure log exist
+    mkdir -p /planefinder/log
+
+    # Ensure pid file exists
+    touch /run/pfclient.pid
+fi

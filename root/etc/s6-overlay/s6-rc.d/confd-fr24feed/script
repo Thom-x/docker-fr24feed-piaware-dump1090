@@ -9,6 +9,14 @@ if [ "$SERVICE_ENABLE_FR24FEED" != "false" ]; then
 		export $key
 	}
 
+	if [ -z "$FR24FEED_FR24KEY" ]; then
+		for i in {1..5}; do
+			echo "FATAL: FR24FEED_FR24KEY not set!" | mawk -W interactive '{printf "%c[34m[fr24feed]%c[0m %s\n", 27, 27, $0}'
+		done
+		kill 1
+		exit 1
+	fi
+
 	default_value "receiver" "beast-tcp"
 	default_value "fr24key" "YOUR_KEY_HERE"
 	default_value "host" "127.0.0.1:30005"

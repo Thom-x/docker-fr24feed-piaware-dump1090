@@ -181,7 +181,20 @@ ENV FR24FEED_AMD64_VERSION 1.0.25-3
 # force version 1.0.25-3 for armhf and armel because of broken version for these architectures
 ENV FR24FEED_ARMHF_VERSION 1.0.25-3
 ENV FR24FEED_ARMEL_VERSION 1.0.25-3
+
+ENV PLANEFINDER_AMD64_VERSION 5.0.162
+ENV PLANEFINDER_ARMHF_VERSION 5.0.161
+
 ENV S6_OVERLAY_VERSION 3.0.0.2-2
+
+# Services startup
+ENV SERVICE_ENABLE_DUMP1090 true
+ENV SERVICE_ENABLE_PIAWARE true
+ENV SERVICE_ENABLE_FR24FEED true
+ENV SERVICE_ENABLE_HTTP true
+ENV SERVICE_ENABLE_IMPORT_OVER_NETCAT false
+ENV SERVICE_ENABLE_ADSBEXCHANGE false
+ENV SERVICE_ENABLE_PLANEFINDER false
 
 LABEL maintainer="maugin.thomas@gmail.com"
 
@@ -269,6 +282,8 @@ RUN apt-get update && \
     find /usr/lib/fr24/public_html -type f -print0 | xargs -0 chmod 0644 && \
 # FR24FEED
     /build/fr24feed.sh && \
+# PLANEFINDER
+    /build/planefinder.sh && \
 # S6 OVERLAY
     /build/s6-overlay.sh && \
 # CLEAN

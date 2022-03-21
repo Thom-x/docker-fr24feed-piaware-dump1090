@@ -1,0 +1,10 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_PLANEFINDER" != "false" ]; then
+    set -eo pipefail
+
+    tail -c 100k -F /planefinder/log/*.log 2>&1 | mawk -W interactive '{printf "%c[36m[planefinder]%c[0m %s\n", 27, 27, $0}'
+    # awk -W interactive ...  (prefix log messages with color and "[planefinder]")
+else
+    tail -f /dev/null
+fi
