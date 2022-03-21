@@ -236,6 +236,8 @@ RUN apt-get update && \
     curl \
     gzip \
     && \
+    # planefinder
+    /planefinder/pfclient --version > /dev/null 2>&1 && echo "planefinder OK" || apt install -y qemu-user-static && \
     # RTL-SDR
     cd /tmp && \
     mkdir -p /etc/modprobe.d && \
