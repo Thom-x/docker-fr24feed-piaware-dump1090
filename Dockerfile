@@ -204,7 +204,7 @@ COPY --from=copyall /copy_root/ /
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN arch=$(dpkg --print-architecture) && \
-    if [ "$arch" == "arm64" ] ; then \
+    if [ "$arch" == "arm64" ] || [ "$arch" == "armel" ] ; then \
     dpkg --add-architecture armhf && \
     apt-get update && \
     apt-get install -y libc6:armhf libstdc++6:armhf libusb-1.0-0:armhf lsb-base:armhf; \
@@ -300,10 +300,7 @@ RUN arch=$(dpkg --print-architecture) && \
     /usr/local/share/adsbexchange/readsb --version && \
     # PLANEFINDER
     /build/planefinder.sh && \
-    # not working on armel
-    if [ "$arch" != "armel" ] ; then \
-    /planefinder/pfclient --version; \
-    fi && \
+    /planefinder/pfclient --version && \
     # CONFD
     /opt/confd/bin/confd --version && \
     # S6 OVERLAY
