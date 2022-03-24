@@ -142,13 +142,13 @@ RUN apk add gcc musl-dev make
 
 # Download thttpd sources
 RUN wget http://www.acme.com/software/thttpd/thttpd-${THTTPD_VERSION}.tar.gz \
-  && tar xzf thttpd-${THTTPD_VERSION}.tar.gz \
-  && mv /thttpd-${THTTPD_VERSION} /thttpd
+    && tar xzf thttpd-${THTTPD_VERSION}.tar.gz \
+    && mv /thttpd-${THTTPD_VERSION} /thttpd
 
 # Compile thttpd to a static binary which we can copy around
 RUN cd /thttpd \
-  && ./configure \
-  && make CCOPT='-O2 -s -static' thttpd
+    && ./configure \
+    && make CCOPT='-O2 -s -static' thttpd
 
 # CONFD
 FROM debian:buster-slim as confd
@@ -201,7 +201,16 @@ LABEL maintainer="maugin.thomas@gmail.com"
 # COPY ALL
 COPY --from=copyall /copy_root/ /
 
-RUN apt-get update && \
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN arch=$(dpkg --print-architecture) && \
+    if [ "$arch" == "arm64" ] || [ "$arch" == "armel" ] ; then \
+    dpkg --add-architecture armhf && \
+    apt-get update && \
+    apt-get install -y libc6:armhf libstdc++6:armhf libusb-1.0-0:armhf lsb-base:armhf; \
+    ldconfig; \
+    fi && \
+    apt-get update && \
     # rtl-sdr
     apt-get install -y \
     wget \
@@ -268,25 +277,35 @@ RUN apt-get update && \
     cd ../ && \
     dpkg -i tcl-tls_*.deb && \
     rm -rf /tmp/tcltls-rebuild && \
-# DUMP1090
+    # DUMP1090
     mkdir -p /usr/lib/fr24/public_html/data && \
     rm /usr/lib/fr24/public_html/config.js && \
     rm /usr/lib/fr24/public_html/layers.js && \
-# PIAWARE
+    /usr/lib/fr24/dump1090 --version && \
+    # PIAWARE
     cd / && \
     dpkg -i piaware.deb && \
     rm /etc/piaware.conf && \
     rm /piaware.deb && \
-# THTTPD
+    /usr/bin/piaware -v && \
+    # THTTPD
     find /usr/lib/fr24/public_html -type d -print0 | xargs -0 chmod 0755 && \
     find /usr/lib/fr24/public_html -type f -print0 | xargs -0 chmod 0644 && \
-# FR24FEED
+    /thttpd -V && \
+    # FR24FEED
     /build/fr24feed.sh && \
-# PLANEFINDER
+    /fr24feed/fr24feed/fr24feed --version && \
+    # ADSBEXCHANGE
+    /usr/local/share/adsbexchange/venv/bin/mlat-client --help && \
+    /usr/local/share/adsbexchange/readsb --version && \
+    # PLANEFINDER
     /build/planefinder.sh && \
-# S6 OVERLAY
+    /planefinder/pfclient --version && \
+    # CONFD
+    /opt/confd/bin/confd --version && \
+    # S6 OVERLAY
     /build/s6-overlay.sh && \
-# CLEAN
+    # CLEAN
     rm -rf /build && \
     apt-get purge -y \
     xz-utils \
