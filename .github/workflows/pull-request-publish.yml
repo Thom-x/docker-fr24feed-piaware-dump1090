@@ -20,7 +20,7 @@ jobs:
     if: github.event.issue.pull_request
     steps:
       - name: If deploy comment
-        uses: khan/pull-request-comment-trigger@master
+        uses: khan/pull-request-comment-trigger@ca8f46e213c14a9c38231cb031f66e16df796fe0
         id: check
         with:
           trigger: '@deploy'
