@@ -1,4 +1,4 @@
-FROM debian:buster as dump1090
+FROM debian:bullseye as dump1090
 
 ENV DUMP1090_VERSION v7.1
 
@@ -11,7 +11,6 @@ RUN apt-get update && \
     debhelper \
     librtlsdr-dev \
     pkg-config \
-    dh-systemd \
     libncurses5-dev \
     libbladerf-dev && \
     rm -rf /var/lib/apt/lists/*
@@ -24,9 +23,9 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
     patch --ignore-whitespace -p1 -ru --force --no-backup-if-mismatch -d $PWD < /patch/flightradar24.patch && \
     make CPUFEATURES=no
 
-FROM debian:buster as piaware
+FROM debian:bullseye as piaware
 
-ENV DEBIAN_VERSION buster
+ENV DEBIAN_VERSION bullseye
 ENV PIAWARE_VERSION v7.1
 
 # PIAWARE
@@ -44,16 +43,14 @@ RUN apt-get update && \
     python3-dev \
     python3-setuptools \
     patchelf \
-    python-virtualenv \
+    python3-virtualenv \
     libz-dev \
-    dh-systemd \
     net-tools \
     tclx8.4 \
     tcllib \
     tcl-tls \
     itcl3 \
     python3-venv \
-    dh-systemd \
     init-system-helpers \
     libboost-system-dev \
     libboost-program-options-dev \
@@ -71,7 +68,7 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 #ADSBEXCHANGE
 # pinned commits, feel free to update to most recent commit, no major versions usually
 
-FROM debian:buster as adsbexchange_packages
+FROM debian:bullseye as adsbexchange_packages
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /tmp
@@ -151,7 +148,7 @@ RUN cd /thttpd \
     && make CCOPT='-O2 -s -static' thttpd
 
 # CONFD
-FROM debian:buster-slim as confd
+FROM debian:bullseye-slim as confd
 
 ADD confd/confd.tar.gz /opt/confd/
 RUN ARCH=$(dpkg --print-architecture) && \
@@ -160,7 +157,7 @@ RUN ARCH=$(dpkg --print-architecture) && \
     rm /opt/confd/bin/confd-*
 
 # ONE STAGE COPY ALL
-FROM debian:buster-slim as copyall
+FROM debian:bullseye-slim as copyall
 
 COPY --from=dump1090 /tmp/dump1090/dump1090 /copy_root/usr/lib/fr24/
 COPY --from=dump1090 /tmp/dump1090/public_html_merged /copy_root/usr/lib/fr24/public_html
@@ -172,9 +169,9 @@ COPY --from=thttpd /thttpd/thttpd /copy_root/
 COPY --from=confd /opt/confd/bin/confd /copy_root/opt/confd/bin/
 ADD build /copy_root/build
 
-FROM debian:buster-slim as serve
+FROM debian:bullseye-slim as serve
 
-ENV DEBIAN_VERSION buster
+ENV DEBIAN_VERSION bullseye
 ENV RTL_SDR_VERSION 0.6.0
 
 ENV FR24FEED_AMD64_VERSION 1.0.25-3
@@ -265,18 +262,9 @@ RUN arch=$(dpkg --print-architecture) && \
     apt-get install -y \
     libssl-dev \
     tcl-dev \
+    tcl-tls \
     chrpath \
     netcat && \
-    # Clone source code, build & Install tcl-tls
-    cd /tmp && \
-    git clone --depth 1 http://github.com/flightaware/tcltls-rebuild.git && \
-    cd tcltls-rebuild && \
-    ./prepare-build.sh ${DEBIAN_VERSION} && \
-    cd package-${DEBIAN_VERSION} && \
-    dpkg-buildpackage -b --no-sign && \
-    cd ../ && \
-    dpkg -i tcl-tls_*.deb && \
-    rm -rf /tmp/tcltls-rebuild && \
     # DUMP1090
     mkdir -p /usr/lib/fr24/public_html/data && \
     rm /usr/lib/fr24/public_html/config.js && \
