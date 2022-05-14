@@ -4,7 +4,7 @@ if [ "$SERVICE_ENABLE_ADSBEXCHANGE" != "false" ]; then
     set -eo pipefail
 
     /usr/local/share/adsbexchange/readsb --net-only --debug=n --quiet \
-        --net-beast-reduce-interval 0.5 --net-connector feed.adsbexchange.com,30004,beast_reduce_out,feed.adsbexchange.com,64004 \
+        --net-beast-reduce-interval 0.5 --net-connector feed1.adsbexchange.com,30004,beast_reduce_out,feed2.adsbexchange.com,64004 \
         --write-json /run/adsbexchange-feed \
         --write-json-every 1 \
         --write-prom /run/adsbexchange-feed/stats.prom \
