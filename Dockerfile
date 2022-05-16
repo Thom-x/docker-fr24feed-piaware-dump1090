@@ -95,7 +95,7 @@ RUN set -x && \
     SRCTMP=/srctmp && \
     # readsb as a feed client
     URL=https://github.com/adsbxchange/readsb && \
-    COMMIT=da57fe341a2485fbeb645147f3738c565c38c312 && \
+    COMMIT=e29d8359fbfdfc71ea40f4f14de9aa78d989cf33 && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     pushd ${SRCTMP} && \
     echo "$COMMIT" > READSB_VERSION && \
@@ -106,7 +106,7 @@ RUN set -x && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
     # mlat-client
     URL=https://github.com/adsbxchange/mlat-client &&\
-    COMMIT=8d8b5a784727526620d5608c6d581fe3082deb79 && \
+    COMMIT=c52b722db034ee04e20714725950da041cbecfe5 && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     pushd ${SRCTMP} && \
     VENV="/usr/local/share/adsbexchange/venv" && \
@@ -120,7 +120,7 @@ RUN set -x && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
     # adsbexchange-stats
     URL=https://github.com/adsbxchange/adsbexchange-stats && \
-    COMMIT=6b9fe07ba728de5e732fe87fa3ae0afdbb390709 && \
+    COMMIT=471028b0407669f839583ae83e055bdc48505eb4 && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     cp -v -T ${SRCTMP}/json-status /usr/local/share/adsbexchange/json-status && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
