@@ -1,6 +1,6 @@
 FROM debian:bullseye as dump1090
 
-ENV DUMP1090_VERSION v7.1
+ENV DUMP1090_VERSION v7.2
 
 # DUMP1090
 RUN apt-get update && \
@@ -19,14 +19,14 @@ ADD patch /patch
 WORKDIR /tmp
 RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/dump1090 && \
     cd dump1090 && \
-    cp /patch/resources/fr24-logo.svg $PWD/public_html_merged/images && \
+    cp /patch/resources/fr24-logo.svg $PWD/public_html/images && \
     patch --ignore-whitespace -p1 -ru --force --no-backup-if-mismatch -d $PWD < /patch/flightradar24.patch && \
     make CPUFEATURES=no
 
 FROM debian:bullseye as piaware
 
 ENV DEBIAN_VERSION bullseye
-ENV PIAWARE_VERSION v7.1
+ENV PIAWARE_VERSION v7.2
 
 # PIAWARE
 WORKDIR /tmp
@@ -48,7 +48,9 @@ RUN apt-get update && \
     net-tools \
     tclx8.4 \
     tcllib \
-    tcl-tls \
+    tcl-dev \
+    chrpath \
+    libssl-dev \
     itcl3 \
     python3-venv \
     init-system-helpers \
@@ -58,7 +60,18 @@ RUN apt-get update && \
     libboost-filesystem-dev && \
     rm -rf /var/lib/apt/lists/*
 
+# Build and install tcl-tls
 RUN git config --global http.sslVerify false && git config --global http.postBuffer 1048576000
+RUN git clone https://github.com/flightaware/tcltls-rebuild && \
+    cd  /tmp/tcltls-rebuild && \
+    git fetch --all && \
+    git reset --hard origin/master && \
+    ./prepare-build.sh bullseye && \
+    cd package-bullseye && \
+    dpkg-buildpackage -b --no-sign && \
+    cd ../ && \
+    dpkg -i tcl-tls_*.deb
+    
 RUN git clone -b ${PIAWARE_VERSION} --depth 1 https://github.com/flightaware/piaware_builder.git piaware_builder
 WORKDIR /tmp/piaware_builder
 RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
@@ -160,11 +173,14 @@ RUN ARCH=$(dpkg --print-architecture) && \
 FROM debian:bullseye-slim as copyall
 
 COPY --from=dump1090 /tmp/dump1090/dump1090 /copy_root/usr/lib/fr24/
-COPY --from=dump1090 /tmp/dump1090/public_html_merged /copy_root/usr/lib/fr24/public_html
+COPY --from=dump1090 /tmp/dump1090/public_html /copy_root/usr/lib/fr24/public_html
 COPY --from=piaware /tmp/piaware_builder /copy_root/piaware_builder
+COPY --from=piaware /tmp/tcltls-rebuild /copy_root/tcltls-rebuild
 COPY --from=adsbexchange  /usr/local/share/adsbexchange /copy_root/usr/local/share/adsbexchange
 RUN mv /copy_root/piaware_builder/piaware_*_*.deb /copy_root/piaware.deb && \
     rm -rf /copy_root/piaware_builder
+RUN mv /copy_root/tcltls-rebuild/tcl-tls_*.deb /copy_root/tcl-tls.deb && \
+    rm -rf /copy_root/tcltls-rebuild
 COPY --from=thttpd /thttpd/thttpd /copy_root/
 COPY --from=confd /opt/confd/bin/confd /copy_root/opt/confd/bin/
 ADD build /copy_root/build
@@ -257,14 +273,16 @@ RUN arch=$(dpkg --print-architecture) && \
     make install && \
     ldconfig && \
     rm -rf /tmp/rtl-sdr && \
-    # Build & Install dependency tcl-tls from source code.
     # Install dependencies
     apt-get install -y \
     libssl-dev \
     tcl-dev \
-    tcl-tls \
     chrpath \
     netcat && \
+    # Install tcl-tls
+    cd / && \
+    dpkg -i tcl-tls.deb && \
+    rm tcl-tls.deb && \
     # DUMP1090
     mkdir -p /usr/lib/fr24/public_html/data && \
     rm /usr/lib/fr24/public_html/config.js && \
