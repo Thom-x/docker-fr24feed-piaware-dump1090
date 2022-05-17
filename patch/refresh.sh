@@ -45,14 +45,14 @@ if [ ! -z "${DEVEL}" ]; then
     wget -O ${DUMMY_AIRCRAFTS_FILE} https://docker-fr24feed-piaware-dump1090.netlify.app/data/aircraft.json
   fi
   if [ -f "${DUMMY_AIRCRAFTS_FILE}" ]; then
-    mkdir -p $MODIFIED/public_html_merged/data/
-    cp $DUMMY_AIRCRAFTS_FILE $MODIFIED/public_html_merged/data/
+    mkdir -p $MODIFIED/public_html/data/
+    cp $DUMMY_AIRCRAFTS_FILE $MODIFIED/public_html/data/
   fi
 fi
 
 echo "Modifying the web page to include Flightradar24 elements"
 # Copy the FR24 logo to the images folder in the `modified` folder
-cp $DIR/resources/fr24-logo.svg $DIR/modified/public_html_merged/images
+cp $DIR/resources/fr24-logo.svg $DIR/modified/public_html/images
 # Patch the files in the `modified` folder
 patch --ignore-whitespace -p1 -ru --force -d $DIR/modified < $DIR/flightradar24.patch
 
@@ -60,9 +60,9 @@ patch --ignore-whitespace -p1 -ru --force -d $DIR/modified < $DIR/flightradar24.
 if [ $? -eq 0 ]
 then
   echo "\nFiles succesfully patched, open this file in your webbrowser to see the changes:"
-  echo "$MODIFIED/public_html_merged/index.html"
+  echo "$MODIFIED/public_html/index.html"
   echo "You can also run a quick-and-dirty web server to serve these files:"
-  echo "python3 -m http.server 8000 --bind 127.0.0.1 --directory $MODIFIED/public_html_merged"
+  echo "python3 -m http.server 8000 --bind 127.0.0.1 --directory $MODIFIED/public_html"
 else
   echo "\nERROR: Patching the files failed, please review the previous output to identify where." >&2
   echo "It likely means that there were changes made upstream to the same lines that are changed by the patch, see README.md file for a suggestion on how to update the patch file."

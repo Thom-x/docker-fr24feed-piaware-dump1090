@@ -1,6 +1,6 @@
-diff -ru upstream/public_html_merged/config.js modified/public_html_merged/config.js
---- upstream/public_html_merged/config.js	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html_merged/config.js	2021-03-14 21:12:22.397993449 +0100
+diff -ru upstream/public_html/config.js modified/public_html/config.js
+--- upstream/public_html/config.js	2020-03-19 15:21:17.000000000 +0100
++++ modified/public_html/config.js	2021-03-14 21:12:22.397993449 +0100
 @@ -28,6 +28,9 @@
  // The google maps zoom level, 0 - 16, lower is further out
  DefaultZoomLvl   = 7;
@@ -34,9 +34,9 @@ diff -ru upstream/public_html_merged/config.js modified/public_html_merged/confi
  
  // Show country flags by ICAO addresses?
  ShowFlags = true;
-diff -ru upstream/public_html_merged/index.html modified/public_html_merged/index.html
---- upstream/public_html_merged/index.html	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html_merged/index.html	2021-02-28 17:38:19.743139664 +0100
+diff -ru upstream/public_html/index.html modified/public_html/index.html
+--- upstream/public_html/index.html	2020-03-19 15:21:17.000000000 +0100
++++ modified/public_html/index.html	2021-02-28 17:38:19.743139664 +0100
 @@ -52,8 +52,9 @@
  		<div id="header" class="infoHeading">
  			<div class="logoContainer">
@@ -67,9 +67,9 @@ diff -ru upstream/public_html_merged/index.html modified/public_html_merged/inde
  										<div class="infoHeading infoRowFluid"><span title="The alphanumeric registration code assigned by the country in which the aircraft is registered.">Registration</span>: </div>
  										<div class="infoData infoRowFluid"><span id="selected_registration">n/a</span></div>
 
-diff -ru upstream/public_html_merged/script.js modified/public_html_merged/script.js
---- upstream/public_html_merged/script.js	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html_merged/script.js	2021-03-14 21:04:58.453101668 +0100
+diff -ru upstream/public_html/script.js modified/public_html/script.js
+--- upstream/public_html/script.js	2020-03-19 15:21:17.000000000 +0100
++++ modified/public_html/script.js	2021-03-14 21:04:58.453101668 +0100
 @@ -461,6 +461,24 @@
                  });
          });
@@ -177,9 +177,9 @@ diff -ru upstream/public_html_merged/script.js modified/public_html_merged/scrip
      refreshPageTitle();
  }
  
-diff -ru upstream/public_html_merged/style.css modified/public_html_merged/style.css
---- upstream/public_html_merged/style.css	2020-03-19 15:21:17.000000000 +0100
-+++ modified/public_html_merged/style.css	2021-03-14 13:40:24.103993882 +0100
+diff -ru upstream/public_html/style.css modified/public_html/style.css
+--- upstream/public_html/style.css	2020-03-19 15:21:17.000000000 +0100
++++ modified/public_html/style.css	2021-03-14 13:40:24.103993882 +0100
 @@ -404,6 +404,16 @@
      box-shadow:inset -12px 0 12px -12px #000000;
  }
