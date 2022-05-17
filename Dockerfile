@@ -108,7 +108,7 @@ RUN set -x && \
     SRCTMP=/srctmp && \
     # readsb as a feed client
     URL=https://github.com/adsbxchange/readsb && \
-    COMMIT=e29d8359fbfdfc71ea40f4f14de9aa78d989cf33 && \
+    COMMIT=1cb85ade1c43fe8af7bdc97cd0f3e510fdb2047b && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     pushd ${SRCTMP} && \
     echo "$COMMIT" > READSB_VERSION && \
