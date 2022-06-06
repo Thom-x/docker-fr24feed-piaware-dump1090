@@ -171,11 +171,11 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
  }
  
 +function getAdsbexchangeIdentLink(ident, linkText) {
-+    if (code !== null && code.length > 0 && code[0] !== '~' && code !== "000000") {
++    if (ident !== null && ident.length > 0 && ident[0] !== '~' && ident !== "000000") {
 +        if (!linkText) {
 +            linkText = ident.toUpperCase();
 +        }
-+        return "<a target=\"_blank\" href=\"https://globe.adsbexchange.com/?icao=" + code.trim() + "\">" + linkText + "</a>";
++        return "<a target=\"_blank\" href=\"https://globe.adsbexchange.com/?icao=" + ident.trim() + "\">" + linkText + "</a>";
 +    }
 +
 +    return "";
