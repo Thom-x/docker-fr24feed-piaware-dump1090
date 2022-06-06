@@ -170,12 +170,12 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
      return "";
  }
  
-+function getFlightradar24IdentLink(icao, ident, linkText) {
++function getAdsbexchangeIdentLink(icao, ident, linkText) {
 +    if (icao !== null && icao !== "") {
 +        if (!linkText) {
 +            linkText = ident;
 +        }
-+        return "<a target=\"_blank\" href=\"https://globe.adsbexchange.com/?icao=" + ident.trim() + "\">" + linkText + "</a>";
++        return "<a target=\"_blank\" href=\"https://globe.adsbexchange.com/?icao=" + icao.trim() + "\">" + linkText + "</a>";
 +    }
 +
 +    return "";
