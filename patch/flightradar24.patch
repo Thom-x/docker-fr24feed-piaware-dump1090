@@ -120,7 +120,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
 -        $('#selected_flightaware_link').html(getFlightAwareModeSLink(selected.icao, selected.flight, "Visit Flight Page"));
 +        $('#selected_flightaware_link').html(getFlightAwareModeSLink(selected.icao, selected.flight, "FlightAware Flight Page"));
 +        $('#selected_flightradar24_link').html(getFlightradar24IdentLink(selected.flight, "Flightradar24 Flight Page"));
-+        $('#selected_adsbexchange_link').html(getAdsbexchangeIdentLink(selected.flight, "Adsbexchange Flight Page"));
++        $('#selected_adsbexchange_link').html(getAdsbexchangeIdentLink(selected.icao, "Adsbexchange Flight Page"));
 +        $('#selected_planefinder_link').html(getPlanefinderIdentLink(selected.flight, "PlaneFinder Flight Page"));
  
          if (selected.registration !== null) {
@@ -170,21 +170,21 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
      return "";
  }
  
-+function getAdsbexchangeIdentLink(icao, ident, linkText) {
-+    if (icao !== null && icao !== "") {
++function getAdsbexchangeIdentLink(ident, linkText) {
++    if (code !== null && code.length > 0 && code[0] !== '~' && code !== "000000") {
 +        if (!linkText) {
-+            linkText = ident;
++            linkText = ident.toUpperCase();
 +        }
-+        return "<a target=\"_blank\" href=\"https://globe.adsbexchange.com/?icao=" + icao.trim() + "\">" + linkText + "</a>";
++        return "<a target=\"_blank\" href=\"https://globe.adsbexchange.com/?icao=" + code.trim() + "\">" + linkText + "</a>";
 +    }
 +
 +    return "";
 +}
 + 
 +function getPlanefinderIdentLink(ident, linkText) {
-+    if (icao !== null && icao !== "") {
++    if (ident !== null && ident !== "") {
 +        if (!linkText) {
-+            linkText = ident;
++            linkText = ident.toUpperCase();
 +        }
 +        return "<a target=\"_blank\" href=\"https://planefinder.net/flight/" + ident.trim() + "\">" + linkText + "</a>";
 +    }
@@ -195,7 +195,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
 +function getFlightradar24IdentLink(ident, linkText) {
 +    if (ident !== null && ident !== "") {
 +        if (!linkText) {
-+            linkText = ident;
++            linkText = ident.toUpperCase();
 +        }
 +        return "<a target=\"_blank\" href=\"https://flightradar24.com/" + ident.trim() + "\">" + linkText + "</a>";
 +    }
