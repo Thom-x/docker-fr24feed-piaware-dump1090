@@ -11,13 +11,15 @@ diff -ru upstream/public_html/config.js modified/public_html/config.js
  // Center marker. If dump1090 provides a receiver location,
  // that location is used and these settings are ignored.
  
-@@ -36,6 +39,12 @@
+@@ -36,6 +39,14 @@
  SiteLon     = 9.0;
  SiteName    = "My Radar Site"; // tooltip of the marker
  
 +// The receiver's ADS-B Statistics pages on the various flight tracker websites
 +myAdsbStatsSiteUrlFlightAware = "";
 +myAdsbStatsSiteUrlFlightradar24 = "";
++myAdsbexchangeFeederStatusUrl = "";
++myPlanefinderFeederStatusUrl = "";
 +// The local FR24 Feeder Status page
 +myFR24FeederStatusUrl = "";
 +
@@ -48,21 +50,25 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
  			</div>
  			<div class="buttonContainer">
  				<div class="dateTime" id="clock_div"></div>
-@@ -202,6 +203,9 @@
+@@ -202,6 +203,11 @@
  										<tr class="infoblock_heading">
  											<td>
  												<button id="stats_page_button" class="stats_button">Go to My ADS-B Statistics Page</button>
 +												<a id="stats_page_button_fa" target="_blank"><button class="stats_button">My ADS-B Statistics on FlightAware</button></a>
 +												<a id="stats_page_button_fr24" target="_blank"><button class="stats_button">My ADS-B Statistics on Flightradar24</button></a>
 +												<a id="fr24_feeder_status_page" target="_blank"><button class="stats_button">My FR24 Feeder Status page</button></a>
++												<a id="adsbexchange_feeder_status_page" target="_blank"><button class="stats_button">My ADSBexchange Feeder Status page</button></a>
++												<a id="planefinder_feeder_status_page" target="_blank"><button class="stats_button">My PlaneFinder Feeder Status page</button></a>
  											</td>
  											</td>
  											<td style="text-align: right">
-@@ -452,6 +456,7 @@
+@@ -452,6 +456,9 @@
  						
  								<div class="infoBlockTopSection">
  									<span id="selected_flightaware_link" class=""></span>
 +									<span id="selected_flightradar24_link" class=""></span>
++									<span id="selected_adsbexchange_link" class=""></span>
++									<span id="selected_planefinder_link" class=""></span>
  									<div class="infoRow removePadding">
  										<div class="infoHeading infoRowFluid"><span title="The alphanumeric registration code assigned by the country in which the aircraft is registered.">Registration</span>: </div>
  										<div class="infoData infoRowFluid"><span id="selected_registration">n/a</span></div>
@@ -70,7 +76,7 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
 diff -ru upstream/public_html/script.js modified/public_html/script.js
 --- upstream/public_html/script.js	2020-03-19 15:21:17.000000000 +0100
 +++ modified/public_html/script.js	2021-03-14 21:04:58.453101668 +0100
-@@ -461,6 +461,24 @@
+@@ -461,6 +461,36 @@
                  });
          });
  
@@ -92,20 +98,34 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
 +                $('#fr24_feeder_status_page').css('display', 'none');
 +        }
 +
++        if (myAdsbexchangeFeederStatusUrl) {
++                $('#adsbexchange_feeder_status_page').attr('href',myAdsbexchangeFeederStatusUrl);
++        } else {
++                $('#adsbexchange_feeder_status_page').css('display', 'none');
++        }
++
++        if (myPlanefinderFeederStatusUrl) {
++                $('#planefinder_feeder_status_page').attr('href',myPlanefinderFeederStatusUrl);
++        } else {
++                $('#planefinder_feeder_status_page').css('display', 'none');
++        }
++
          // Force map to redraw if sidebar container is resized - use a timer to debounce
          var mapResizeTimeout;
          $("#sidebar_container").on("resize", function() {
-@@ -1337,7 +1355,8 @@
+@@ -1337,7 +1355,10 @@
          } else {
                  $('#selected_callsign').text('n/a');
          }
 -        $('#selected_flightaware_link').html(getFlightAwareModeSLink(selected.icao, selected.flight, "Visit Flight Page"));
 +        $('#selected_flightaware_link').html(getFlightAwareModeSLink(selected.icao, selected.flight, "FlightAware Flight Page"));
 +        $('#selected_flightradar24_link').html(getFlightradar24IdentLink(selected.flight, "Flightradar24 Flight Page"));
++        $('#selected_adsbexchange_link').html(getAdsbexchangeIdentLink(selected.flight, "Adsbexchange Flight Page"));
++        $('#selected_planefinder_link').html(getPlanefinderIdentLink(selected.flight, "PlaneFinder Flight Page"));
  
          if (selected.registration !== null) {
                  $('#selected_registration').text(selected.registration);
-@@ -1705,18 +1724,30 @@
+@@ -1705,18 +1724,34 @@
                          }
 
                          // ICAO doesn't change
@@ -117,6 +137,10 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
 +                                flightClassName = "ident_normal";
 +                                if (DefaultTracker === "Flightradar24") {
 +                                        flightURL = getFlightradar24IdentLink(tableplane.flight, tableplane.flight);
++                                } else if (DefaultTracker === "Adsbexchange") {
++                                        flightURL = getAdsbexchangeIdentLink(tableplane.icao, tableplane.flight, tableplane.flight);
++                                } else if (DefaultTracker === "Planefinder") {
++                                        flightURL = getPlanefinderIdentLink(tableplane.flight, tableplane.flight);
 +                                } else {
 +                                        flightURL = getFlightAwareModeSLink(tableplane.icao, tableplane.flight, tableplane.flight);
 +                                }
@@ -124,7 +148,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
                                  // Show registration with special styling if ident is not present
 -                               tableplane.tr.cells[2].innerHTML = getFlightAwareIdentLink(tableplane.registration, tableplane.registration);
 -                               tableplane.tr.cells[2].className = "ident_fallback";
-+                                if (DefaultTracker === "Flightradar24") {
++                                if (DefaultTracker === "Flightradar24" || DefaultTracker === "Adsbexchange" || DefaultTracker === "Planefinder") {
 +                                        flightURL = "";
 +                                        flightClassName = "";
                          } else {
@@ -142,10 +166,32 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
                          tableplane.tr.cells[3].textContent = (tableplane.registration !== null ? tableplane.registration : "");
                          tableplane.tr.cells[4].textContent = (tableplane.icaotype !== null ? tableplane.icaotype : "");
                          tableplane.tr.cells[5].textContent = (tableplane.squawk !== null ? tableplane.squawk : "");
-@@ -2451,6 +2470,17 @@
+@@ -2451,6 +2470,39 @@
      return "";
  }
  
++function getFlightradar24IdentLink(icao, ident, linkText) {
++    if (icao !== null && icao !== "") {
++        if (!linkText) {
++            linkText = ident;
++        }
++        return "<a target=\"_blank\" href=\"https://globe.adsbexchange.com/?icao=" + ident.trim() + "\">" + linkText + "</a>";
++    }
++
++    return "";
++}
++ 
++function getPlanefinderIdentLink(ident, linkText) {
++    if (icao !== null && icao !== "") {
++        if (!linkText) {
++            linkText = ident;
++        }
++        return "<a target=\"_blank\" href=\"https://planefinder.net/flight/" + ident.trim() + "\">" + linkText + "</a>";
++    }
++
++    return "";
++}
++
 +function getFlightradar24IdentLink(ident, linkText) {
 +    if (ident !== null && ident !== "") {
 +        if (!linkText) {
@@ -202,7 +248,7 @@ diff -ru upstream/public_html/style.css modified/public_html/style.css
  	background-color: #eee;
  }
 -#selected_flightaware_link a {
-+#selected_flightaware_link a, #selected_flightradar24_link a {
++#selected_flightaware_link a, #selected_flightradar24_link a, #selected_adsbexchange_link a, #selected_planefinder_link a {
  	background-color: #00a0e2;
  	color: white;
  	text-decoration: none;
