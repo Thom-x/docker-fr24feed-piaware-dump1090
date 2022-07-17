@@ -97,6 +97,8 @@ RUN set -x && \
     ncurses-bin \
     zlib1g-dev \
     zlib1g \
+    libzstd-dev \
+    libzstd1 \
     python3-venv \
     python3-dev
 
@@ -108,7 +110,7 @@ RUN set -x && \
     SRCTMP=/srctmp && \
     # readsb as a feed client
     URL=https://github.com/adsbxchange/readsb && \
-    COMMIT=1cb85ade1c43fe8af7bdc97cd0f3e510fdb2047b && \
+    COMMIT=eb03e9324fd91f1cf563966ed033fe759b05ed97 && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     pushd ${SRCTMP} && \
     echo "$COMMIT" > READSB_VERSION && \
@@ -119,7 +121,7 @@ RUN set -x && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
     # mlat-client
     URL=https://github.com/adsbxchange/mlat-client &&\
-    COMMIT=c52b722db034ee04e20714725950da041cbecfe5 && \
+    COMMIT=55fcde6fcf4216a33006e40ad17dbb924d65f6df && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     pushd ${SRCTMP} && \
     VENV="/usr/local/share/adsbexchange/venv" && \
@@ -254,6 +256,7 @@ RUN arch=$(dpkg --print-architecture) && \
     jq \
     ncurses-bin \
     zlib1g \
+    libzstd1 \
     python3-venv \
     curl \
     gzip \
