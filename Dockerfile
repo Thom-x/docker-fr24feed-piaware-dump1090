@@ -1,6 +1,6 @@
 FROM debian:bullseye as dump1090
 
-ENV DUMP1090_VERSION v7.2
+ENV DUMP1090_VERSION v8.2
 
 # DUMP1090
 RUN apt-get update && \
@@ -26,7 +26,7 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
 FROM debian:bullseye as piaware
 
 ENV DEBIAN_VERSION bullseye
-ENV PIAWARE_VERSION v7.2
+ENV PIAWARE_VERSION v8.2
 
 # PIAWARE
 WORKDIR /tmp
@@ -110,7 +110,7 @@ RUN set -x && \
     SRCTMP=/srctmp && \
     # readsb as a feed client
     URL=https://github.com/adsbxchange/readsb && \
-    COMMIT=eb03e9324fd91f1cf563966ed033fe759b05ed97 && \
+    COMMIT=a25f8ea9c8427ad1bea82f244b7967ac8cd3153f && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     pushd ${SRCTMP} && \
     echo "$COMMIT" > READSB_VERSION && \
@@ -121,7 +121,7 @@ RUN set -x && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
     # mlat-client
     URL=https://github.com/adsbxchange/mlat-client &&\
-    COMMIT=55fcde6fcf4216a33006e40ad17dbb924d65f6df && \
+    COMMIT=faf9638fe8c2eafc2abdc45621ff879c7acb882b && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     pushd ${SRCTMP} && \
     VENV="/usr/local/share/adsbexchange/venv" && \
@@ -135,7 +135,7 @@ RUN set -x && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
     # adsbexchange-stats
     URL=https://github.com/adsbxchange/adsbexchange-stats && \
-    COMMIT=471028b0407669f839583ae83e055bdc48505eb4 && \
+    COMMIT=ca7e433b14e2e4226d579dca7e8a512bcd94726b && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     cp -v -T ${SRCTMP}/json-status /usr/local/share/adsbexchange/json-status && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
@@ -199,7 +199,7 @@ ENV FR24FEED_ARMEL_VERSION 1.0.34-0
 ENV PLANEFINDER_AMD64_VERSION 5.0.162
 ENV PLANEFINDER_ARMHF_VERSION 5.0.161
 
-ENV S6_OVERLAY_VERSION 3.0.0.2-2
+ENV S6_OVERLAY_VERSION 3.1.3.0
 
 # Services startup
 ENV SERVICE_ENABLE_DUMP1090 true
