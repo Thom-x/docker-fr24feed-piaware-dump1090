@@ -40,7 +40,7 @@ jobs:
       - name: Get commit
         id: get_commit
         run: |
-          echo "::set-output name=sha_short::$(git rev-parse HEAD)"
+          echo "sha_short=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -76,7 +76,7 @@ jobs:
       - name: Get commit
         id: get_commit
         run: |
-          echo "::set-output name=sha_short::$(git rev-parse HEAD)"
+          echo "sha_short=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -98,7 +98,7 @@ jobs:
         run: |
           TAGS=$IMAGE_NAME:PR-${{ github.event.issue.number }}
           echo TAGS=$TAGS
-          echo "::set-output name=tags::$TAGS"
+          echo "tags=$TAGS" >> $GITHUB_OUTPUT
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
