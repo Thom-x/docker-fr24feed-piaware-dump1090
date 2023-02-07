@@ -1,6 +1,6 @@
 FROM debian:bullseye as dump1090
 
-ENV DUMP1090_VERSION v7.2
+ENV DUMP1090_VERSION v8.2
 
 # DUMP1090
 RUN apt-get update && \
@@ -26,7 +26,7 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
 FROM debian:bullseye as piaware
 
 ENV DEBIAN_VERSION bullseye
-ENV PIAWARE_VERSION v7.2
+ENV PIAWARE_VERSION v8.2
 
 # PIAWARE
 WORKDIR /tmp
