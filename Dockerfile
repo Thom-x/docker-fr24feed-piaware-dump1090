@@ -144,23 +144,8 @@ RUN set -x && \
     # mlat-client: simple test
     /usr/local/share/adsbexchange/venv/bin/python3 -c 'import mlat.client'
 
-# THTTPD
-FROM alpine:3.13.2 AS thttpd
-
-ENV THTTPD_VERSION=2.29
-
-# Install all dependencies required for compiling thttpd
-RUN apk add gcc musl-dev make
-
-# Download thttpd sources
-RUN wget http://www.acme.com/software/thttpd/thttpd-${THTTPD_VERSION}.tar.gz \
-    && tar xzf thttpd-${THTTPD_VERSION}.tar.gz \
-    && mv /thttpd-${THTTPD_VERSION} /thttpd
-
-# Compile thttpd to a static binary which we can copy around
-RUN cd /thttpd \
-    && ./configure \
-    && make CCOPT='-O2 -s -static' thttpd
+# HTTPD
+FROM httpd:2.4.55 AS http
 
 # CONFD
 FROM debian:bullseye-slim as confd
@@ -183,7 +168,9 @@ RUN mv /copy_root/piaware_builder/piaware_*_*.deb /copy_root/piaware.deb && \
     rm -rf /copy_root/piaware_builder
 RUN mv /copy_root/tcltls-rebuild/tcl-tls_*.deb /copy_root/tcl-tls.deb && \
     rm -rf /copy_root/tcltls-rebuild
-COPY --from=thttpd /thttpd/thttpd /copy_root/
+COPY --from=http /usr/local/apache2 /copy_root/usr/local/apache2
+COPY --from=http /usr/local/bin/httpd-foreground /copy_root/
+COPY /httpd/httpd.conf /copy_root/usr/local/apache2/conf/httpd.conf
 COPY --from=confd /opt/confd/bin/confd /copy_root/opt/confd/bin/
 ADD build /copy_root/build
 
@@ -209,6 +196,9 @@ ENV SERVICE_ENABLE_HTTP true
 ENV SERVICE_ENABLE_IMPORT_OVER_NETCAT false
 ENV SERVICE_ENABLE_ADSBEXCHANGE false
 ENV SERVICE_ENABLE_PLANEFINDER false
+
+ENV HTTPD_PREFIX /usr/local/apache2
+ENV PATH $HTTPD_PREFIX/bin:$PATH
 
 LABEL maintainer="maugin.thomas@gmail.com"
 
@@ -280,7 +270,9 @@ RUN arch=$(dpkg --print-architecture) && \
     libssl-dev \
     tcl-dev \
     chrpath \
-    netcat && \
+    netcat \
+    # httpd
+    apache2 && \
     # Install tcl-tls
     cd / && \
     dpkg -i tcl-tls.deb && \
@@ -296,10 +288,9 @@ RUN arch=$(dpkg --print-architecture) && \
     rm /etc/piaware.conf && \
     rm /piaware.deb && \
     /usr/bin/piaware -v && \
-    # THTTPD
+    # HTTP
     find /usr/lib/fr24/public_html -type d -print0 | xargs -0 chmod 0755 && \
     find /usr/lib/fr24/public_html -type f -print0 | xargs -0 chmod 0644 && \
-    /thttpd -V && \
     # FR24FEED
     /build/fr24feed.sh && \
     /fr24feed/fr24feed/fr24feed --version && \
