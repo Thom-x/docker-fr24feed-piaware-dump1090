@@ -52,7 +52,7 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 	thomx/fr24feed-piaware
 ```
 
-Go to http://dockerhost:8080 to view a map of reveived data.
+Go to http://dockerhost:8080 to view a map of received data.
 Go to http://dockerhost:8754 to view the FR24 Feeder configuration panel.
 
 _Note : remove `-e "PANORAMA_ID=MY_PANORAMA_ID"` or `-e "LAYERS_OWM_API_KEY=MY_OWM_API_KEY"` from the command line if you don't want to use this feature._  
@@ -118,9 +118,9 @@ docker run -it --rm \
 	thomx/fr24feed-piaware /bin/bash
 ```
 
-Then : `/fr24feed/fr24feed/fr24feed --signup` and follow the instructions, for technical steps, your answer doesn't matter we just need the sharing key at the end.
+Then : `/fr24feed/fr24feed/fr24feed --signup` and follow the instructions. For technical steps, your answer doesn't matter. We just need the sharing key at the end.
 
-Finally to see the sharing key run `cat /etc/fr24feed.ini`, you can now exit the container.
+Finally, to see the sharing, key run `cat /etc/fr24feed.ini`. You can now exit the container.
 
 Add the environment variable `FR24FEED_FR24KEY` with your sharing key.
 
