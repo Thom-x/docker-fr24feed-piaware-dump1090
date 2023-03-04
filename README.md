@@ -118,7 +118,7 @@ docker run -it --rm \
 	thomx/fr24feed-piaware /bin/bash
 ```
 
-Then : `/fr24feed/fr24feed/fr24feed --signup` and follow the instructions For technical steps, your answer doesn't matter. We just need the sharing key at the end.
+Then : `/fr24feed/fr24feed/fr24feed --signup` and follow the instructions. For technical steps, your answer doesn't matter. We just need the sharing key at the end.
 
 Finally, to see the sharing, key run `cat /etc/fr24feed.ini`. You can now exit the container.
 
