@@ -210,6 +210,9 @@ ENV SERVICE_ENABLE_IMPORT_OVER_NETCAT false
 ENV SERVICE_ENABLE_ADSBEXCHANGE false
 ENV SERVICE_ENABLE_PLANEFINDER false
 
+# System properties
+ENV ULIMIT_N -1
+
 LABEL maintainer="maugin.thomas@gmail.com"
 
 # COPY ALL
