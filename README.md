@@ -296,6 +296,14 @@ See: https://openweathermap.org/price
 
 Ex : `-e "LAYERS_OWM_API_KEY=dsf1ds65f4d2f65g"`
 
+## System:
+
+| Environment Variable                     | Default value   | Description                                                                                                                                  |
+| ---------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ULIMIT_N`                               | -1              | Enforce ulimit like docker <=22 to prevent OOM issues (-1 mean not enforced), recommended value when crash 1048576                           |
+
+Ex : `-e "ULIMIT_N=1048576"`
+
 # Build it yourself
 
 Clone this repo.
