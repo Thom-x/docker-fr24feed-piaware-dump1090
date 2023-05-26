@@ -11,7 +11,7 @@ diff -ru upstream/public_html/config.js modified/public_html/config.js
  // Center marker. If dump1090 provides a receiver location,
  // that location is used and these settings are ignored.
  
-@@ -36,6 +39,14 @@
+@@ -36,6 +39,15 @@
  SiteLon     = 9.0;
  SiteName    = "My Radar Site"; // tooltip of the marker
  
@@ -51,7 +51,7 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
  			</div>
  			<div class="buttonContainer">
  				<div class="dateTime" id="clock_div"></div>
-@@ -202,6 +203,11 @@
+@@ -202,6 +203,12 @@
  										<tr class="infoblock_heading">
  											<td>
  												<button id="stats_page_button" class="stats_button">Go to My ADS-B Statistics Page</button>
@@ -64,7 +64,7 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
  											</td>
  											</td>
  											<td style="text-align: right">
-@@ -452,6 +456,9 @@
+@@ -452,6 +456,10 @@
  						
  								<div class="infoBlockTopSection">
  									<span id="selected_flightaware_link" class=""></span>
@@ -79,7 +79,7 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
 diff -ru upstream/public_html/script.js modified/public_html/script.js
 --- upstream/public_html/script.js	2020-03-19 15:21:17.000000000 +0100
 +++ modified/public_html/script.js	2021-03-14 21:04:58.453101668 +0100
-@@ -461,6 +461,36 @@
+@@ -461,6 +461,42 @@
                  });
          });
  
@@ -122,7 +122,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
          // Force map to redraw if sidebar container is resized - use a timer to debounce
          var mapResizeTimeout;
          $("#sidebar_container").on("resize", function() {
-@@ -1337,7 +1355,10 @@
+@@ -1337,7 +1355,11 @@
          } else {
                  $('#selected_callsign').text('n/a');
          }
@@ -135,7 +135,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
  
          if (selected.registration !== null) {
                  $('#selected_registration').text(selected.registration);
-@@ -1705,18 +1724,34 @@
+@@ -1705,18 +1724,36 @@
                          }
 
                          // ICAO doesn't change
@@ -178,7 +178,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
                          tableplane.tr.cells[3].textContent = (tableplane.registration !== null ? tableplane.registration : "");
                          tableplane.tr.cells[4].textContent = (tableplane.icaotype !== null ? tableplane.icaotype : "");
                          tableplane.tr.cells[5].textContent = (tableplane.squawk !== null ? tableplane.squawk : "");
-@@ -2451,6 +2470,39 @@
+@@ -2451,6 +2470,50 @@
      return "";
  }
  
