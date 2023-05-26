@@ -129,7 +129,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
 -        $('#selected_flightaware_link').html(getFlightAwareModeSLink(selected.icao, selected.flight, "Visit Flight Page"));
 +        $('#selected_flightaware_link').html(getFlightAwareModeSLink(selected.icao, selected.flight, "FlightAware Flight Page"));
 +        $('#selected_flightradar24_link').html(getFlightradar24IdentLink(selected.flight, "Flightradar24 Flight Page"));
-+        $('#selected_adsbexchange_link').html(getAdsbexchangeIdentLink(selected.icao, "Adsbexchange Flight Page").html(getAdsbexchangeIdentLink(selected.icao, "Adsbexchange Flight Page"));
++        $('#selected_adsbexchange_link').html(getAdsbexchangeIdentLink(selected.icao, "Adsbexchange Flight Page"));
 +        $('#selected_opensky_link').html(getOpenskyIdentLink(selected.icao, "Opensky Network Flight Page"));
 +        $('#selected_planefinder_link').html(getPlanefinderIdentLink(selected.flight, "PlaneFinder Flight Page"));
  
