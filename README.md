@@ -47,9 +47,9 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 	-e "MLAT_ALTITUDE_MSL_METERS=MY_SITE_ALT_MSL_METERS" \
 	-e "SERVICE_ENABLE_PLANEFINDER=true" \
 	-e "PLANEFINDER_SHARECODE=dslmfksdlmk" \
-    -e "SERVICE_ENABLE_OPENSKY=true" \
-    -e "OPENSKY_USERNAME=MY_PENSKY_USERNAME" \
-    -e "OPENSKY_SERIAL=MY_OPENSKY_RECEIVER_SERIAL" \
+	-e "SERVICE_ENABLE_OPENSKY=true" \
+	-e "OPENSKY_USERNAME=MY_PENSKY_USERNAME" \
+	-e "OPENSKY_SERIAL=MY_OPENSKY_RECEIVER_SERIAL" \
 	--tmpfs /run:exec,size=32M \
 	--tmpfs /planefinder/log:exec,size=32M \
 	--tmpfs /usr/lib/fr24/public_html/data:size=32M \
@@ -230,14 +230,14 @@ Run :
 
 ```
 docker run -it --rm \
-	-e "SERVICE_ENABLE_OPENSKY=true" 
-	-e "SERVICE_ENABLE_DUMP1090=false" 
-	-e "SERVICE_ENABLE_HTTP=false" 
-	-e "SERVICE_ENABLE_PIAWARE=false" 
-	-e "SERVICE_ENABLE_FR24FEED=false" 
-	-e "OPENSKY_USERNAME=OpenskyUsername" 
-	-e "HTML_SITE_LAT=45"
-	-e "HTML_SITE_LON=9" 
+	-e "SERVICE_ENABLE_OPENSKY=true" \
+	-e "SERVICE_ENABLE_DUMP1090=false" \
+	-e "SERVICE_ENABLE_HTTP=false" \
+	-e "SERVICE_ENABLE_PIAWARE=false" \
+	-e "SERVICE_ENABLE_FR24FEED=false" \
+	-e "OPENSKY_USERNAME=OpenskyUsername" \
+	-e "HTML_SITE_LAT=45" \
+	-e "HTML_SITE_LON=9" \
 	thomx/fr24feed-piaware /bin/bash
 ```
 
