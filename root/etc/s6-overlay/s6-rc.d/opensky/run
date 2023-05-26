@@ -1,0 +1,9 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_OPENSKY" != "false" ]; then
+	set -eo pipefail
+	/usr/bin/openskyd-dump1090 2>&1 | mawk -W interactive '{printf "%c[34m[opensky-feeder]%c[0m %s\n", 27, 27, $0}'
+	# awk -W interactive ...  (prefix log messages with color and "[opensky-feeder]")
+else
+	tail -f /dev/null
+fi

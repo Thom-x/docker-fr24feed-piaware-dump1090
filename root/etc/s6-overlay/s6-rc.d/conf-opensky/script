@@ -1,0 +1,71 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_OPENSKY" != "false" ]; then
+    set -eo pipefail
+
+    default_value_html() {
+        key=${1//\-/_DASH_}
+        key=HTML_${key^^}
+        eval "value=\${$key:-\$2}"
+        printf -v $key -- "$value"
+        export $key
+    }
+    default_value() {
+        key=${1//\-/_DASH_}
+        key=OPENSKY_${key^^}
+        eval "value=\${$key:-\$2}"
+        printf -v $key -- "$value"
+        export $key
+    }
+
+    default_value_html "site_lat" "45.0"
+    default_value_html "site_lon" "9.0"
+    default_value_html "site_alt" "0"
+
+    default_value "site_alt" "0"
+    default_value "site_alt" "0"
+    default_value "site_alt" "0"
+
+    default_value "device_type" "default"
+    default_value "input_host" "127.0.0.1"
+    default_value "input_port" "30005"
+
+    if [ -z "${OPENSKY_USERNAME}" ]; then
+        for i in {1..5}; do
+            echo "FATAL: OPENSKY_USERNAME not set!" | mawk -W interactive '{printf "%c[34m[opensky-feeder]%c[0m %s\n", 27, 27, $0}'
+        done
+        kill 1
+        exit 1
+    fi
+
+    # Generate config based on environment variables
+    CONFIGFILE=/var/lib/openskyd/conf.d/10-opensky.conf
+    {
+        echo "[GPS]"
+        echo "Latitude=${HTML_SITE_LAT}"
+        echo "Longitude=${HTML_SITE_LON}"
+        echo "Altitude=${HTML_SITE_ALT}"
+        echo ""
+        echo "[DEVICE]"
+        echo "Type=${OPENSKY_DEVICE_TYPE}"
+        echo ""
+        echo "[IDENT]"
+        echo "Username=${OPENSKY_USERNAME}"
+        echo ""
+        echo "[INPUT]"
+        echo "Host=${OPENSKY_INPUT_HOST}"
+        echo "Port=${OPENSKY_INPUT_PORT}"
+    } >${CONFIGFILE}
+
+    if [ -z "${OPENSKY_SERIAL}" ]; then
+        echo "WARNING: OPENSKY_SERIAL environment variable was not set!" | mawk -W interactive '{printf "%c[34m[opensky-feeder]%c[0m %s\n", 27, 27, $0}'
+        echo "Please make sure you note down the serial generated." | mawk -W interactive '{printf "%c[34m[opensky-feeder]%c[0m %s\n", 27, 27, $0}'
+        echo "Pass the key as environment var OPENSKY_SERIAL on next launch!" | mawk -W interactive '{printf "%c[34m[opensky-feeder]%c[0m %s\n", 27, 27, $0}'
+    else
+        CONFIGFILE=/var/lib/openskyd/conf.d/05-serial.conf
+        {
+            echo "[Device]"
+            echo "serial = ${OPENSKY_SERIAL}"
+        } >${CONFIGFILE}
+    fi
+fi

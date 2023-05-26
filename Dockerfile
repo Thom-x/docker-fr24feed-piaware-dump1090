@@ -209,6 +209,7 @@ ENV SERVICE_ENABLE_HTTP true
 ENV SERVICE_ENABLE_IMPORT_OVER_NETCAT false
 ENV SERVICE_ENABLE_ADSBEXCHANGE false
 ENV SERVICE_ENABLE_PLANEFINDER false
+ENV SERVICE_ENABLE_OPENSKY false
 
 # System properties
 ENV ULIMIT_N -1
@@ -299,6 +300,17 @@ RUN arch=$(dpkg --print-architecture) && \
     rm /etc/piaware.conf && \
     rm /piaware.deb && \
     /usr/bin/piaware -v && \
+    # # OPENSKY
+    curl --output - https://opensky-network.org/files/firmware/opensky.gpg.pub | apt-key add - && \
+    echo deb https://opensky-network.org/repos/debian opensky custom > /etc/apt/sources.list.d/opensky.list && \
+    apt-get update -y && \
+    # Install opensky-feeder
+    mkdir -p /src/opensky-feeder && \
+    cd /src/opensky-feeder && \
+    apt-get download opensky-feeder && \
+    ar vx ./*.deb && \
+    tar xvf data.tar.xz -C / && \
+    mkdir -p /var/lib/openskyd/conf.d && \
     # THTTPD
     find /usr/lib/fr24/public_html -type d -print0 | xargs -0 chmod 0755 && \
     find /usr/lib/fr24/public_html -type f -print0 | xargs -0 chmod 0644 && \

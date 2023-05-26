@@ -10,6 +10,7 @@ services:
       - "PIAWARE_FEEDER_DASH_ID=MY_FEEDER_ID"
       - "HTML_SITE_LAT=MY_SITE_LAT"
       - "HTML_SITE_LON=MY_SITE_LON"
+      - "HTML_SITE_ALT=MY_SITE_ALT"
       - "HTML_SITE_NAME=MY_SITE_NAME"
       - "HTML_DEFAULT_TRACKER=Flightradar24"
       - "HTML_RECEIVER_STATS_PAGE_FLIGHTAWARE=https://flightaware.com/adsb/stats/user/"
@@ -25,6 +26,9 @@ services:
       - "MLAT_ALTITUDE_MSL_METERS=MY_SITE_ALT_MSL_METERS"
       - "SERVICE_ENABLE_PLANEFINDER=true"
       - "PLANEFINDER_SHARECODE=MY_SHARE_CODE"
+      - "SERVICE_ENABLE_OPENSKY=true"
+      - "OPENSKY_USERNAME=MY_PENSKY_USERNAME"
+      - "OPENSKY_SERIAL=MY_OPENSKY_RECEIVER_SERIAL"
     devices:
       - "/dev/bus/usb"
     # ports

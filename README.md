@@ -35,6 +35,7 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 	-e "PIAWARE_FEEDER_DASH_ID=MY_FEEDER_ID" \
 	-e "HTML_SITE_LAT=MY_SITE_LAT" \
 	-e "HTML_SITE_LON=MY_SITE_LON" \
+	-e "HTML_SITE_ALT=MY_SITE_ALT" \
 	-e "HTML_SITE_NAME=MY_SITE_NAME" \
 	-e "PANORAMA_ID=MY_PANORAMA_ID" \
 	-e "LAYERS_OWM_API_KEY=MY_OWM_API_KEY" \
@@ -46,6 +47,9 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 	-e "MLAT_ALTITUDE_MSL_METERS=MY_SITE_ALT_MSL_METERS" \
 	-e "SERVICE_ENABLE_PLANEFINDER=true" \
 	-e "PLANEFINDER_SHARECODE=dslmfksdlmk" \
+    -e "SERVICE_ENABLE_OPENSKY=true" \
+    -e "OPENSKY_USERNAME=MY_PENSKY_USERNAME" \
+    -e "OPENSKY_SERIAL=MY_OPENSKY_RECEIVER_SERIAL" \
 	--tmpfs /run:exec,size=32M \
 	--tmpfs /planefinder/log:exec,size=32M \
 	--tmpfs /usr/lib/fr24/public_html/data:size=32M \
@@ -74,6 +78,7 @@ To disable starting a service you can add an environement variable :
 | `SERVICE_ENABLE_IMPORT_OVER_NETCAT` | `false` | Disable import over netcat | `false`       |
 | `SERVICE_ENABLE_ADSBEXCHANGE`       | `false` | Disable adsbexchange feed  | `false`       |
 | `SERVICE_ENABLE_PLANEFINDER`        | `false` | Disable plane finder feed  | `false`       |
+| `SERVICE_ENABLE_OPENSKY`            | `false` | Disable opensky feeder     | `false`       |
 
 Ex : `-e "SERVICE_ENABLE_HTTP=false"`
 
@@ -145,12 +150,11 @@ In case of multiple receivers, please use a different UUID for each receiver.
 
 Add the environment variable `SERVICE_ENABLE_ADSBEXCHANGE` and set it to `true`.
 
-| Environment Variable          | Configuration property    | Default value |
+| Environment Variable          | Description               | Default value |
 | ----------------------------- | ------------------------- | ------------- |
-| `SERVICE_ENABLE_ADSBEXCHANGE` | `enable this feed client` | `false`       |
-| `ADSBEXCHANGE_UUID`           | `uuid (required)`         | empty         |
-| `ADSBEXCHANGE_STATION_NAME`   | `station name`            | empty         |
-| `ADSBEXCHANGE_MLAT`           | `mlat`                    | `true`        |
+| `ADSBEXCHANGE_UUID`           | uuid (required)`          | empty         |
+| `ADSBEXCHANGE_STATION_NAME`   | station name              | empty         |
+| `ADSBEXCHANGE_MLAT`           | mlat                      | `true`        |
 
 Configure the MLAT coordinates so that adsbexchange MLAT can work. (see its own section below)
 If you don't want to supply your exact coordinates, please set the `ADSBEXCHANGE_MLAT` environment variable to `false`. (you won't get MLAT results and won't contribute to MLAT)
@@ -172,11 +176,11 @@ Get your exact coordinates and altitude above sealevel in meters from one these 
 
 It's important for MLAT accuracy that these aren't off by more than about 10 m / 30 ft.
 
-| Environment Variable       | Configuration property    | Default value |
+| Environment Variable       | Description               | Default value |
 | -------------------------- | ------------------------- | ------------- |
-| `MLAT_EXACT_LAT`           | `decimal latitude`        | empty         |
-| `MLAT_EXACT_LON`           | `decimal longitude`       | empty         |
-| `MLAT_ALTITUDE_MSL_METERS` | `altitude above MSL in m` | empty         |
+| `MLAT_EXACT_LAT`           |  decimal latitude         | empty         |
+| `MLAT_EXACT_LON`           |  decimal longitude        | empty         |
+| `MLAT_ALTITUDE_MSL_METERS` |  altitude above MSL in m  | empty         |
 
 ## Plane Finder
 
@@ -210,11 +214,58 @@ You can now kill the container by pressing `CTRL-C`.
 
 Add the environment variable `SERVICE_ENABLE_PLANEFINDER` and set it to `true`.
 
-| Environment Variable    | Configuration property            | Default value |
-| ----------------------- | --------------------------------- | ------------- |
-| `PLANEFINDER_SHARECODE` | `generated share code (required)` | empty         |
+| Environment Variable         | Description                       | Default value |
+| ---------------------------- | --------------------------------- | ------------- |
+| `PLANEFINDER_SHARECODE`      | generated share code (required)   | empty         |
 
 Ex : `-e "SERVICE_ENABLE_PLANEFINDER=true" -e "PLANEFINDER_SHARECODE=65dsfsd56f"`
+
+## Opensky
+
+First-time users should obtain a Opensky serial.
+
+In order to obtain a Opensky serial, we will start a temporary container running minimal configuration to have opensky up and running, which will generate it.
+
+Run :
+
+```
+docker run -it --rm \
+	-e "SERVICE_ENABLE_OPENSKY=true" 
+	-e "SERVICE_ENABLE_DUMP1090=false" 
+	-e "SERVICE_ENABLE_HTTP=false" 
+	-e "SERVICE_ENABLE_PIAWARE=false" 
+	-e "SERVICE_ENABLE_FR24FEED=false" 
+	-e "OPENSKY_USERNAME=OpenskyUsername" 
+	-e "HTML_SITE_LAT=45"
+	-e "HTML_SITE_LON=9" 
+	thomx/fr24feed-piaware /bin/bash
+```
+
+Once the container has started, you should see a message such as:
+
+```text
+[opensky-feeder] [INFO] [SERIAL] Requesting new serial number
+[opensky-feeder] [INFO] [SERIAL] Got a new serial number: -16546546532
+```
+
+Note the serial and add it for next run to `OPENSKY_SERIAL` environement variable.
+
+You can now kill the container by pressing `CTRL-D`.
+
+Add the environment variable `SERVICE_ENABLE_OPENSKY` and set it to `true`.
+
+| Environment Variable    | Default value | Description                                   |
+| ----------------------- | ------------- | --------------------------------------------- |
+| `OPENSKY_USERNAME`      | empty         | Opensky username (required)                   |
+| `OPENSKY_SERIAL`        | empty         | Generated serial (required after first run)   |
+| `OPENSKY_DEVICE_TYPE`   | `default`     | Device type                                   |
+| `OPENSKY_INPUT_HOST`    | `127.0.0.1`   | Input host                                    |
+| `OPENSKY_INPUT_PORT`    | `30005`       | Input port                                    |
+| `HTML_SITE_LAT`         | `45.0`        | Receiver latitude                             |
+| `HTML_SITE_LON`         | `9.0`         | Receiver longitude                            |
+| `HTML_SITE_ALT`         | `0`           | Receiver altitude                             |
+
+Ex : `-e "SERVICE_ENABLE_OPENSKY=true" -e "OPENSKY_USERNAME=MyUserName" -e "OPENSKY_SERIAL=-462168426854"`
 
 ## Add custom properties
 
@@ -232,9 +283,10 @@ Example :
 
 | Environment Variable                     | Default value   | Description                                                                                                                                  |
 | ---------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `HTML_SITE_LAT`                          | `45.0`          |                                                                                                                                              |
-| `HTML_SITE_LON`                          | `9.0`           |                                                                                                                                              |
-| `HTML_SITE_NAME`                         | `My Radar Site` |                                                                                                                                              |
+| `HTML_SITE_LAT`                          | `45.0`          | Receiver latitude                                                                                                                            |
+| `HTML_SITE_LON`                          | `9.0`           | Receiver longitude                                                                                                                           |
+| `HTML_SITE_ALT`                          | `0`             | Receiver altitude                                                                                                                            |
+| `HTML_SITE_NAME`                         | `My Radar Site` | Receiver name                                                                                                                                |
 | `HTML_DEFAULT_TRACKER`                   | `FlightAware`   | Which flight tracker website to use by default. Possible values are `FlightAware` and `Flightradar24`                                        |
 | `HTML_RECEIVER_STATS_PAGE_FLIGHTAWARE`   | empty           | URL of your receiver's stats page on FlightAware. Usually https://flightaware.com/adsb/stats/user/                                           |
 | `HTML_RECEIVER_STATS_PAGE_FLIGHTRADAR24` | empty           | URL of your receiver's stats page on Flightradar24. Usually https://www.flightradar24.com/account/feed-stats/?id=<ID>                        |
