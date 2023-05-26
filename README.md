@@ -281,19 +281,20 @@ Example :
 
 ## Dump1090 & Web UI
 
-| Environment Variable                     | Default value   | Description                                                                                                                                  |
-| ---------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `HTML_SITE_LAT`                          | `45.0`          | Receiver latitude                                                                                                                            |
-| `HTML_SITE_LON`                          | `9.0`           | Receiver longitude                                                                                                                           |
-| `HTML_SITE_ALT`                          | `0`             | Receiver altitude                                                                                                                            |
-| `HTML_SITE_NAME`                         | `My Radar Site` | Receiver name                                                                                                                                |
-| `HTML_DEFAULT_TRACKER`                   | `FlightAware`   | Which flight tracker website to use by default. Possible values are `FlightAware` and `Flightradar24`                                        |
-| `HTML_RECEIVER_STATS_PAGE_FLIGHTAWARE`   | empty           | URL of your receiver's stats page on FlightAware. Usually https://flightaware.com/adsb/stats/user/                                           |
-| `HTML_RECEIVER_STATS_PAGE_FLIGHTRADAR24` | empty           | URL of your receiver's stats page on Flightradar24. Usually https://www.flightradar24.com/account/feed-stats/?id=<ID>                        |
-| `HTML_RECEIVER_STATS_PAGE_ADSBEXCHANGE`  | empty           | URL of your receiver's stats page on ADS-B Exchange. Usually https://www.adsbexchange.com/api/feeders/?feed=<ID>                             |
-| `HTML_RECEIVER_STATS_PAGE_PLANEFINDER`   | empty           | URL of your receiver's stats page on PlaneFinder. Usually https://planefinder.net/coverage/receiver/<ID>                                     |
-| `HTML_FR24_FEEDER_STATUS_PAGE`           | empty           | URL of your local FR24 Feeder Status page. Usually http://<dockerhost>:8754/ (depends on the port you indicated when starting the container) |
-| `DUMP1090_ADDITIONAL_ARGS`               | empty           | Additial arguments for dump1090 e.g.: `--json-location-accuracy 2`                                                                           |
+| Environment Variable                       | Default value   | Description                                                                                                                                                 |
+| ------------------------------------------ | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HTML_SITE_LAT`                            | `45.0`          | Receiver latitude                                                                                                                                           |
+| `HTML_SITE_LON`                            | `9.0`           | Receiver longitude                                                                                                                                          |
+| `HTML_SITE_ALT`                            | `0`             | Receiver altitude                                                                                                                                           |
+| `HTML_SITE_NAME`                           | `My Radar Site` | Receiver name                                                                                                                                               |
+| `HTML_DEFAULT_TRACKER`                     | `FlightAware`   | Which flight tracker website to use by default. Possible values are `FlightAware` or `Flightradar24` or `Adsbexchange` or `Planefinder` or `OpenskyNetowrk` |
+| `HTML_RECEIVER_STATS_PAGE_FLIGHTAWARE`     | empty           | URL of your receiver's stats page on FlightAware. Usually https://flightaware.com/adsb/stats/user/                                                          |
+| `HTML_RECEIVER_STATS_PAGE_FLIGHTRADAR24`   | empty           | URL of your receiver's stats page on Flightradar24. Usually https://www.flightradar24.com/account/feed-stats/?id=<ID>                                       |
+| `HTML_RECEIVER_STATS_PAGE_ADSBEXCHANGE`    | empty           | URL of your receiver's stats page on ADS-B Exchange. Usually https://www.adsbexchange.com/api/feeders/?feed=<ID>                                            |
+| `HTML_RECEIVER_STATS_PAGE_PLANEFINDER`     | empty           | URL of your receiver's stats page on PlaneFinder. Usually https://planefinder.net/coverage/receiver/<ID>                                                    |
+| `HTML_RECEIVER_STATS_PAGE_OPENSKY_NETWORK` | empty           | URL of your receiver's stats page on Opensky Netowrk. Usually https://opensky-network.org/receiver-profile?s=<ID>                                           |
+| `HTML_FR24_FEEDER_STATUS_PAGE`             | empty           | URL of your local FR24 Feeder Status page. Usually http://<dockerhost>:8754/ (depends on the port you indicated when starting the container)                |
+| `DUMP1090_ADDITIONAL_ARGS`                 | empty           | Additial arguments for dump1090 e.g.: `--json-location-accuracy 2`                                                                                          |
 
 Ex : `-e "HTML_SITE_NAME=My site"`
 
