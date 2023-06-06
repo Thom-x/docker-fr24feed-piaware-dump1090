@@ -48,7 +48,7 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 	-e "SERVICE_ENABLE_PLANEFINDER=true" \
 	-e "PLANEFINDER_SHARECODE=dslmfksdlmk" \
 	-e "SERVICE_ENABLE_OPENSKY=true" \
-	-e "OPENSKY_USERNAME=MY_PENSKY_USERNAME" \
+	-e "OPENSKY_USERNAME=MY_OPENSKY_USERNAME" \
 	-e "OPENSKY_SERIAL=MY_OPENSKY_RECEIVER_SERIAL" \
 	--tmpfs /run:exec,size=32M \
 	--tmpfs /planefinder/log:exec,size=32M \
