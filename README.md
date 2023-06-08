@@ -152,7 +152,7 @@ Add the environment variable `SERVICE_ENABLE_ADSBEXCHANGE` and set it to `true`.
 
 | Environment Variable          | Description               | Default value |
 | ----------------------------- | ------------------------- | ------------- |
-| `ADSBEXCHANGE_UUID`           | uuid (required)`          | empty         |
+| `ADSBEXCHANGE_UUID`           | uuid (required)           | empty         |
 | `ADSBEXCHANGE_STATION_NAME`   | station name              | empty         |
 | `ADSBEXCHANGE_MLAT`           | mlat                      | `true`        |
 
@@ -287,7 +287,7 @@ Example :
 | `HTML_SITE_LON`                            | `9.0`           | Receiver longitude                                                                                                                                          |
 | `HTML_SITE_ALT`                            | `0`             | Receiver altitude                                                                                                                                           |
 | `HTML_SITE_NAME`                           | `My Radar Site` | Receiver name                                                                                                                                               |
-| `HTML_DEFAULT_TRACKER`                     | `FlightAware`   | Which flight tracker website to use by default. Possible values are `FlightAware` or `Flightradar24` or `Adsbexchange` or `Planefinder` or `OpenskyNetowrk` |
+| `HTML_DEFAULT_TRACKER`                     | `FlightAware`   | Which flight tracker website to use by default. Possible values are `FlightAware` or `Flightradar24` or `Adsbexchange` or `Planefinder` or `OpenskyNetwork` |
 | `HTML_RECEIVER_STATS_PAGE_FLIGHTAWARE`     | empty           | URL of your receiver's stats page on FlightAware. Usually https://flightaware.com/adsb/stats/user/                                                          |
 | `HTML_RECEIVER_STATS_PAGE_FLIGHTRADAR24`   | empty           | URL of your receiver's stats page on Flightradar24. Usually https://www.flightradar24.com/account/feed-stats/?id=<ID>                                       |
 | `HTML_RECEIVER_STATS_PAGE_ADSBEXCHANGE`    | empty           | URL of your receiver's stats page on ADS-B Exchange. Usually https://www.adsbexchange.com/api/feeders/?feed=<ID>                                            |
