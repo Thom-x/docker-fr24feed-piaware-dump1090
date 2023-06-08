@@ -2,6 +2,13 @@
 
 if [ "$SERVICE_ENABLE_FR24FEED" != "false" ]; then
 	set -eo pipefail
+
+	# enforce ulimit like docker <=22 to prevent CPU issues
+	# see https://github.com/Thom-x/docker-fr24feed-piaware-dump1090/issues/126
+	if [ "$SYSTEM_FR24FEED_ULIMIT_N" != "-1" ]; then
+		ulimit -n "$SYSTEM_FR24FEED_ULIMIT_N"
+	fi
+
 	/fr24feed/fr24feed/fr24feed 2>&1 | mawk -W interactive '{printf "%c[34m[fr24feed]%c[0m %s\n", 27, 27, $0}'
 	# awk -W interactive ...  (prefix log messages with color and "[fr24feed]")
 else
