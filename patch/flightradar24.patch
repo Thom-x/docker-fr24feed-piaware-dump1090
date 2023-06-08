@@ -151,7 +151,7 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
 +                                        flightURL = getAdsbexchangeIdentLink(tableplane.icao, tableplane.flight, tableplane.flight);
 +                                } else if (DefaultTracker === "Planefinder") {
 +                                        flightURL = getPlanefinderIdentLink(tableplane.flight, tableplane.flight);
-+                                } else if (DefaultTracker === "OpenskyNetowrk") {
++                                } else if (DefaultTracker === "OpenskyNetwork") {
 +                                        flightURL = getOpenskyIdentLink(tableplane.icao, tableplane.flight, tableplane.flight);
 +                                } else {
 +                                        flightURL = getFlightAwareModeSLink(tableplane.icao, tableplane.flight, tableplane.flight);
