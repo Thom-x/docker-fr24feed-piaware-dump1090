@@ -5,8 +5,8 @@ if [ "$SERVICE_ENABLE_HTTP" != "false" ]; then
     
     # enforce ulimit like docker <=22 to prevent OOM issues
     # see https://github.com/Thom-x/docker-fr24feed-piaware-dump1090/issues/107
-    if [ "$ULIMIT_N" != "-1" ]; then
-        ulimit -n "$ULIMIT_N"
+    if [ "$HTTP_ULIMIT_N" != "-1" ]; then
+        ulimit -n "$HTTP_ULIMIT_N"
     fi
     
     /thttpd -D -h 0.0.0.0 -p 8080 -d /usr/lib/fr24/public_html -l - -M 60 2>&1 | mawk -W interactive '{printf "%c[32m[http]%c[0m %s\n", 27, 27, $0}'

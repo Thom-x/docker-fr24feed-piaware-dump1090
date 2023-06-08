@@ -129,17 +129,18 @@ Finally, to see the sharing, key run `cat /etc/fr24feed.ini`. You can now exit t
 
 Add the environment variable `FR24FEED_FR24KEY` with your sharing key.
 
-| Environment Variable                  | Configuration property | Default value     |
-| ------------------------------------- | ---------------------- | ----------------- |
-| `FR24FEED_RECEIVER`                   | `receiver`             | `beast-tcp`       |
-| `FR24FEED_FR24KEY`                    | `fr24key (required)`   | empty             |
-| `FR24FEED_HOST`                       | `host`                 | `127.0.0.1:30005` |
-| `FR24FEED_BS`                         | `bs`                   | `no`              |
-| `FR24FEED_RAW`                        | `raw`                  | `no`              |
-| `FR24FEED_LOGMODE`                    | `logmode`              | `1`               |
-| `FR24FEED_LOGPATH`                    | `logpath`              | `/tmp`            |
-| `FR24FEED_MLAT`                       | `mlat`                 | `no`             |
-| `FR24FEED_MLAT_DASH_WITHOUT_DASH_GPS` | `mlat-without-gps`     | `no`             |
+| Environment Variable                  | Configuration property                                                                                             | Default value     |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------- |
+| `FR24FEED_RECEIVER`                   | `receiver`                                                                                                         | `beast-tcp`       |
+| `FR24FEED_FR24KEY`                    | `fr24key (required)`                                                                                               | empty             |
+| `FR24FEED_HOST`                       | `host`                                                                                                             | `127.0.0.1:30005` |
+| `FR24FEED_BS`                         | `bs`                                                                                                               | `no`              |
+| `FR24FEED_RAW`                        | `raw`                                                                                                              | `no`              |
+| `FR24FEED_LOGMODE`                    | `logmode`                                                                                                          | `1`               |
+| `FR24FEED_LOGPATH`                    | `logpath`                                                                                                          | `/tmp`            |
+| `FR24FEED_MLAT`                       | `mlat`                                                                                                             | `no`              |
+| `FR24FEED_MLAT_DASH_WITHOUT_DASH_GPS` | `mlat-without-gps`                                                                                                 | `no`              |
+| `FR24FEED_ULIMIT_N`                   | Enforce ulimit like docker <=22 to prevent CPU issues (-1 means not enforced), recommended value when crash 1048576 | -1                |
 
 Ex : `-e "FR24FEED_FR24KEY=0123456789"`
 
@@ -295,6 +296,7 @@ Example :
 | `HTML_RECEIVER_STATS_PAGE_OPENSKY_NETWORK` | empty           | URL of your receiver's stats page on Opensky Netowrk. Usually https://opensky-network.org/receiver-profile?s=<ID>                                           |
 | `HTML_FR24_FEEDER_STATUS_PAGE`             | empty           | URL of your local FR24 Feeder Status page. Usually http://<dockerhost>:8754/ (depends on the port you indicated when starting the container)                |
 | `DUMP1090_ADDITIONAL_ARGS`                 | empty           | Additial arguments for dump1090 e.g.: `--json-location-accuracy 2`                                                                                          |
+| `HTTP_ULIMIT_N`                            | -1              | Enforce ulimit like docker <=22 to prevent OOM issues (-1 means not enforced), recommended value when crash 1048576                                          |
 
 Ex : `-e "HTML_SITE_NAME=My site"`
 
@@ -348,14 +350,6 @@ See: https://openweathermap.org/price
 | `LAYERS_OWM_API_KEY` |               | Open Weather Map API Key |
 
 Ex : `-e "LAYERS_OWM_API_KEY=dsf1ds65f4d2f65g"`
-
-## System:
-
-| Environment Variable                     | Default value   | Description                                                                                                                                  |
-| ---------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ULIMIT_N`                               | -1              | Enforce ulimit like docker <=22 to prevent OOM issues (-1 mean not enforced), recommended value when crash 1048576                           |
-
-Ex : `-e "ULIMIT_N=1048576"`
 
 # Build it yourself
 

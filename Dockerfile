@@ -212,7 +212,8 @@ ENV SERVICE_ENABLE_PLANEFINDER false
 ENV SERVICE_ENABLE_OPENSKY false
 
 # System properties
-ENV ULIMIT_N -1
+ENV HTTP_ULIMIT_N -1
+ENV FR24FEED_ULIMIT_N -1
 
 LABEL maintainer="maugin.thomas@gmail.com"
 
