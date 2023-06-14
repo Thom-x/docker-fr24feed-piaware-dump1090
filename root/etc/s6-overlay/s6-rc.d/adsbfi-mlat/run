@@ -1,0 +1,40 @@
+#!/command/with-contenv bash
+source /export-env-from-config.sh
+
+if [ "$SERVICE_ENABLE_ADSBFI" != "false" ]; then
+    if [ "$ADSBFI_MLAT" == "no" ] || [ "$ADSBFI_MLAT" == "false" ]; then
+        tail -f /dev/null
+        exit 0
+    fi
+
+    set -eo pipefail
+
+    MLAT_ALTITUDE_MSL_METERS="$(echo "${MLAT_ALTITUDE_MSL_METERS}" | tr --delete ' m')"
+
+    if [ -z "$MLAT_EXACT_LAT" ] || [ -z "$MLAT_EXACT_LON" ] || [ -z "$MLAT_ALTITUDE_MSL_METERS" ] || [ -z "$ADSBFI_STATION_NAME" ]; then
+        for i in {1..5}; do
+            echo "FATAL: MLAT_EXACT_LAT or MLAT_EXACT_LON or MLAT_ALTITUDE_MSL_METERS or ADSBFI_STATION_NAME not set!" | mawk -W interactive '{printf "%c[32m[adsbfi-conf]%c31m %s\n", 27, 27, $0}'
+        done
+        kill 1
+        exit 1
+    fi
+    # pushes MLAT results into dump1090 via port 30104
+    # listens on 31009 to provide MLAT results as SBS / basestation
+    # listens on 30169 to provide MLAT results as beast
+    # pushes MLAT results into adsbfi-feed
+    /usr/local/share/adsbexchange/venv/bin/mlat-client \
+        --input-type dump1090 --no-udp \
+        --input-connect 127.0.0.1:30005 \
+        --server feed.adsb.fi:31090 \
+        --lat "${MLAT_EXACT_LAT}" --lon "${MLAT_EXACT_LON}" \
+        --alt "${MLAT_ALTITUDE_MSL_METERS}" \
+        --user "${ADSBFI_STATION_NAME}" \
+        --results beast,connect,127.0.0.1:30104 \
+        --results basestation,listen,31009 \
+        --results beast,listen,30179 \
+        --results beast,connect,127.0.0.1:30169 \
+        2>&1 | mawk -W interactive '{printf "%c[35m[adsbfi-mlat]%c[0m %s\n", 27, 27, $0}'
+    # awk -W interactive ...  (prefix log messages with color and "[adsbfi-mlat]")
+else
+    tail -f /dev/null
+fi
