@@ -5,6 +5,7 @@ if [ "$SERVICE_ENABLE_ADSBFI" != "false" ]; then
     if ((${#ADSBFI_UUID} == 36)); then
         set -eo pipefail
 
+        mkdir -p /usr/local/share/adsbfi
         echo "${ADSBFI_UUID}" >/usr/local/share/adsbfi/adsbfi-uuid
         mkdir -p /run/adsbfi-feed
 
