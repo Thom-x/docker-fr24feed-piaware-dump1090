@@ -1,0 +1,20 @@
+#!/command/with-contenv bash
+source /export-env-from-config.sh
+
+if [ "$SERVICE_ENABLE_ADSBFI" != "false" ]; then
+    if ((${#ADSBFI_UUID} == 36)); then
+        set -eo pipefail
+
+        echo "${ADSBFI_UUID}" >/usr/local/share/adsbfi/adsbfi-uuid
+        mkdir -p /run/adsbfi-feed
+
+        # delay other adsbfi services a little bit to produce less error messages on startup
+        sleep 1.5
+    else
+        for i in {1..5}; do
+            echo "FATAL: ADSBFI_UUID not set or invalid!" | mawk -W interactive '{printf "%c[35m[adsbfi-conf]%c[31m %s\n", 27, 27, $0}'
+        done
+        kill 1
+        exit 1
+    fi
+fi
