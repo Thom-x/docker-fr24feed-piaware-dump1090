@@ -1,5 +1,4 @@
 #!/command/with-contenv bash
-source /export-env-from-config.sh
 
 if [ "$SERVICE_ENABLE_ADSBFI" != "false" ]; then
     set -eo pipefail
