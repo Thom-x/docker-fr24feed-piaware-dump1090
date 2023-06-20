@@ -22,10 +22,6 @@ if [ "$SERVICE_ENABLE_OPENSKY" != "false" ]; then
     default_value_html "site_lon" "9.0"
     default_value_html "site_alt" "0"
 
-    default_value "site_alt" "0"
-    default_value "site_alt" "0"
-    default_value "site_alt" "0"
-
     default_value "device_type" "default"
     default_value "input_host" "127.0.0.1"
     default_value "input_port" "30005"
