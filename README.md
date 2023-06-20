@@ -323,7 +323,7 @@ Run :
 ```
 docker run -it --rm \
 	-e "SERVICE_ENABLE_RADARBOX=true" \
-	-e "SERVICE_ENABLE_DUMP1090=true" \
+	-e "SERVICE_ENABLE_DUMP1090=false" \
 	-e "SERVICE_ENABLE_HTTP=false" \
 	-e "SERVICE_ENABLE_PIAWARE=false" \
 	-e "SERVICE_ENABLE_FR24FEED=false" \
@@ -336,8 +336,8 @@ docker run -it --rm \
 Once the container has started, you should see a message such as:
 
 ```text
-[radarbox-feeder] [2020-04-02 11:36:31]  Empty sharing key. We will try to create a new one for you!
-[radarbox-feeder] [2020-04-02 11:36:32]  Your new key is g45643ab345af3c5d5g923a99ffc0de9. Please save this key for future use. You will have to know this key to link this receiver to your account in RadarBox24.com. This key is also saved in configuration file (/etc/rbfeeder.ini)
+[radarbox-feeder] [2023-06-20 18:51:01]  CPU Serial empty. Use MAC address instead.
+[radarbox-feeder] [2023-06-20 18:51:02]  Your new key is 35345bf2258aea6b9c7280fbe4467fcd. Please save this key for future use. You will have to know this key to link this receiver to your account in RadarBox24.com. This key is also saved in configuration file (/etc/rbfeeder.ini)
 ```
 
 Note the serial and add it for next run to `RADARBOX_SHARING_KEY` environement variable.
@@ -356,7 +356,7 @@ Add the environment variable `SERVICE_ENABLE_RADARBOX` and set it to `true`.
 | `HTML_SITE_LON`         | `9.0`         | Receiver longitude                               |
 | `HTML_SITE_ALT`         | `0`           | Receiver altitude                                |
 
-Ex : `-e "SERVICE_ENABLE_RADARBOX=true" -e "RADARBOX_SHARING_KEY=g45643ab345af3c5d5g923a99ffc0de9"`
+Ex : `-e "SERVICE_ENABLE_RADARBOX=true" -e "RADARBOX_SHARING_KEY=35345bf2258aea6b9c7280fbe4467fcd"`
 
 ## Add custom properties
 
