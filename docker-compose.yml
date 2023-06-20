@@ -32,6 +32,9 @@ services:
       - "SERVICE_ENABLE_OPENSKY=true"
       - "OPENSKY_USERNAME=MY_OPENSKY_USERNAME"
       - "OPENSKY_SERIAL=MY_OPENSKY_RECEIVER_SERIAL"
+      - "SERVICE_ENABLE_ADSBFI=true"
+      - "ADSBFI_UUID=MY_UUID"
+      - "ADSBFI_STATION_NAME=MY_STATION_NAME"
     devices:
       - "/dev/bus/usb"
     # ports

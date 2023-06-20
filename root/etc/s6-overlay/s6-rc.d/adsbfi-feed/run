@@ -1,0 +1,19 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_ADSBFI" != "false" ]; then
+    set -eo pipefail
+
+    /usr/local/share/adsbexchange/readsb --net-only --debug=n --quiet \
+        --net-beast-reduce-interval 0.5 --net-connector feed.adsb.fi,30004,beast_reduce_out,feed.adsb.fi,64004 \
+        --write-json /run/adsbfi-feed \
+        --write-json-every 1 \
+        --json-location-accuracy 2 \
+        --net-heartbeat 60 --net-ro-size 1280 --net-ro-interval 0.2 \
+        --net-bi-port 30169 \
+        --net-connector 127.0.0.1,30005,beast_in,silent_fail \
+        --lat "${HTML_SITE_LAT}" --lon "${HTML_SITE_LON}" \
+        2>&1 | mawk -W interactive '{printf "%c[35m[adsbfi-feed]%c[0m %s\n", 27, 27, $0}'
+    # awk -W interactive ...  (prefix log messages with color and "[adsbfi-feed]")
+else
+    tail -f /dev/null
+fi
