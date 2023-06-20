@@ -358,6 +358,9 @@ Add the environment variable `SERVICE_ENABLE_RADARBOX` and set it to `true`.
 
 Ex : `-e "SERVICE_ENABLE_RADARBOX=true" -e "RADARBOX_SHARING_KEY=35345bf2258aea6b9c7280fbe4467fcd"`
 
+_Note : You may have this error on windows `[radarbox-feeder] /usr/bin/rbfeeder: line 17:   208 Segmentation fault      /usr/bin/rbfeeder_armhf "$@"`, there is no solution to it._
+_Note : You may have seg fault error, see https://github.com/mikenye/docker-radarbox/issues/9#issuecomment-633068833 for resolution_
+
 ## Add custom properties
 
 **Note** : you can add any property to either fr24feed or piaware configuration file by adding an environment variable starting with `PIAWARE_...` or `FR24FEED_...`.
