@@ -144,6 +144,62 @@ RUN set -x && \
     # mlat-client: simple test
     /usr/local/share/adsbexchange/venv/bin/python3 -c 'import mlat.client'
 
+FROM debian:bullseye as radarbox
+
+# git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' 'https://github.com/mutability/mlat-client.git' | cut -d '/' -f 3 | grep '^v.*' | tail -1
+ENV RADARBOX_MLAT_VERSION v0.2.12
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+WORKDIR /tmp
+RUN set -x && \
+    dpkg --add-architecture armhf && \
+    apt-get update && \
+    apt-get install -y --no-install-suggests --no-install-recommends \
+        ca-certificates \
+        binutils \
+        wget \
+        gnupg \
+        build-essential \
+        git \
+        python3-minimal \
+        python3-distutils \
+        python3-venv \
+        libpython3-dev \
+        libc6:armhf \
+        libcurl4:armhf \
+        libglib2.0-0:armhf \
+        libjansson4:armhf \
+        libprotobuf-c1:armhf \
+        librtlsdr0:armhf \
+        netbase \
+        xz-utils  && \
+    rm -rf /var/lib/apt/lists/* && \
+    dpkg --add-architecture armhf && \
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 1D043681 && \
+    bash -c "echo 'deb https://apt.rb24.com/ bullseye main' > /etc/apt/sources.list.d/rb24.list" && \
+    apt-get update && \
+    # download rbfeeder deb
+    cd /tmp && \
+    apt-get download rbfeeder:armhf && \
+    # extract rbfeeder deb
+    ar xv ./rbfeeder_*armhf.deb && \
+    tar xvf ./data.tar.xz -C / && \
+    # mlat-client
+    SRCTMP=/srctmp && \
+    URL=https://github.com/mutability/mlat-client && \
+    mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/refs/tags/${RADARBOX_MLAT_VERSION}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
+    pushd ${SRCTMP} && \
+    VENV="/usr/local/share/radarbox-mlat-client/venv" && \
+    python3 -m venv "${VENV}" && \
+    source "${VENV}/bin/activate" && \
+    ./setup.py build && \
+    ./setup.py install && \
+    deactivate && \
+    popd && \
+    rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
+    # mlat-client: simple test
+    /usr/local/share/radarbox-mlat-client/venv/bin/python3 -c 'import mlat.client'
+
 # THTTPD
 FROM alpine:3.13.2 AS thttpd
 
@@ -185,6 +241,9 @@ RUN mv /copy_root/tcltls-rebuild/tcl-tls_*.deb /copy_root/tcl-tls.deb && \
     rm -rf /copy_root/tcltls-rebuild
 COPY --from=thttpd /thttpd/thttpd /copy_root/
 COPY --from=confd /opt/confd/bin/confd /copy_root/opt/confd/bin/
+COPY --from=radarbox /usr/bin/rbfeeder /copy_root/usr/bin/rbfeeder_armhf
+COPY --from=radarbox /usr/bin/dump1090-rb /copy_root/usr/bin/dump1090-rbs
+COPY --from=radarbox /usr/local/share/radarbox-mlat-client /copy_root/usr/local/share/radarbox-mlat-client
 ADD build /copy_root/build
 
 FROM debian:bullseye-slim as serve
@@ -211,6 +270,7 @@ ENV SERVICE_ENABLE_ADSBEXCHANGE false
 ENV SERVICE_ENABLE_PLANEFINDER false
 ENV SERVICE_ENABLE_OPENSKY false
 ENV SERVICE_ENABLE_ADSBFI false
+ENV SERVICE_ENABLE_RADARBOX false
 
 # System properties
 ENV SYSTEM_HTTP_ULIMIT_N -1
@@ -223,13 +283,10 @@ COPY --from=copyall /copy_root/ /
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN arch=$(dpkg --print-architecture) && \
-    if [ "$arch" == "arm64" ] || [ "$arch" == "armel" ] ; then \
-    dpkg --add-architecture armhf && \
+RUN dpkg --add-architecture armhf && \
     apt-get update && \
-    apt-get install -y libc6:armhf libstdc++6:armhf libusb-1.0-0:armhf lsb-base:armhf; \
-    ldconfig; \
-    fi && \
+    apt-get install -y libc6:armhf libstdc++6:armhf libusb-1.0-0:armhf lsb-base:armhf && \
+    ldconfig && \
     apt-get update && \
     # rtl-sdr
     apt-get install -y \
@@ -265,7 +322,21 @@ RUN arch=$(dpkg --print-architecture) && \
     python3-venv \
     curl \
     gzip \
+    # radarbox
+    qemu-user-static \
+    build-essential \
+    python3-minimal \
+    python3-distutils \
+    libcurl4:armhf \
+    libglib2.0-0:armhf \
+    libjansson4:armhf \
+    libprotobuf-c1:armhf \
+    librtlsdr0:armhf \
+    netbase \
     && \
+    # Simple checks qemu
+    qemu-arm-static --version && \
+    qemu-aarch64-static --version && \
     # RTL-SDR
     cd /tmp && \
     mkdir -p /etc/modprobe.d && \
@@ -313,6 +384,9 @@ RUN arch=$(dpkg --print-architecture) && \
     ar vx ./*.deb && \
     tar xvf data.tar.xz -C / && \
     mkdir -p /var/lib/openskyd/conf.d && \
+    # Radarbox : create symlink for rbfeeder wrapper
+    mv /build/rbfeeder_wrapper.sh /usr/bin/rbfeeder_wrapper.sh && \
+    ln -s /usr/bin/rbfeeder_wrapper.sh /usr/bin/rbfeeder && \
     # THTTPD
     find /usr/lib/fr24/public_html -type d -print0 | xargs -0 chmod 0755 && \
     find /usr/lib/fr24/public_html -type f -print0 | xargs -0 chmod 0644 && \
@@ -326,6 +400,9 @@ RUN arch=$(dpkg --print-architecture) && \
     # PLANEFINDER
     /build/planefinder.sh && \
     /planefinder/pfclient --version && \
+    # RADARBOX
+    /usr/local/share/radarbox-mlat-client/venv/bin/mlat-client --help && \
+    /usr/bin/rbfeeder --version && \
     # CONFD
     /opt/confd/bin/confd --version && \
     # S6 OVERLAY
@@ -334,11 +411,11 @@ RUN arch=$(dpkg --print-architecture) && \
     rm -rf /build && \
     apt-get purge -y \
     xz-utils \
+    build-essential \
     devscripts \
     pkg-config \
     git-core \
-    cmake \
-    build-essential && \
+    cmake && \
     apt autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 

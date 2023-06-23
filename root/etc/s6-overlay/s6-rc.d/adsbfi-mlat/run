@@ -1,6 +1,17 @@
 #!/command/with-contenv bash
 
 if [ "$SERVICE_ENABLE_ADSBFI" != "false" ]; then
+
+    default_value() {
+        key=${1//\-/_DASH_}
+        key=ADSBFI_${key^^}
+        eval "value=\${$key:-\$2}"
+        printf -v $key -- "$value"
+        export $key
+    }
+
+    default_value "mlat" "false"
+
     if [ "$ADSBFI_MLAT" == "no" ] || [ "$ADSBFI_MLAT" == "false" ]; then
         tail -f /dev/null
         exit 0

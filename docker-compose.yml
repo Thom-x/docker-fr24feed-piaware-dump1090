@@ -35,6 +35,8 @@ services:
       - "SERVICE_ENABLE_ADSBFI=true"
       - "ADSBFI_UUID=MY_UUID"
       - "ADSBFI_STATION_NAME=MY_STATION_NAME"
+      - "SERVICE_ENABLE_RADARBOX=true"
+      - "RADARBOX_SHARING_KEY=MY_SHARING_KEY"
     devices:
       - "/dev/bus/usb"
     # ports
