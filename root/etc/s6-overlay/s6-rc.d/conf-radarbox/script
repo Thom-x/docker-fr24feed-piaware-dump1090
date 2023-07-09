@@ -50,7 +50,7 @@ if [ "$SERVICE_ENABLE_RADARBOX" != "false" ]; then
     {
     echo "[mlat]"
     if [[ "$RADARBOX_MLAT" == "true" ]]; then
-        echo "mlat_cmd=/usr/local/share/radarbox-mlat-client/venv/bin/mlat-client --results beast,listen,30105"
+        echo "mlat_cmd=/usr/local/share/radarbox-mlat-client/venv/bin/mlat-client --results beast,listen,30107"
         echo "autostart_mlat=true"
     else
         echo "autostart_mlat=false"
