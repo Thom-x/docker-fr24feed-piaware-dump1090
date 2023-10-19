@@ -55,6 +55,8 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 	-e "ADSBFI_STATION_NAME=MY_STATION_NAME" \
 	-e "SERVICE_ENABLE_RADARBOX=true" \
 	-e "RADARBOX_SHARING_KEY=MY_RADARBOX_SHARING_KEY" \
+	-e "SERVICE_ENABLE_ADSBHUB=true" \
+	-e "ADSBHUB_CKEY=MY_ADSBHUB_SHARING_KEY" \
 	--tmpfs /run:exec,size=32M \
 	--tmpfs /planefinder/log:exec,size=32M \
 	--tmpfs /usr/lib/fr24/public_html/data:size=32M \
@@ -86,6 +88,7 @@ To disable starting a service you can add an environement variable :
 | `SERVICE_ENABLE_OPENSKY`            | `false` | Disable opensky feeder     | `false`       |
 | `SERVICE_ENABLE_ADSBFI`             | `false` | Disable adsb.fi feeder     | `false`       |
 | `SERVICE_ENABLE_RADARBOX`           | `false` | Disable radarbox feeder    | `false`       |
+| `SERVICE_ENABLE_ADSBHUB`            | `false` | Disable adsbhub feeder     | `false`       |
 
 
 Ex : `-e "SERVICE_ENABLE_HTTP=false"`
@@ -348,6 +351,22 @@ Ex : `-e "SERVICE_ENABLE_RADARBOX=true" -e "RADARBOX_SHARING_KEY=35345bf2258aea6
 
 _Note : You may have this error on windows `[radarbox-feeder] /usr/bin/rbfeeder: line 17:   208 Segmentation fault      /usr/bin/rbfeeder_armhf "$@"`, there is no solution to it._
 _Note : You may have seg fault error, see https://github.com/mikenye/docker-radarbox/issues/9#issuecomment-633068833 for resolution_
+
+## Adsbhub
+
+First-time users should obtain a sharing key.
+
+In order to obtain a sharing key, you need to register on https://www.adsbhub.org/ and create a new station under settings.
+
+Add the environment variable `ADSBHUB_CKEY` and set it to to the value under "Station dynamic IP update ckey".
+Add the environment variable `SERVICE_ENABLE_ADSBHUB` and set it to `true`.
+
+
+| Environment Variable    | Default value | Description                                        |
+| ----------------------- | ------------- | -------------------------------------------------- |
+| `ADSBHUB_CKEY`          | empty         | Sharing key for your station to connect to adsbhub |
+
+Ex : `-e "SERVICE_ENABLE_ADSBHUB=true" -e "ADSBHUB_CKEY=803BHyyxe)HP(%da%DCJfM,}%ftp[9?_j%XR+NktQJUKQ9&UAwQSCWWT&#vWfPAJQW%i){p2:ih!Y&=wMr*qRDrnC{C,L.C&UgYwB_rw.YG["`
 
 ## Add custom properties
 
