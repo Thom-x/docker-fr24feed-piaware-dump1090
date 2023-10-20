@@ -1,6 +1,7 @@
 #!/command/with-contenv bash
 
 if [ "$SERVICE_ENABLE_ADSBHUB" != "false" ]; then
+    set -eo pipefail
 	if [ -z "$ADSBHUB_CKEY" ]; then
 		for i in {1..5}; do
 			echo "FATAL: ADSBHUB_CKEY not set!" | mawk -W interactive '{printf "%c[33m[adsbhub]%c[0m %s\n", 27, 27, $0}'
@@ -8,9 +9,7 @@ if [ "$SERVICE_ENABLE_ADSBHUB" != "false" ]; then
 		kill 1
 		exit 1
 	fi
-
-	cd /usr/bin
-	wget https://www.adsbhub.org/downloads/adsbhub.php --no-check-certificate -O adsbhub.sh
-	chmod 755 adsbhub.sh
-	sed -i "s/^ckey=.*/ckey=$ADSBHUB_CKEY/" "adsbhub.sh"
+	wget https://www.adsbhub.org/downloads/adsbhub.php --no-check-certificate -O /usr/bin/adsbhub.sh
+	chmod 755 /usr/bin/adsbhub.sh
+	sed -i "s/^ckey=.*/ckey=$ADSBHUB_CKEY/" "/usr/bin/adsbhub.sh"
 fi
