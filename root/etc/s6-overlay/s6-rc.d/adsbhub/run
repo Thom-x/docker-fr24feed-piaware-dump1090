@@ -1,0 +1,9 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_ADSBHUB" != "false" ]; then
+	set -eo pipefail
+	/usr/bin/adsbhub.sh 2>&1 | mawk -W interactive '{printf "%c[33m[adsbhub]%c[0m %s\n", 27, 27, $0}'
+	# awk -W interactive ...  (prefix log messages with color and "[adsbhub]")
+else
+	tail -f /dev/null
+fi
