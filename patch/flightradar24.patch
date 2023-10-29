@@ -11,7 +11,7 @@ diff -ru upstream/public_html/config.js modified/public_html/config.js
  // Center marker. If dump1090 provides a receiver location,
  // that location is used and these settings are ignored.
  
-@@ -36,6 +39,15 @@
+@@ -36,6 +39,18 @@
  SiteLon     = 9.0;
  SiteName    = "My Radar Site"; // tooltip of the marker
  
@@ -21,6 +21,9 @@ diff -ru upstream/public_html/config.js modified/public_html/config.js
 +myAdsbexchangeFeederStatusUrl = "";
 +myOpenskyFeederStatusUrl = "";
 +myPlanefinderFeederStatusUrl = "";
++myRadarboxFeederStatusUrl = "";
++myAdsbfiFeederStatusUrl = "";
++myAdsbhubFeederStatusUrl = "";
 +// The local FR24 Feeder Status page
 +myFR24FeederStatusUrl = "";
 +
@@ -51,7 +54,7 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
  			</div>
  			<div class="buttonContainer">
  				<div class="dateTime" id="clock_div"></div>
-@@ -202,6 +203,12 @@
+@@ -202,6 +203,15 @@
  										<tr class="infoblock_heading">
  											<td>
  												<button id="stats_page_button" class="stats_button">Go to My ADS-B Statistics Page</button>
@@ -61,6 +64,9 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
 +												<a id="adsbexchange_feeder_status_page" target="_blank"><button class="stats_button">My ADSBexchange Feeder Status page</button></a>
 +												<a id="opensky_feeder_status_page" target="_blank"><button class="stats_button">My Opensky Network Feeder Status page</button></a>
 +												<a id="planefinder_feeder_status_page" target="_blank"><button class="stats_button">My PlaneFinder Feeder Status page</button></a>
++												<a id="radarbox_feeder_status_page" target="_blank"><button class="stats_button">My Radarbox Feeder Status page</button></a>
++												<a id="adsbfi_feeder_status_page" target="_blank"><button class="stats_button">My ADSB.fi Feeder Status page</button></a>
++												<a id="adsbhub_feeder_status_page" target="_blank"><button class="stats_button">My ADSBHub Feeder Status page</button></a>
  											</td>
  											</td>
  											<td style="text-align: right">
@@ -79,7 +85,7 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
 diff -ru upstream/public_html/script.js modified/public_html/script.js
 --- upstream/public_html/script.js	2020-03-19 15:21:17.000000000 +0100
 +++ modified/public_html/script.js	2021-03-14 21:04:58.453101668 +0100
-@@ -461,6 +461,42 @@
+@@ -461,6 +461,60 @@
                  });
          });
  
@@ -117,6 +123,24 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
 +                $('#planefinder_feeder_status_page').attr('href',myPlanefinderFeederStatusUrl);
 +        } else {
 +                $('#planefinder_feeder_status_page').css('display', 'none');
++        }
++
++        if (myRadarboxFeederStatusUrl) {
++                $('#radarbox_feeder_status_page').attr('href',myRadarboxFeederStatusUrl);
++        } else {
++                $('#radarbox_feeder_status_page').css('display', 'none');
++        }
++
++        if (myAdsbfiFeederStatusUrl) {
++                $('#adsbfi_feeder_status_page').attr('href',myAdsbfiFeederStatusUrl);
++        } else {
++                $('#adsbfi_feeder_status_page').css('display', 'none');
++        }
++
++        if (myAdsbhubFeederStatusUrl) {
++                $('#adsbhub_feeder_status_page').attr('href',myAdsbhubFeederStatusUrl);
++        } else {
++                $('#adsbhub_feeder_status_page').css('display', 'none');
 +        }
 +
          // Force map to redraw if sidebar container is resized - use a timer to debounce
