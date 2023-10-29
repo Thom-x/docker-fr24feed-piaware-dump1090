@@ -18,6 +18,9 @@ if [ "$SERVICE_ENABLE_HTTP" != "false" ]; then
 	default_value "receiver_stats_page_adsbexchange" ""
 	default_value "receiver_stats_page_planefinder" ""
 	default_value "receiver_stats_page_opensky_network" ""
+	default_value "receiver_stats_page_radarbox" ""
+	default_value "receiver_stats_page_adsbfi" ""
+	default_value "receiver_stats_page_adsbhub" ""
 	default_value "fr24_feeder_status_page" ""
 
 	if [ ! -f /usr/lib/fr24/public_html/config.js ]; then
