@@ -351,12 +351,19 @@ Ex : `-e "SERVICE_ENABLE_RADARBOX=true" -e "RADARBOX_SHARING_KEY=35345bf2258aea6
 
 _Note : You may have this error on windows `[radarbox-feeder] /usr/bin/rbfeeder: line 17:   208 Segmentation fault      /usr/bin/rbfeeder_armhf "$@"`, there is no solution to it._
 _Note : You may have seg fault error, see https://github.com/mikenye/docker-radarbox/issues/9#issuecomment-633068833 for resolution_
+_Note : You may have 'already claimed' error on supplied sharing key, see https://github.com/Thom-x/docker-fr24feed-piaware-dump1090/issues/145_
 
 ## Adsbhub
 
 First-time users should obtain a sharing key.
 
-In order to obtain a sharing key, you need to register on https://www.adsbhub.org/ and create a new station under settings.
+In order to obtain a sharing key, you need to register on https://www.adsbhub.org/ and create a new station under settings, setup the station as follow:
+
+- Station mode: Client
+- Feeder Type: Linux
+- Data Protocol: Raw
+- Station Host(IP): Your public IP
+
 
 Add the environment variable `ADSBHUB_CKEY` and set it to to the value under "Station dynamic IP update ckey".
 Add the environment variable `SERVICE_ENABLE_ADSBHUB` and set it to `true`.
@@ -394,6 +401,9 @@ Example :
 | `HTML_RECEIVER_STATS_PAGE_ADSBEXCHANGE`    | empty           | URL of your receiver's stats page on ADS-B Exchange. Usually https://www.adsbexchange.com/api/feeders/?feed=<ID>                                            |
 | `HTML_RECEIVER_STATS_PAGE_PLANEFINDER`     | empty           | URL of your receiver's stats page on PlaneFinder. Usually https://planefinder.net/coverage/receiver/<ID>                                                    |
 | `HTML_RECEIVER_STATS_PAGE_OPENSKY_NETWORK` | empty           | URL of your receiver's stats page on Opensky Netowrk. Usually https://opensky-network.org/receiver-profile?s=<ID>                                           |
+| `HTML_RECEIVER_STATS_PAGE_RADARBOX`        | empty           | URL of your receiver's stats page on Radarbox. Usually https://www.radarbox.com/stations/<ID>                                                               |
+| `HTML_RECEIVER_STATS_PAGE_ADSBFI`          | empty           | URL of your receiver's stats page on ADSB.fi. Usually https://adsb.fi/                                                                                      |
+| `HTML_RECEIVER_STATS_PAGE_ADSBHUB`         | empty           | URL of your receiver's stats page on ADSBHub. Usually https://www.adsbhub.org/statistic.php                                                                 |
 | `HTML_FR24_FEEDER_STATUS_PAGE`             | empty           | URL of your local FR24 Feeder Status page. Usually http://<dockerhost>:8754/ (depends on the port you indicated when starting the container)                |
 | `DUMP1090_ADDITIONAL_ARGS`                 | empty           | Additial arguments for dump1090 e.g.: `--json-location-accuracy 2`                                                                                          |
 | `SYSTEM_HTTP_ULIMIT_N`                     | -1              | Enforce ulimit like docker <=22 to prevent OOM issues (-1 means not enforced), recommended value when crash 1048576                                         |
