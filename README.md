@@ -30,33 +30,33 @@ Run :
 ```
 docker run -d -p 8080:8080 -p 8754:8754 \
 	--device=/dev/bus/usb:/dev/bus/usb \
-	-v "/etc/localtime:/etc/localtime:ro" \
-	-e "FR24FEED_FR24KEY=MY_SHARING_KEY" \
-	-e "PIAWARE_FEEDER_DASH_ID=MY_FEEDER_ID" \
-	-e "HTML_SITE_LAT=MY_SITE_LAT" \
-	-e "HTML_SITE_LON=MY_SITE_LON" \
-	-e "HTML_SITE_ALT=MY_SITE_ALT" \
-	-e "HTML_SITE_NAME=MY_SITE_NAME" \
-	-e "PANORAMA_ID=MY_PANORAMA_ID" \
-	-e "LAYERS_OWM_API_KEY=MY_OWM_API_KEY" \
-	-e "SERVICE_ENABLE_ADSBEXCHANGE=true" \
-	-e "ADSBEXCHANGE_UUID=MY_UUID" \
-	-e "ADSBEXCHANGE_STATION_NAME=MY_STATION_NAME" \
-	-e "MLAT_EXACT_LAT=MY_EXACT_SITE_LAT" \
-	-e "MLAT_EXACT_LON=MY_EXACT_SITE_LON" \
-	-e "MLAT_ALTITUDE_MSL_METERS=MY_SITE_ALT_MSL_METERS" \
-	-e "SERVICE_ENABLE_PLANEFINDER=true" \
-	-e "PLANEFINDER_SHARECODE=dslmfksdlmk" \
-	-e "SERVICE_ENABLE_OPENSKY=true" \
-	-e "OPENSKY_USERNAME=MY_OPENSKY_USERNAME" \
-	-e "OPENSKY_SERIAL=MY_OPENSKY_RECEIVER_SERIAL" \
-	-e "SERVICE_ENABLE_ADSBFI=true" \
-	-e "ADSBFI_UUID=MY_UUID" \
-	-e "ADSBFI_STATION_NAME=MY_STATION_NAME" \
-	-e "SERVICE_ENABLE_RADARBOX=true" \
-	-e "RADARBOX_SHARING_KEY=MY_RADARBOX_SHARING_KEY" \
-	-e "SERVICE_ENABLE_ADSBHUB=true" \
-	-e "ADSBHUB_CKEY=MY_ADSBHUB_SHARING_KEY" \
+	-v '/etc/localtime:/etc/localtime:ro' \
+	-e 'FR24FEED_FR24KEY=MY_SHARING_KEY' \
+	-e 'PIAWARE_FEEDER_DASH_ID=MY_FEEDER_ID' \
+	-e 'HTML_SITE_LAT=MY_SITE_LAT' \
+	-e 'HTML_SITE_LON=MY_SITE_LON' \
+	-e 'HTML_SITE_ALT=MY_SITE_ALT' \
+	-e 'HTML_SITE_NAME=MY_SITE_NAME' \
+	-e 'PANORAMA_ID=MY_PANORAMA_ID' \
+	-e 'LAYERS_OWM_API_KEY=MY_OWM_API_KEY' \
+	-e 'SERVICE_ENABLE_ADSBEXCHANGE=true' \
+	-e 'ADSBEXCHANGE_UUID=MY_UUID' \
+	-e 'ADSBEXCHANGE_STATION_NAME=MY_STATION_NAME' \
+	-e 'MLAT_EXACT_LAT=MY_EXACT_SITE_LAT' \
+	-e 'MLAT_EXACT_LON=MY_EXACT_SITE_LON' \
+	-e 'MLAT_ALTITUDE_MSL_METERS=MY_SITE_ALT_MSL_METERS' \
+	-e 'SERVICE_ENABLE_PLANEFINDER=true' \
+	-e 'PLANEFINDER_SHARECODE=dslmfksdlmk' \
+	-e 'SERVICE_ENABLE_OPENSKY=true' \
+	-e 'OPENSKY_USERNAME=MY_OPENSKY_USERNAME' \
+	-e 'OPENSKY_SERIAL=MY_OPENSKY_RECEIVER_SERIAL' \
+	-e 'SERVICE_ENABLE_ADSBFI=true' \
+	-e 'ADSBFI_UUID=MY_UUID' \
+	-e 'ADSBFI_STATION_NAME=MY_STATION_NAME' \
+	-e 'SERVICE_ENABLE_RADARBOX=true' \
+	-e 'RADARBOX_SHARING_KEY=MY_RADARBOX_SHARING_KEY' \
+	-e 'SERVICE_ENABLE_ADSBHUB=true' \
+	-e 'ADSBHUB_CKEY=MY_ADSBHUB_SHARING_KEY' \
 	--tmpfs /run:exec,size=32M \
 	--tmpfs /planefinder/log:exec,size=32M \
 	--tmpfs /usr/lib/fr24/public_html/data:size=32M \
@@ -66,7 +66,7 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 Go to http://dockerhost:8080 to view a map of received data.
 Go to http://dockerhost:8754 to view the FR24 Feeder configuration panel.
 
-_Note : remove `-e "PANORAMA_ID=MY_PANORAMA_ID"` or `-e "LAYERS_OWM_API_KEY=MY_OWM_API_KEY"` from the command line if you don't want to use this feature._  
+_Note : remove `-e 'PANORAMA_ID=MY_PANORAMA_ID'` or `-e 'LAYERS_OWM_API_KEY=MY_OWM_API_KEY'` from the command line if you don't want to use this feature._  
 _Note : `--tmpfs` is used to avoid writing data on HDD/SD Card_  
 _Note : `-v "/etc/localtime:/etc/localtime:ro"` is needed for MLAT, or you can have issues with time synchronization._
 
@@ -91,7 +91,7 @@ To disable starting a service you can add an environement variable :
 | `SERVICE_ENABLE_ADSBHUB`            | `false` | Disable adsbhub feeder     | `false`       |
 
 
-Ex : `-e "SERVICE_ENABLE_HTTP=false"`
+Ex : `-e 'SERVICE_ENABLE_HTTP=false'`
 
 ## FlightAware
 
@@ -101,10 +101,10 @@ Run :
 
 ```
 docker run -it --rm \
-	-e "SERVICE_ENABLE_DUMP1090=false" \
-	-e "SERVICE_ENABLE_HTTP=false" \
-	-e "SERVICE_ENABLE_FR24FEED=false" \
-	-e "SERVICE_ENABLE_PIAWARE=false" \
+	-e 'SERVICE_ENABLE_DUMP1090=false' \
+	-e 'SERVICE_ENABLE_HTTP=false' \
+	-e 'SERVICE_ENABLE_FR24FEED=false' \
+	-e 'SERVICE_ENABLE_PIAWARE=false' \
 	thomx/fr24feed-piaware /usr/bin/piaware -plainlog
 ```
 
@@ -119,7 +119,7 @@ Add the environment variable `PIAWARE_FEEDER_DASH_ID` with your feeder id.
 | `PIAWARE_RECEIVER_DASH_HOST` | `receiver-host`        | `127.0.0.1`   |
 | `PIAWARE_RECEIVER_DASH_PORT` | `receiver-port`        | `30005`       |
 
-Ex : `-e "PIAWARE_RECEIVER_DASH_TYPE=other"`
+Ex : `-e 'PIAWARE_RECEIVER_DASH_TYPE=other'`
 
 ## FlightRadar24
 
@@ -127,10 +127,10 @@ Run :
 
 ```
 docker run -it --rm \
-	-e "SERVICE_ENABLE_DUMP1090=false" \
-	-e "SERVICE_ENABLE_HTTP=false" \
-	-e "SERVICE_ENABLE_PIAWARE=false" \
-	-e "SERVICE_ENABLE_FR24FEED=false" \
+	-e 'SERVICE_ENABLE_DUMP1090=false' \
+	-e 'SERVICE_ENABLE_HTTP=false' \
+	-e 'SERVICE_ENABLE_PIAWARE=false' \
+	-e 'SERVICE_ENABLE_FR24FEED=false' \
 	thomx/fr24feed-piaware /bin/bash
 ```
 
@@ -153,7 +153,7 @@ Add the environment variable `FR24FEED_FR24KEY` with your sharing key.
 | `FR24FEED_MLAT_DASH_WITHOUT_DASH_GPS` | `mlat-without-gps`                                                                                                  | `no`              |
 | `SYSTEM_FR24FEED_ULIMIT_N`            | Enforce ulimit like docker <=22 to prevent CPU issues (-1 means not enforced), recommended value when crash 1048576 | -1                |
 
-Ex : `-e "FR24FEED_FR24KEY=0123456789"`
+Ex : `-e 'FR24FEED_FR24KEY=0123456789'`
 
 ## ADS-B Exchange
 
@@ -177,7 +177,7 @@ You can check that your MLAT is working correctly by searching for your station 
 
 The ADS-B Exchange Anywhere map will be available at: <https://www.adsbexchange.com/api/feeders/?feed=MY_UUID>
 
-Ex : `-e "SERVICE_ENABLE_ADSBEXCHANGE=true" -e "ADSBEXCHANGE_UUID=8398f51e-a61d-11ec-b909-0242ac120002" -e "ADSBEXCHANGE_STATION_NAME=MyStation"`
+Ex : `-e 'SERVICE_ENABLE_ADSBEXCHANGE=true' -e 'ADSBEXCHANGE_UUID=8398f51e-a61d-11ec-b909-0242ac120002' -e 'ADSBEXCHANGE_STATION_NAME=MyStation'`
 
 ## adsb.fi
 
@@ -201,7 +201,7 @@ You can check that your MLAT is working correctly by searching for your station 
 
 The ADS-B Exchange Anywhere map will be available at: <https://www.adsbfi.com/api/feeders/?feed=MY_UUID>
 
-Ex : `-e "SERVICE_ENABLE_ADSBFI=true" -e "ADSBFI_UUID=8398f51e-a61d-11ec-b909-0242ac120002" -e "ADSBFI_STATION_NAME=MyStation"`
+Ex : `-e 'SERVICE_ENABLE_ADSBFI=true' -e 'ADSBFI_UUID=8398f51e-a61d-11ec-b909-0242ac120002' -e 'ADSBFI_STATION_NAME=MyStation'`
 
 ## Exact coordinates for MLAT
 
@@ -229,10 +229,10 @@ Run :
 ```
 docker run -it --rm \
 	-p 30053:30053 \
-	-e "SERVICE_ENABLE_DUMP1090=false" \
-	-e "SERVICE_ENABLE_HTTP=false" \
-	-e "SERVICE_ENABLE_PIAWARE=false" \
-	-e "SERVICE_ENABLE_FR24FEED=false" \
+	-e 'SERVICE_ENABLE_DUMP1090=false' \
+	-e 'SERVICE_ENABLE_HTTP=false' \
+	-e 'SERVICE_ENABLE_PIAWARE=false' \
+	-e 'SERVICE_ENABLE_FR24FEED=false' \
 	thomx/fr24feed-piaware /planefinder/pfclient
 ```
 
@@ -254,7 +254,7 @@ Add the environment variable `SERVICE_ENABLE_PLANEFINDER` and set it to `true`.
 | ---------------------------- | --------------------------------- | ------------- |
 | `PLANEFINDER_SHARECODE`      | generated share code (required)   | empty         |
 
-Ex : `-e "SERVICE_ENABLE_PLANEFINDER=true" -e "PLANEFINDER_SHARECODE=65dsfsd56f"`
+Ex : `-e 'SERVICE_ENABLE_PLANEFINDER=true' -e 'PLANEFINDER_SHARECODE=65dsfsd56f'`
 
 ## Opensky
 
@@ -266,14 +266,14 @@ Run :
 
 ```
 docker run -it --rm \
-	-e "SERVICE_ENABLE_OPENSKY=true" \
-	-e "SERVICE_ENABLE_DUMP1090=false" \
-	-e "SERVICE_ENABLE_HTTP=false" \
-	-e "SERVICE_ENABLE_PIAWARE=false" \
-	-e "SERVICE_ENABLE_FR24FEED=false" \
-	-e "OPENSKY_USERNAME=OpenskyUsername" \
-	-e "HTML_SITE_LAT=45" \
-	-e "HTML_SITE_LON=9" \
+	-e 'SERVICE_ENABLE_OPENSKY=true' \
+	-e 'SERVICE_ENABLE_DUMP1090=false' \
+	-e 'SERVICE_ENABLE_HTTP=false' \
+	-e 'SERVICE_ENABLE_PIAWARE=false' \
+	-e 'SERVICE_ENABLE_FR24FEED=false' \
+	-e 'OPENSKY_USERNAME=OpenskyUsername' \
+	-e 'HTML_SITE_LAT=45' \
+	-e 'HTML_SITE_LON=9' \
 	thomx/fr24feed-piaware /bin/bash
 ```
 
@@ -301,7 +301,7 @@ Add the environment variable `SERVICE_ENABLE_OPENSKY` and set it to `true`.
 | `HTML_SITE_LON`         | `9.0`         | Receiver longitude                            |
 | `HTML_SITE_ALT`         | `0`           | Receiver altitude                             |
 
-Ex : `-e "SERVICE_ENABLE_OPENSKY=true" -e "OPENSKY_USERNAME=MyUserName" -e "OPENSKY_SERIAL=-462168426854"`
+Ex : `-e 'SERVICE_ENABLE_OPENSKY=true' -e 'OPENSKY_USERNAME=MyUserName' -e 'OPENSKY_SERIAL=-62168426854'`
 
 ## Radarbox
 
@@ -313,14 +313,14 @@ Run :
 
 ```
 docker run -it --rm \
-	-e "SERVICE_ENABLE_RADARBOX=true" \
-	-e "SERVICE_ENABLE_DUMP1090=false" \
-	-e "SERVICE_ENABLE_HTTP=false" \
-	-e "SERVICE_ENABLE_PIAWARE=false" \
-	-e "SERVICE_ENABLE_FR24FEED=false" \
-	-e "HTML_SITE_LAT=45" \
-	-e "HTML_SITE_LON=9" \
-	-e "HTML_SITE_ALT=0" \
+	-e 'SERVICE_ENABLE_RADARBOX=true' \
+	-e 'SERVICE_ENABLE_DUMP1090=false' \
+	-e 'SERVICE_ENABLE_HTTP=false' \
+	-e 'SERVICE_ENABLE_PIAWARE=false' \
+	-e 'SERVICE_ENABLE_FR24FEED=false' \
+	-e 'HTML_SITE_LAT=45' \
+	-e 'HTML_SITE_LON=9' \
+	-e 'HTML_SITE_ALT=0' \
 	thomx/fr24feed-piaware /bin/bash
 ```
 
@@ -347,7 +347,7 @@ Add the environment variable `SERVICE_ENABLE_RADARBOX` and set it to `true`.
 | `HTML_SITE_LON`         | `9.0`         | Receiver longitude                               |
 | `HTML_SITE_ALT`         | `0`           | Receiver altitude                                |
 
-Ex : `-e "SERVICE_ENABLE_RADARBOX=true" -e "RADARBOX_SHARING_KEY=35345bf2258aea6b9c7280fbe4467fcd"`
+Ex : `-e 'SERVICE_ENABLE_RADARBOX=true' -e 'RADARBOX_SHARING_KEY=35345bf2258aea6b9c7280fbe4467fcd'`
 
 _Note : You may have this error on windows `[radarbox-feeder] /usr/bin/rbfeeder: line 17:   208 Segmentation fault      /usr/bin/rbfeeder_armhf "$@"`, there is no solution to it._
 _Note : You may have seg fault error, see https://github.com/mikenye/docker-radarbox/issues/9#issuecomment-633068833 for resolution_
@@ -373,7 +373,7 @@ Add the environment variable `SERVICE_ENABLE_ADSBHUB` and set it to `true`.
 | ----------------------- | ------------- | -------------------------------------------------- |
 | `ADSBHUB_CKEY`          | empty         | Sharing key for your station to connect to adsbhub |
 
-Ex : `-e "SERVICE_ENABLE_ADSBHUB=true" -e "ADSBHUB_CKEY=803BHyyxe)HP(%da%DCJfM,}%ftp[9?_j%XR+NktQJUKQ9&UAwQSCWWT&#vWfPAJQW%i){p2:ih!Y&=wMr*qRDrnC{C,L.C&UgYwB_rw.YG["`
+Ex : `-e 'SERVICE_ENABLE_ADSBHUB=true' -e 'ADSBHUB_CKEY=803BHyyxe'HP(%da%DCJfM,}%ftp[9?_j%XR+NktQJUKQ9&UAwQSCWWT&#vWfPAJQW%i){p2:ih!Y&=wMr*qRDrnC{C,L.C&UgYwB_rw.YG["`
 
 ## Add custom properties
 
@@ -408,7 +408,7 @@ Example :
 | `DUMP1090_ADDITIONAL_ARGS`                 | empty           | Additial arguments for dump1090 e.g.: `--json-location-accuracy 2`                                                                                          |
 | `SYSTEM_HTTP_ULIMIT_N`                     | -1              | Enforce ulimit like docker <=22 to prevent OOM issues (-1 means not enforced), recommended value when crash 1048576                                         |
 
-Ex : `-e "HTML_SITE_NAME=My site"`
+Ex : `-e 'HTML_SITE_NAME=My site"`
 
 ## DUMP1090 forwarding
 
@@ -442,7 +442,7 @@ Create a panorama for your receiver location on http://www.heywhatsthat.com.
 
 _Note : the panorama id value correspond to the URL at the top of the panorama http://www.heywhatsthat.com/?view=XXXX, altitudes are in meters, you can specify a list of altitudes._
 
-Ex : `-e "PANORAMA_ID=FRUXK2G7"`
+Ex : `-e 'PANORAMA_ID=FRUXK2G7'`
 
 If you don't want to download the limit every time you bring up the container you can download `http://www.heywhatsthat.com/api/upintheair.json?id=${PANORAMA_ID}&refraction=0.25&alts=${PANORAMA_ALTS}` as upintheair.json and mount it in `/usr/lib/fr24/public_html/upintheair.json`.
 
@@ -459,7 +459,7 @@ See: https://openweathermap.org/price
 | -------------------- | ------------- | ------------------------ |
 | `LAYERS_OWM_API_KEY` | empty         | Open Weather Map API Key |
 
-Ex : `-e "LAYERS_OWM_API_KEY=dsf1ds65f4d2f65g"`
+Ex : `-e 'LAYERS_OWM_API_KEY=dsf1ds65f4d2f65g'`
 
 # Build it yourself
 
