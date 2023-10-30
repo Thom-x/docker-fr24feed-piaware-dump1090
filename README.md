@@ -301,7 +301,7 @@ Add the environment variable `SERVICE_ENABLE_OPENSKY` and set it to `true`.
 | `HTML_SITE_LON`         | `9.0`         | Receiver longitude                            |
 | `HTML_SITE_ALT`         | `0`           | Receiver altitude                             |
 
-Ex : `-e 'SERVICE_ENABLE_OPENSKY=true' -e 'OPENSKY_USERNAME=MyUserName' -e 'OPENSKY_SERIAL=-62168426854'`
+Ex : `-e 'SERVICE_ENABLE_OPENSKY=true' -e 'OPENSKY_USERNAME=MyUserName' -e 'OPENSKY_SERIAL=-462168426854'`
 
 ## Radarbox
 
@@ -373,7 +373,7 @@ Add the environment variable `SERVICE_ENABLE_ADSBHUB` and set it to `true`.
 | ----------------------- | ------------- | -------------------------------------------------- |
 | `ADSBHUB_CKEY`          | empty         | Sharing key for your station to connect to adsbhub |
 
-Ex : `-e 'SERVICE_ENABLE_ADSBHUB=true' -e 'ADSBHUB_CKEY=803BHyyxe'HP(%da%DCJfM,}%ftp[9?_j%XR+NktQJUKQ9&UAwQSCWWT&#vWfPAJQW%i){p2:ih!Y&=wMr*qRDrnC{C,L.C&UgYwB_rw.YG["`
+Ex : `-e 'SERVICE_ENABLE_ADSBHUB=true' -e 'ADSBHUB_CKEY=803BHyyxeHP(%da%DCJfM,}%ftp[9?_j%XR+NktQJUKQ9&UAwQSCWWT&#vWfPAJQW%i){p2:ih!Y&=wMr*qRDrnC{C,L.C&UgYwB_rw.YG['`
 
 ## Add custom properties
 
@@ -408,7 +408,7 @@ Example :
 | `DUMP1090_ADDITIONAL_ARGS`                 | empty           | Additial arguments for dump1090 e.g.: `--json-location-accuracy 2`                                                                                          |
 | `SYSTEM_HTTP_ULIMIT_N`                     | -1              | Enforce ulimit like docker <=22 to prevent OOM issues (-1 means not enforced), recommended value when crash 1048576                                         |
 
-Ex : `-e 'HTML_SITE_NAME=My site"`
+Ex : `-e 'HTML_SITE_NAME=My site'`
 
 ## DUMP1090 forwarding
 
