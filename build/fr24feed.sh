@@ -14,7 +14,7 @@ case $arch in
     dirname=fr24feed_armhf
     ;;
   amd64)
-    url=https://repo-feed.flightradar24.com/linux_x86_64_binaries/fr24feed_${FR24FEED_AMD64_VERSION}_amd64.tgz
+    url=https://repo-feed.flightradar24.com/linux_binaries/fr24feed_${FR24FEED_AMD64_VERSION}_amd64.tgz
     dirname=fr24feed_amd64
     ;;
   *)
