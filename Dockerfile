@@ -355,6 +355,7 @@ RUN dpkg --add-architecture armhf && \
     rm -rf /tmp/rtl-sdr && \
     # Install dependencies
     apt-get install -y \
+    procps \
     libssl-dev \
     tcl-dev \
     chrpath \
