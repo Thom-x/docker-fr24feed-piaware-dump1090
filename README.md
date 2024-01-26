@@ -95,7 +95,7 @@ Ex : `-e 'SERVICE_ENABLE_HTTP=false'`
 
 ## FlightAware
 
-Resgister on https://flightaware.com/account/join/.
+Register on https://flightaware.com/account/join/.
 
 Run :
 
