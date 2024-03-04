@@ -147,7 +147,7 @@ RUN set -x && \
 FROM debian:bullseye as radarbox
 
 # git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' 'https://github.com/mutability/mlat-client.git' | cut -d '/' -f 3 | grep '^v.*' | tail -1
-ENV RADARBOX_MLAT_VERSION v0.2.12
+ENV RADARBOX_MLAT_VERSION v0.2.13
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /tmp
