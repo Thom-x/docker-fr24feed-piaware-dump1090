@@ -25,6 +25,7 @@ jobs:
         id: check
         run: |
           if [[ "${COMMENT}" == "@deploy" ]]; then
+            echo "Proceeding..."
           else
             curl -f -s -L \
               -X POST \
