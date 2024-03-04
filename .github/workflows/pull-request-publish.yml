@@ -26,7 +26,9 @@ jobs:
         run: |
           if [[ "${COMMENT}" == "@deploy" ]]; then
             echo "Proceeding..."
+            echo "triggered=true" >> $GITHUB_OUTPUT
           else
+            echo "triggered=false" >> $GITHUB_OUTPUT
             curl -f -s -L \
               -X POST \
               -H "Accept: application/vnd.github+json" \
