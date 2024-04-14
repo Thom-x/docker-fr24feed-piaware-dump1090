@@ -200,8 +200,23 @@ RUN set -x && \
     # mlat-client: simple test
     /usr/local/share/radarbox-mlat-client/venv/bin/python3 -c 'import mlat.client'
 
+FROM debian:bullseye as rbfeeder_fixcputemp
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+ADD rbfeeder_fixcputemp ./
+RUN set -x && \
+    apt-get update && \
+    apt-get install -y --no-install-suggests --no-install-recommends \
+        build-essential
+ARG TARGETARCH
+RUN if [ $TARGETARCH != "arm" ]; then \
+        apt-get install -y crossbuild-essential-armhf && \
+        make CC=arm-linux-gnueabihf-gcc \
+    ; else \
+        make \
+    ; fi
+
 # THTTPD
-FROM alpine:3.13.2 AS thttpd
+FROM alpine:3.19.1 AS thttpd
 
 ENV THTTPD_VERSION=2.29
 
@@ -244,6 +259,7 @@ COPY --from=confd /opt/confd/bin/confd /copy_root/opt/confd/bin/
 COPY --from=radarbox /usr/bin/rbfeeder /copy_root/usr/bin/rbfeeder_armhf
 COPY --from=radarbox /usr/bin/dump1090-rb /copy_root/usr/bin/dump1090-rbs
 COPY --from=radarbox /usr/local/share/radarbox-mlat-client /copy_root/usr/local/share/radarbox-mlat-client
+COPY --from=rbfeeder_fixcputemp ./librbfeeder_fixcputemp.so /copy_root/usr/lib/arm-linux-gnueabihf/librbfeeder_fixcputemp.so
 ADD build /copy_root/build
 
 FROM debian:bullseye-slim as serve
