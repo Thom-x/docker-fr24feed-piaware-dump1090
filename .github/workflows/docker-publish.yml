@@ -13,7 +13,7 @@ on:
 env:
   # TODO: Change variable to your image's name.
   DOCKERHUB_IMAGE_NAME: thomx/fr24feed-piaware
-  GHCR_IMAGE_NAME: ${{ github.repository }}
+  GHCR_IMAGE_NAME: thom-x/docker-fr24feed-piaware-dump1090
 
 jobs:
   # Run tests.
@@ -77,6 +77,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker metadata
+        id: docker-metadata
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/$GHCR_IMAGE_NAME
       - name: Get tags list
         id: tags
         run: |
