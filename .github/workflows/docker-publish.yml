@@ -12,7 +12,8 @@ on:
 
 env:
   # TODO: Change variable to your image's name.
-  IMAGE_NAME: thomx/fr24feed-piaware
+  DOCKERHUB_IMAGE_NAME: thomx/fr24feed-piaware
+  GHCR_IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   # Run tests.
@@ -22,13 +23,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Cache Docker layers
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
           key: all-buildx-${{ github.sha }}
@@ -53,13 +54,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Cache Docker layers
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
           key: all-buildx-${{ github.sha }}
@@ -86,8 +87,8 @@ jobs:
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
 
           # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && TAGS=$IMAGE_NAME:latest,ghcr.io/$IMAGE_NAME:latest
-          [ "$VERSION" != "master" ] && TAGS=$IMAGE_NAME:$VERSION,$IMAGE_NAME:latest,ghcr.io/$IMAGE_NAME:$VERSION,ghcr.io/$IMAGE_NAME:latest
+          [ "$VERSION" == "master" ] && TAGS=$DOCKERHUB_IMAGE_NAME:latest,ghcr.io/$GHCR_IMAGE_NAME:latest
+          [ "$VERSION" != "master" ] && TAGS=$DOCKERHUB_IMAGE_NAME:$VERSION,$DOCKERHUB_IMAGE_NAME:latest,ghcr.io/$GHCR_IMAGE_NAME:$VERSION,ghcr.io/$GHCR_IMAGE_NAME:latest
           echo TAGS=$TAGS
           echo "tags=$TAGS" >> $GITHUB_OUTPUT
       - name: Build and push

@@ -3,11 +3,6 @@ name: Pull Request
 # Run tests for any PRs.
 on: pull_request
 
-env:
-  # TODO: Change variable to your image's name.
-  IMAGE_NAME: thomx/fr24feed-piaware
-  PR_NUMBER: ${{ github.event.pull_request.number }}
-
 jobs:
   # Run tests.
   # See also https://docs.docker.com/docker-hub/builds/automated-testing/
@@ -19,13 +14,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Cache Docker layers
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
           key: ${{ matrix.architecture }}-buildx-${{ github.sha }}
