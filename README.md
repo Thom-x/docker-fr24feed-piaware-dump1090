@@ -8,6 +8,8 @@
 
 ![License](https://img.shields.io/github/license/Thom-x/docker-fr24feed-piaware-dump1090)
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/T6T1YLGWM)
+
 > Please consider following this project's author, [Thom-x](https://github.com/Thom-x), and consider starring the project to show your ❤️ and support.
 
 Docker image of Fr24feed, FlightAware and dump1090.
