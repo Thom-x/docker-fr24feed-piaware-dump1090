@@ -71,7 +71,7 @@ RUN git clone https://github.com/flightaware/tcltls-rebuild && \
     dpkg-buildpackage -b --no-sign && \
     cd ../ && \
     dpkg -i tcl-tls_*.deb
-    
+
 RUN git clone -b ${PIAWARE_VERSION} --depth 1 https://github.com/flightaware/piaware_builder.git piaware_builder
 WORKDIR /tmp/piaware_builder
 RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
@@ -273,6 +273,7 @@ ENV FR24FEED_ARMEL_VERSION 1.0.44-0
 
 ENV PLANEFINDER_AMD64_VERSION 5.0.162
 ENV PLANEFINDER_ARMHF_VERSION 5.0.161
+ENV PLANEFINDER_ARM64_VERSION 5.1.440
 
 ENV S6_OVERLAY_VERSION 3.1.3.0
 
