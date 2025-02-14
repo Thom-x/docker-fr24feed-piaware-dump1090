@@ -1,4 +1,4 @@
-FROM debian:bullseye as dump1090
+FROM debian:bullseye-20240904 as dump1090
 
 ENV DUMP1090_VERSION v9.0
 
@@ -23,7 +23,7 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
     patch --ignore-whitespace -p1 -ru --force --no-backup-if-mismatch -d $PWD < /patch/flightradar24.patch && \
     make CPUFEATURES=no
 
-FROM debian:bullseye as piaware
+FROM debian:bullseye-20240904 as piaware
 
 ENV DEBIAN_VERSION bullseye
 ENV PIAWARE_VERSION v9.0.1
@@ -81,7 +81,7 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 #ADSBEXCHANGE
 # pinned commits, feel free to update to most recent commit, no major versions usually
 
-FROM debian:bullseye as adsbexchange_packages
+FROM debian:bullseye-20240904 as adsbexchange_packages
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /tmp
@@ -144,7 +144,7 @@ RUN set -x && \
     # mlat-client: simple test
     /usr/local/share/adsbexchange/venv/bin/python3 -c 'import mlat.client'
 
-FROM debian:bullseye as radarbox
+FROM debian:bullseye-20240904 as radarbox
 
 # git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' 'https://github.com/mutability/mlat-client.git' | cut -d '/' -f 3 | grep '^v.*' | tail -1
 ENV RADARBOX_MLAT_VERSION v0.2.13
@@ -200,7 +200,7 @@ RUN set -x && \
     # mlat-client: simple test
     /usr/local/share/radarbox-mlat-client/venv/bin/python3 -c 'import mlat.client'
 
-FROM debian:bullseye as rbfeeder_fixcputemp
+FROM debian:bullseye-20240904 as rbfeeder_fixcputemp
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ADD rbfeeder_fixcputemp ./
 RUN set -x && \
@@ -234,7 +234,7 @@ RUN cd /thttpd \
     && make CCOPT='-O2 -s -static' thttpd
 
 # CONFD
-FROM debian:bullseye-slim as confd
+FROM debian:bullseye-20240904-slim as confd
 
 ADD confd/confd.tar.gz /opt/confd/
 RUN ARCH=$(dpkg --print-architecture) && \
@@ -243,7 +243,7 @@ RUN ARCH=$(dpkg --print-architecture) && \
     rm /opt/confd/bin/confd-*
 
 # ONE STAGE COPY ALL
-FROM debian:bullseye-slim as copyall
+FROM debian:bullseye-20240904-slim as copyall
 
 COPY --from=dump1090 /tmp/dump1090/dump1090 /copy_root/usr/lib/fr24/
 COPY --from=dump1090 /tmp/dump1090/public_html /copy_root/usr/lib/fr24/public_html
@@ -262,7 +262,7 @@ COPY --from=radarbox /usr/local/share/radarbox-mlat-client /copy_root/usr/local/
 COPY --from=rbfeeder_fixcputemp ./librbfeeder_fixcputemp.so /copy_root/usr/lib/arm-linux-gnueabihf/librbfeeder_fixcputemp.so
 ADD build /copy_root/build
 
-FROM debian:bullseye-slim as serve
+FROM debian:bullseye-20240904-slim as serve
 
 ENV DEBIAN_VERSION bullseye
 ENV RTL_SDR_VERSION 0.6.0
