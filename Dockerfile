@@ -1,6 +1,6 @@
-FROM debian:bullseye as dump1090
+FROM debian:bullseye AS dump1090
 
-ENV DUMP1090_VERSION v9.0
+ENV DUMP1090_VERSION=v9.0
 
 # DUMP1090
 RUN apt-get update && \
@@ -23,10 +23,10 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
     patch --ignore-whitespace -p1 -ru --force --no-backup-if-mismatch -d $PWD < /patch/flightradar24.patch && \
     make CPUFEATURES=no
 
-FROM debian:bullseye as piaware
+FROM debian:bullseye AS piaware
 
-ENV DEBIAN_VERSION bullseye
-ENV PIAWARE_VERSION v9.0.1
+ENV DEBIAN_VERSION=bullseye
+ENV PIAWARE_VERSION=v9.0.1
 
 # PIAWARE
 WORKDIR /tmp
@@ -81,7 +81,7 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 #ADSBEXCHANGE
 # pinned commits, feel free to update to most recent commit, no major versions usually
 
-FROM debian:bullseye as adsbexchange_packages
+FROM debian:bullseye AS adsbexchange_packages
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /tmp
@@ -89,6 +89,7 @@ RUN set -x && \
     apt-get update && \
     apt-get install -y --no-install-suggests --no-install-recommends \
     jq \
+    git \
     uuid-runtime \
     wget \
     make \
@@ -102,7 +103,7 @@ RUN set -x && \
     python3-venv \
     python3-dev
 
-FROM adsbexchange_packages as adsbexchange
+FROM adsbexchange_packages AS adsbexchange
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /tmp
 RUN set -x && \
@@ -144,77 +145,6 @@ RUN set -x && \
     # mlat-client: simple test
     /usr/local/share/adsbexchange/venv/bin/python3 -c 'import mlat.client'
 
-FROM debian:bullseye as radarbox
-
-# git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' 'https://github.com/mutability/mlat-client.git' | cut -d '/' -f 3 | grep '^v.*' | tail -1
-ENV RADARBOX_MLAT_VERSION v0.2.13
-
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-WORKDIR /tmp
-RUN set -x && \
-    dpkg --add-architecture armhf && \
-    apt-get update && \
-    apt-get install -y --no-install-suggests --no-install-recommends \
-        ca-certificates \
-        binutils \
-        wget \
-        gnupg \
-        build-essential \
-        git \
-        python3-minimal \
-        python3-distutils \
-        python3-venv \
-        libpython3-dev \
-        libc6:armhf \
-        libcurl4:armhf \
-        libglib2.0-0:armhf \
-        libjansson4:armhf \
-        libprotobuf-c1:armhf \
-        librtlsdr0:armhf \
-        netbase \
-        xz-utils  && \
-    rm -rf /var/lib/apt/lists/* && \
-    dpkg --add-architecture armhf && \
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 1D043681 && \
-    bash -c "echo 'deb https://apt.rb24.com/ bullseye main' > /etc/apt/sources.list.d/rb24.list" && \
-    apt-get update && \
-    # download rbfeeder deb
-    cd /tmp && \
-    apt-get download rbfeeder:armhf && \
-    # extract rbfeeder deb
-    ar xv ./rbfeeder_*armhf.deb && \
-    tar xvf ./data.tar.xz -C / && \
-    # mlat-client
-    SRCTMP=/srctmp && \
-    URL=https://github.com/mutability/mlat-client && \
-    mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/refs/tags/${RADARBOX_MLAT_VERSION}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
-    pushd ${SRCTMP} && \
-    VENV="/usr/local/share/radarbox-mlat-client/venv" && \
-    python3 -m venv "${VENV}" && \
-    source "${VENV}/bin/activate" && \
-    ./setup.py build && \
-    ./setup.py install && \
-    deactivate && \
-    popd && \
-    rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
-    # mlat-client: simple test
-    /usr/local/share/radarbox-mlat-client/venv/bin/python3 -c 'import mlat.client'
-
-FROM debian:bullseye as rbfeeder_fixcputemp
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-ADD rbfeeder_fixcputemp ./
-RUN set -x && \
-    apt-get update && \
-    apt-get install -y --no-install-suggests --no-install-recommends \
-        build-essential
-ARG TARGETARCH
-RUN if [ $TARGETARCH != "arm" ]; then \
-        apt-get install -y crossbuild-essential-armhf && \
-        make CC=arm-linux-gnueabihf-gcc \
-    ; else \
-        make \
-    ; fi
-
 # THTTPD
 FROM alpine:3.19.1 AS thttpd
 
@@ -234,7 +164,7 @@ RUN cd /thttpd \
     && make CCOPT='-O2 -s -static' thttpd
 
 # CONFD
-FROM debian:bullseye-slim as confd
+FROM debian:bullseye-slim AS confd
 
 ADD confd/confd.tar.gz /opt/confd/
 RUN ARCH=$(dpkg --print-architecture) && \
@@ -243,7 +173,7 @@ RUN ARCH=$(dpkg --print-architecture) && \
     rm /opt/confd/bin/confd-*
 
 # ONE STAGE COPY ALL
-FROM debian:bullseye-slim as copyall
+FROM debian:bullseye-slim AS copyall
 
 COPY --from=dump1090 /tmp/dump1090/dump1090 /copy_root/usr/lib/fr24/
 COPY --from=dump1090 /tmp/dump1090/public_html /copy_root/usr/lib/fr24/public_html
@@ -256,42 +186,36 @@ RUN mv /copy_root/tcltls-rebuild/tcl-tls_*.deb /copy_root/tcl-tls.deb && \
     rm -rf /copy_root/tcltls-rebuild
 COPY --from=thttpd /thttpd/thttpd /copy_root/
 COPY --from=confd /opt/confd/bin/confd /copy_root/opt/confd/bin/
-COPY --from=radarbox /usr/bin/rbfeeder /copy_root/usr/bin/rbfeeder_armhf
-COPY --from=radarbox /usr/bin/dump1090-rb /copy_root/usr/bin/dump1090-rbs
-COPY --from=radarbox /usr/local/share/radarbox-mlat-client /copy_root/usr/local/share/radarbox-mlat-client
-COPY --from=rbfeeder_fixcputemp ./librbfeeder_fixcputemp.so /copy_root/usr/lib/arm-linux-gnueabihf/librbfeeder_fixcputemp.so
 ADD build /copy_root/build
 
-FROM debian:bullseye-slim as serve
+FROM debian:bullseye-slim AS serve
 
-ENV DEBIAN_VERSION bullseye
-ENV RTL_SDR_VERSION 0.6.0
+ENV DEBIAN_VERSION=bullseye
+ENV RTL_SDR_VERSION=0.6.0
 
-ENV FR24FEED_AMD64_VERSION 1.0.44-0
-ENV FR24FEED_ARMHF_VERSION 1.0.44-0
-ENV FR24FEED_ARMEL_VERSION 1.0.44-0
+ENV FR24FEED_AMD64_VERSION=1.0.44-0
+ENV FR24FEED_ARMHF_VERSION=1.0.44-0
 
-ENV PLANEFINDER_AMD64_VERSION 5.0.162
-ENV PLANEFINDER_ARMHF_VERSION 5.0.161
+ENV PLANEFINDER_AMD64_VERSION=5.0.162
+ENV PLANEFINDER_ARMHF_VERSION=5.0.161
 
-ENV S6_OVERLAY_VERSION 3.1.3.0
+ENV S6_OVERLAY_VERSION=3.1.3.0
 
 # Services startup
-ENV SERVICE_ENABLE_DUMP1090 true
-ENV SERVICE_ENABLE_PIAWARE true
-ENV SERVICE_ENABLE_FR24FEED true
-ENV SERVICE_ENABLE_HTTP true
-ENV SERVICE_ENABLE_IMPORT_OVER_NETCAT false
-ENV SERVICE_ENABLE_ADSBEXCHANGE false
-ENV SERVICE_ENABLE_PLANEFINDER false
-ENV SERVICE_ENABLE_OPENSKY false
-ENV SERVICE_ENABLE_ADSBFI false
-ENV SERVICE_ENABLE_RADARBOX false
-ENV SERVICE_ENABLE_ADSBHUB false
+ENV SERVICE_ENABLE_DUMP1090=true
+ENV SERVICE_ENABLE_PIAWARE=true
+ENV SERVICE_ENABLE_FR24FEED=true
+ENV SERVICE_ENABLE_HTTP=true
+ENV SERVICE_ENABLE_IMPORT_OVER_NETCAT=false
+ENV SERVICE_ENABLE_ADSBEXCHANGE=false
+ENV SERVICE_ENABLE_PLANEFINDER=false
+ENV SERVICE_ENABLE_OPENSKY=false
+ENV SERVICE_ENABLE_ADSBFI=false
+ENV SERVICE_ENABLE_ADSBHUB=false
 
 # System properties
-ENV SYSTEM_HTTP_ULIMIT_N -1
-ENV SYSTEM_FR24FEED_ULIMIT_N -1
+ENV SYSTEM_HTTP_ULIMIT_N=-1
+ENV SYSTEM_FR24FEED_ULIMIT_N=-1
 
 LABEL maintainer="maugin.thomas@gmail.com"
 
@@ -339,21 +263,7 @@ RUN dpkg --add-architecture armhf && \
     python3-venv \
     curl \
     gzip \
-    # radarbox
-    qemu-user-static \
-    build-essential \
-    python3-minimal \
-    python3-distutils \
-    libcurl4:armhf \
-    libglib2.0-0:armhf \
-    libjansson4:armhf \
-    libprotobuf-c1:armhf \
-    librtlsdr0:armhf \
-    netbase \
     && \
-    # Simple checks qemu
-    qemu-arm-static --version && \
-    qemu-aarch64-static --version && \
     # RTL-SDR
     cd /tmp && \
     mkdir -p /etc/modprobe.d && \
@@ -391,20 +301,19 @@ RUN dpkg --add-architecture armhf && \
     rm /etc/piaware.conf && \
     rm /piaware.deb && \
     /usr/bin/piaware -v && \
-    # # OPENSKY
-    curl --output - https://opensky-network.org/files/firmware/opensky.gpg.pub | apt-key add - && \
-    echo deb https://opensky-network.org/repos/debian opensky custom > /etc/apt/sources.list.d/opensky.list && \
-    apt-get update -y && \
-    # Install opensky-feeder
+    # OPENSKY
     mkdir -p /src/opensky-feeder && \
     cd /src/opensky-feeder && \
-    apt-get download opensky-feeder && \
+    DOWNLOAD_ARCH=$(case ${arch:-amd64} in \
+        "amd64")echo "amd64" ;; \
+        "armhf")echo "armhf" ;; \
+        "arm64")echo "arm64" ;; esac) && \
+    echo "DOWNLOAD_ARCH=$DOWNLOAD_ARCH" && \
+    wget https://opensky-network.org/files/firmware/opensky-feeder_latest_${DOWNLOAD_ARCH}.deb && \
     ar vx ./*.deb && \
     tar xvf data.tar.xz -C / && \
+    rm ./*.deb && \
     mkdir -p /var/lib/openskyd/conf.d && \
-    # Radarbox : create symlink for rbfeeder wrapper
-    mv /build/rbfeeder_wrapper.sh /usr/bin/rbfeeder_wrapper.sh && \
-    ln -s /usr/bin/rbfeeder_wrapper.sh /usr/bin/rbfeeder && \
     # THTTPD
     find /usr/lib/fr24/public_html -type d -print0 | xargs -0 chmod 0755 && \
     find /usr/lib/fr24/public_html -type f -print0 | xargs -0 chmod 0644 && \
@@ -418,9 +327,6 @@ RUN dpkg --add-architecture armhf && \
     # PLANEFINDER
     /build/planefinder.sh && \
     /planefinder/pfclient --version && \
-    # RADARBOX
-    /usr/local/share/radarbox-mlat-client/venv/bin/mlat-client --help && \
-    /usr/bin/rbfeeder --version && \
     # CONFD
     /opt/confd/bin/confd --version && \
     # S6 OVERLAY

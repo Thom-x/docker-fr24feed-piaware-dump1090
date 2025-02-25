@@ -7,9 +7,6 @@ case $arch in
   arm64)
     url=http://client.planefinder.net/pfclient_${PLANEFINDER_ARMHF_VERSION}_armhf.tar.gz
     ;;
-  armel)
-    url=http://client.planefinder.net/pfclient_${PLANEFINDER_ARMHF_VERSION}_armhf.tar.gz
-    ;;
   amd64)
     url=http://client.planefinder.net/pfclient_${PLANEFINDER_AMD64_VERSION}_amd64.tar.gz
     ;;

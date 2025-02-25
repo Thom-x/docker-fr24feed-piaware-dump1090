@@ -21,7 +21,7 @@ diff -ru upstream/public_html/config.js modified/public_html/config.js
 +myAdsbexchangeFeederStatusUrl = "";
 +myOpenskyFeederStatusUrl = "";
 +myPlanefinderFeederStatusUrl = "";
-+myRadarboxFeederStatusUrl = "";
++
 +myAdsbfiFeederStatusUrl = "";
 +myAdsbhubFeederStatusUrl = "";
 +// The local FR24 Feeder Status page
@@ -64,7 +64,7 @@ diff -ru upstream/public_html/index.html modified/public_html/index.html
 +												<a id="adsbexchange_feeder_status_page" target="_blank"><button class="stats_button">My ADSBexchange Feeder Status page</button></a>
 +												<a id="opensky_feeder_status_page" target="_blank"><button class="stats_button">My Opensky Network Feeder Status page</button></a>
 +												<a id="planefinder_feeder_status_page" target="_blank"><button class="stats_button">My PlaneFinder Feeder Status page</button></a>
-+												<a id="radarbox_feeder_status_page" target="_blank"><button class="stats_button">My Radarbox Feeder Status page</button></a>
++												
 +												<a id="adsbfi_feeder_status_page" target="_blank"><button class="stats_button">My ADSB.fi Feeder Status page</button></a>
 +												<a id="adsbhub_feeder_status_page" target="_blank"><button class="stats_button">My ADSBHub Feeder Status page</button></a>
  											</td>
@@ -125,11 +125,11 @@ diff -ru upstream/public_html/script.js modified/public_html/script.js
 +                $('#planefinder_feeder_status_page').css('display', 'none');
 +        }
 +
-+        if (myRadarboxFeederStatusUrl) {
-+                $('#radarbox_feeder_status_page').attr('href',myRadarboxFeederStatusUrl);
-+        } else {
-+                $('#radarbox_feeder_status_page').css('display', 'none');
-+        }
++
++
++
++
++
 +
 +        if (myAdsbfiFeederStatusUrl) {
 +                $('#adsbfi_feeder_status_page').attr('href',myAdsbfiFeederStatusUrl);

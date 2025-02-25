@@ -55,8 +55,6 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 	-e 'SERVICE_ENABLE_ADSBFI=true' \
 	-e 'ADSBFI_UUID=MY_UUID' \
 	-e 'ADSBFI_STATION_NAME=MY_STATION_NAME' \
-	-e 'SERVICE_ENABLE_RADARBOX=true' \
-	-e 'RADARBOX_SHARING_KEY=MY_RADARBOX_SHARING_KEY' \
 	-e 'SERVICE_ENABLE_ADSBHUB=true' \
 	-e 'ADSBHUB_CKEY=MY_ADSBHUB_SHARING_KEY' \
 	--tmpfs /run:exec,size=32M \
@@ -89,7 +87,6 @@ To disable starting a service you can add an environement variable :
 | `SERVICE_ENABLE_PLANEFINDER`        | `false` | Disable plane finder feed  | `false`       |
 | `SERVICE_ENABLE_OPENSKY`            | `false` | Disable opensky feeder     | `false`       |
 | `SERVICE_ENABLE_ADSBFI`             | `false` | Disable adsb.fi feeder     | `false`       |
-| `SERVICE_ENABLE_RADARBOX`           | `false` | Disable radarbox feeder    | `false`       |
 | `SERVICE_ENABLE_ADSBHUB`            | `false` | Disable adsbhub feeder     | `false`       |
 
 
@@ -307,56 +304,6 @@ Add the environment variable `SERVICE_ENABLE_OPENSKY` and set it to `true`.
 
 Ex : `-e 'SERVICE_ENABLE_OPENSKY=true' -e 'OPENSKY_USERNAME=MyUserName' -e 'OPENSKY_SERIAL=-462168426854'`
 
-## Radarbox
-
-First-time users should obtain a sharing key.
-
-In order to obtain a sharing key, we will start a temporary container running minimal configuration to have radarbox up and running, which will generate it.
-
-Run :
-
-```
-docker run -it --rm \
-	-e 'SERVICE_ENABLE_RADARBOX=true' \
-	-e 'SERVICE_ENABLE_DUMP1090=false' \
-	-e 'SERVICE_ENABLE_HTTP=false' \
-	-e 'SERVICE_ENABLE_PIAWARE=false' \
-	-e 'SERVICE_ENABLE_FR24FEED=false' \
-	-e 'HTML_SITE_LAT=45' \
-	-e 'HTML_SITE_LON=9' \
-	-e 'HTML_SITE_ALT=0' \
-	thomx/fr24feed-piaware /bin/bash
-```
-
-Once the container has started, you should see a message such as:
-
-```text
-[radarbox-feeder] [2023-06-20 18:51:01]  CPU Serial empty. Use MAC address instead.
-[radarbox-feeder] [2023-06-20 18:51:02]  Your new key is 35345bf2258aea6b9c7280fbe4467fcd. Please save this key for future use. You will have to know this key to link this receiver to your account in RadarBox24.com. This key is also saved in configuration file (/etc/rbfeeder.ini)
-```
-
-Note the serial and add it for next run to `RADARBOX_SHARING_KEY` environement variable.
-
-You can now kill the container by pressing `CTRL-D`.
-
-Add the environment variable `SERVICE_ENABLE_RADARBOX` and set it to `true`.
-
-| Environment Variable    | Default value | Description                                      |
-| ----------------------- | ------------- | ------------------------------------------------ |
-| `RADARBOX_SHARING_KEY`  | empty         | Generated sharing key (required after first run) |
-| `RADARBOX_INPUT_HOST`   | `127.0.0.1`   | Input host                                       |
-| `RADARBOX_INPUT_PORT`   | `30005`       | Input port                                       |
-| `RADARBOX_MLAT     `    | `false`       | Enable/disable MLAT                              |
-| `HTML_SITE_LAT`         | `45.0`        | Receiver latitude                                |
-| `HTML_SITE_LON`         | `9.0`         | Receiver longitude                               |
-| `HTML_SITE_ALT`         | `0`           | Receiver altitude                                |
-
-Ex : `-e 'SERVICE_ENABLE_RADARBOX=true' -e 'RADARBOX_SHARING_KEY=35345bf2258aea6b9c7280fbe4467fcd'`
-
-_Note : You may have this error on windows `[radarbox-feeder] /usr/bin/rbfeeder: line 17:   208 Segmentation fault      /usr/bin/rbfeeder_armhf "$@"`, there is no solution to it._
-_Note : You may have seg fault error, see https://github.com/mikenye/docker-radarbox/issues/9#issuecomment-633068833 for resolution_
-_Note : You may have 'already claimed' error on supplied sharing key, see https://github.com/Thom-x/docker-fr24feed-piaware-dump1090/issues/145_
-
 ## Adsbhub
 
 First-time users should obtain a sharing key.
@@ -405,7 +352,6 @@ Example :
 | `HTML_RECEIVER_STATS_PAGE_ADSBEXCHANGE`    | empty           | URL of your receiver's stats page on ADS-B Exchange. Usually https://www.adsbexchange.com/api/feeders/?feed=<ID>                                            |
 | `HTML_RECEIVER_STATS_PAGE_PLANEFINDER`     | empty           | URL of your receiver's stats page on PlaneFinder. Usually https://planefinder.net/coverage/receiver/<ID>                                                    |
 | `HTML_RECEIVER_STATS_PAGE_OPENSKY_NETWORK` | empty           | URL of your receiver's stats page on Opensky Netowrk. Usually https://opensky-network.org/receiver-profile?s=<ID>                                           |
-| `HTML_RECEIVER_STATS_PAGE_RADARBOX`        | empty           | URL of your receiver's stats page on Radarbox. Usually https://www.radarbox.com/stations/<ID>                                                               |
 | `HTML_RECEIVER_STATS_PAGE_ADSBFI`          | empty           | URL of your receiver's stats page on ADSB.fi. Usually https://adsb.fi/                                                                                      |
 | `HTML_RECEIVER_STATS_PAGE_ADSBHUB`         | empty           | URL of your receiver's stats page on ADSBHub. Usually https://www.adsbhub.org/statistic.php                                                                 |
 | `HTML_FR24_FEEDER_STATUS_PAGE`             | empty           | URL of your local FR24 Feeder Status page. Usually http://<dockerhost>:8754/ (depends on the port you indicated when starting the container)                |
