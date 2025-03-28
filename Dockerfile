@@ -224,9 +224,8 @@ COPY --from=copyall /copy_root/ /
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN dpkg --add-architecture armhf && \
-    apt-get update && \
-    apt-get install -y libc6:armhf libstdc++6:armhf libusb-1.0-0:armhf lsb-base:armhf && \
+RUN apt-get update && \
+    apt-get install -y libc6 libstdc++6 libusb-1.0-0 lsb-base && \
     ldconfig && \
     apt-get update && \
     # rtl-sdr
@@ -304,6 +303,7 @@ RUN dpkg --add-architecture armhf && \
     # OPENSKY
     mkdir -p /src/opensky-feeder && \
     cd /src/opensky-feeder && \
+    arch=$(dpkg --print-architecture) && \
     DOWNLOAD_ARCH=$(case ${arch:-amd64} in \
         "amd64")echo "amd64" ;; \
         "armhf")echo "armhf" ;; \
