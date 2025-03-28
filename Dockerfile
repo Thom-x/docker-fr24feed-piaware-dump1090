@@ -99,9 +99,9 @@ RUN set -x && \
     zlib1g-dev \
     zlib1g \
     libzstd-dev \
-    libzstd1 \
     python3-venv \
-    python3-dev
+    python3-dev  \
+    libncurses6
 
 FROM adsbexchange_packages AS adsbexchange
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -111,7 +111,7 @@ RUN set -x && \
     SRCTMP=/srctmp && \
     # readsb as a feed client
     URL=https://github.com/adsbxchange/readsb && \
-    COMMIT=a25f8ea9c8427ad1bea82f244b7967ac8cd3153f && \
+    COMMIT=f535e517996ad04ce8126a58757a9b91a82fe542 && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     pushd ${SRCTMP} && \
     echo "$COMMIT" > READSB_VERSION && \
@@ -121,8 +121,8 @@ RUN set -x && \
     popd && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
     # mlat-client
-    URL=https://github.com/adsbxchange/mlat-client &&\
-    COMMIT=faf9638fe8c2eafc2abdc45621ff879c7acb882b && \
+    URL=https://github.com/wiedehopf/mlat-client &&\
+    COMMIT=0f95d5d9bb9d2a81e41651565beca2855cb4f1bd && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     pushd ${SRCTMP} && \
     VENV="/usr/local/share/adsbexchange/venv" && \
@@ -136,7 +136,7 @@ RUN set -x && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
     # adsbexchange-stats
     URL=https://github.com/adsbxchange/adsbexchange-stats && \
-    COMMIT=ca7e433b14e2e4226d579dca7e8a512bcd94726b && \
+    COMMIT=cbe5febf7e70e518d5a3550d3a2c8375b8a43c24 && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     cp -v -T ${SRCTMP}/json-status /usr/local/share/adsbexchange/json-status && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
@@ -258,7 +258,7 @@ RUN apt-get update && \
     jq \
     ncurses-bin \
     zlib1g \
-    libzstd1 \
+    libncurses6 \
     python3-venv \
     curl \
     gzip \
