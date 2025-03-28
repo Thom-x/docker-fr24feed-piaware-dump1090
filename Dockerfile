@@ -119,6 +119,7 @@ RUN set -x && \
     make -j "$(nproc)" AIRCRAFT_HASH_BITS=12 && \
     cp -v -T readsb /usr/local/share/adsbexchange/readsb && \
     popd && \
+    ldconfig && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
     # mlat-client
     URL=https://github.com/wiedehopf/mlat-client &&\
@@ -227,9 +228,9 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN arch=$(dpkg --print-architecture) && \
     apt-get update && \
     if [ "$arch" != "amd64" ]; then \
-        apt-get install -y libc6:armhf libstdc++6:armhf libusb-1.0-0:armhf lsb-base:armhf && \
+        apt-get install -y libc6:armhf libstdc++6:armhf libusb-1.0-0:armhf lsb-base:armhf; \
     else \
-        apt-get install -y libc6 libstdc++6 libusb-1.0-0 lsb-base && \
+        apt-get install -y libc6 libstdc++6 libusb-1.0-0 lsb-base; \
     fi && \
     apt-get update && \
     # rtl-sdr
