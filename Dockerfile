@@ -227,11 +227,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN arch=$(dpkg --print-architecture) && \
     apt-get update && \
-    if [ "$arch" != "amd64" ]; then \
-        apt-get install -y libc6:armhf libstdc++6:armhf libusb-1.0-0:armhf lsb-base:armhf; \
-    else \
-        apt-get install -y libc6 libstdc++6 libusb-1.0-0 lsb-base; \
-    fi && \
+    apt-get install -y libc6 libstdc++6 libusb-1.0-0 lsb-base; \    
     apt-get update && \
     # rtl-sdr
     apt-get install -y \
