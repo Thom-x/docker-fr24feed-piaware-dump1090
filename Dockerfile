@@ -219,7 +219,7 @@ RUN if [ $TARGETARCH != "arm" ]; then \
     ; fi
 
 # THTTPD
-FROM alpine:3.19.1 AS thttpd
+FROM alpine:3.19 AS thttpd
 
 ENV THTTPD_VERSION=2.29
 
