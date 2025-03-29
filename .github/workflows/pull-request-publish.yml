@@ -17,7 +17,7 @@ jobs:
     outputs:
       is_deploy: ${{ steps.check.outputs.triggered }}
     # Ensure test job passes before pushing image.
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     if: github.event.issue.pull_request
     steps:
       - name: If deploy comment
@@ -45,11 +45,17 @@ jobs:
     needs: is_deploy_comment
     if: needs.is_deploy_comment.outputs.is_deploy == 'true'
     environment: docker
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        arch: [amd64, arm/v7, arm64]
+        include:
+          - arch: amd64
+            os: ubuntu-22.04
+          - arch: arm/v7
+            os: ubuntu-22.04
+          - arch: arm64
+            os: ubuntu-22.04-arm
     steps:
       - name: Checkout
         uses: actions/checkout@v4
