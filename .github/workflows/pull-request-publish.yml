@@ -115,21 +115,6 @@ jobs:
           outputs: type=docker,dest=${{ runner.temp }}/${{ steps.get_commit.outputs.sha_short }}-${{ matrix.archname }}.tar
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
-      - name: Export image ID imageid-amd64
-        if: matrix.archname == 'amd64'
-        id: imageid-amd64
-        run: |
-          echo "imageid=${{ steps.docker-build-push.outputs.imageid }}" >> $GITHUB_OUTPUT
-      - name: Export image ID imageid-arm64
-        if: matrix.archname == 'arm64'
-        id: imageid-arm64
-        run: |
-          echo "imageid=${{ steps.docker-build-push.outputs.imageid }}" >> $GITHUB_OUTPUT
-      - name: Export image ID imageid-arm-v7
-        if: matrix.archname == 'arm-v7'
-        id: imageid-arm-v7
-        run: |
-          echo "imageid=${{ steps.docker-build-push.outputs.imageid }}" >> $GITHUB_OUTPUT
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -137,9 +122,6 @@ jobs:
           path: ${{ runner.temp }}/${{ steps.get_commit.outputs.sha_short }}-${{ matrix.archname }}.tar
     outputs:
       sha_short: ${{ steps.get_commit.outputs.sha_short }}
-      imageid-amd64: ${{ steps.imageid-amd64.outputs.imageid }}
-      imageid-arm64: ${{ steps.imageid-arm64.outputs.imageid }}
-      imageid-arm-v7: ${{ steps.imageid-arm-v7.outputs.imageid }}
   # Push images to GitHub Packages and Docker Hub in a single image
   pushmanifest:
     needs: push
@@ -182,10 +164,12 @@ jobs:
         id: image-setup
         run: |
           inputs=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}
+          images=$DOCKERHUB_IMAGE_NAME/PR-${{ github.event.issue.number }}-arm64,$DOCKERHUB_IMAGE_NAME/PR-${{ github.event.issue.number }}-arm-v7,$DOCKERHUB_IMAGE_NAME/PR-${{ github.event.issue.number }}-amd64
           echo "inputs=$inputs" >> $GITHUB_OUTPUT
+          echo "images=$images" >> $GITHUB_OUTPUT
       - name: Create and push manifest images
         uses: Noelware/docker-manifest-action@master
         with:
           inputs: ${{ steps.image-setup.outputs.inputs }}
-          images: ${{ needs.push.outputs.imageid-amd64 }},${{ needs.push.outputs.imageid-arm64 }},${{ needs.push.outputs.imageid-arm-v7 }}
+          images: ${{ steps.image-setup.outputs.images }}
           push: true
