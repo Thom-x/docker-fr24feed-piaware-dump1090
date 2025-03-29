@@ -51,10 +51,13 @@ jobs:
       matrix:
         include:
           - arch: amd64
+            archname: amd64
             os: ubuntu-22.04
           - arch: arm/v7
+            archname: arm-v7
             os: ubuntu-22.04-arm
           - arch: arm64
+            archname: arm64
             os: ubuntu-22.04-arm
     steps:
       - name: Checkout
@@ -75,7 +78,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
-          key: all-buildx-${{ steps.get_commit.outputs.sha_short }}-${{ matrix.arch }}
+          key: all-buildx-${{ steps.get_commit.outputs.sha_short }}-${{ matrix.archname }}
           restore-keys: |
             all-buildx-
       - name: Login to DockerHub
@@ -92,21 +95,93 @@ jobs:
       - name: Get tags list
         id: tags
         run: |
-          ARCH=$(echo "${{ matrix.arch }}" | tr '/' '-')
-          if [[ "${ARCH}" == "amd64" ]]; then
-            TAGS=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }},$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-${ARCH},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}-${ARCH}
+          if [[ "${{ matrix.archname }}" == "amd64" ]]; then
+            TAGS=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }},$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-${{ matrix.archname }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}-${{ matrix.archname }}
           else
-            TAGS=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-${ARCH},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}-${ARCH}
+            TAGS=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-${{ matrix.archname }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}-${{ matrix.archname }}
           fi
           echo TAGS=$TAGS
           echo "tags=$TAGS" >> $GITHUB_OUTPUT
       - name: Build and push
-        uses: docker/build-push-action@v5
+        id: docker-build-push
+        uses: docker/build-push-action@v6
         with:
           context: .
+          provenance: false
           file: ./Dockerfile
           platforms: linux/${{ matrix.arch }}
           push: true
           tags: ${{ steps.tags.outputs.tags }}
+          outputs: type=docker,dest=${{ runner.temp }}/${{ steps.get_commit.outputs.sha_short }}-${{ matrix.archname }}.tar
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.get_commit.outputs.sha_short }}-${{ matrix.archname }}
+          path: ${{ runner.temp }}/${{ steps.get_commit.outputs.sha_short }}-${{ matrix.archname }}.tar
+    outputs:
+      sha_short: ${{ steps.get_commit.outputs.sha_short }}
+  # Push images to GitHub Packages and Docker Hub in a single image
+  pushmanifest:
+    needs: push
+    environment: docker
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download artifact amd64
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.push.outputs.sha_short }}-amd64
+          path: ${{ runner.temp }}
+      - name: Download artifact arm-v7
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.push.outputs.sha_short }}-arm-v7
+          path: ${{ runner.temp }}
+      - name: Download artifact arm64
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.push.outputs.sha_short }}-arm64
+          path: ${{ runner.temp }}
+      - name: Load image
+        run: |
+          docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-amd64.tar
+          docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-arm-v7.tar
+          docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-arm64.tar
+      - name: Images setup docker.io
+        id: image-setup-dockerhub
+        run: |
+          inputs=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}
+          images=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-arm64,$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-arm-v7,$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-amd64
+          echo "inputs=$inputs" >> $GITHUB_OUTPUT
+          echo "images=$images" >> $GITHUB_OUTPUT
+      - name: Create and push manifest images docker.io
+        uses: Noelware/docker-manifest-action@master
+        with:
+          inputs: ${{ steps.image-setup-dockerhub.outputs.inputs }}
+          images: ${{ steps.image-setup-dockerhub.outputs.images }}
+          push: true
+      - name: Images setup ghcr.io
+        id: image-setup-ghcr
+        run: |
+          inputs=ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}
+          images=ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}-arm64,ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}-arm-v7,ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}-amd64
+          echo "inputs=$inputs" >> $GITHUB_OUTPUT
+          echo "images=$images" >> $GITHUB_OUTPUT
+      - name: Create and push manifest images ghcr.io
+        uses: Noelware/docker-manifest-action@master
+        with:
+          inputs: ${{ steps.image-setup-ghcr.outputs.inputs }}
+          images: ${{ steps.image-setup-ghcr.outputs.images }}
+          push: true

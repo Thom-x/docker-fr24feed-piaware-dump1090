@@ -11,11 +11,14 @@ jobs:
     strategy:
       matrix:
         include:
-          - arch: linux/amd64
+          - arch: amd64
+            archname: amd64
             os: ubuntu-22.04
-          - arch: inux/arm/v7
+          - arch: arm/v7
+            archname: arm-v7
             os: ubuntu-22.04-arm
-          - arch: linux/arm64
+          - arch: arm64
+            archname: arm64
             os: ubuntu-22.04-arm
     steps:
       - name: Checkout
@@ -30,15 +33,15 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
-          key: ${{ matrix.architecture }}-buildx-${{ github.sha }}
+          key: all-buildx-${{ github.sha }}-${{ matrix.archname }}
           restore-keys: |
-            ${{ matrix.architecture }}-buildx-
+            ${{ matrix.arch }}-buildx-
       - name: Build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
-          platforms: ${{ matrix.architecture }}
+          platforms: ${{ matrix.arch }}
           push: false
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache

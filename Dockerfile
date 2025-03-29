@@ -146,10 +146,10 @@ RUN set -x && \
     # mlat-client: simple test
     /usr/local/share/adsbexchange/venv/bin/python3 -c 'import mlat.client'
 
-FROM debian:bullseye-20250317 as radarbox
+FROM debian:bullseye-20250317 AS radarbox
 
 # git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' 'https://github.com/mutability/mlat-client.git' | cut -d '/' -f 3 | grep '^v.*' | tail -1
-ENV RADARBOX_MLAT_VERSION v0.2.13
+ENV RADARBOX_MLAT_VERSION=v0.2.13
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /tmp
@@ -203,7 +203,7 @@ RUN set -x && \
     # mlat-client: simple test
     /usr/local/share/radarbox-mlat-client/venv/bin/python3 -c 'import mlat.client'
 
-FROM debian:bullseye-20250317 as rbfeeder_fixcputemp
+FROM debian:bullseye-20250317 AS rbfeeder_fixcputemp
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ADD rbfeeder_fixcputemp ./
 RUN set -x && \
@@ -274,7 +274,7 @@ ENV FR24FEED_AMD64_VERSION=1.0.48-0
 ENV FR24FEED_ARMHF_VERSION=1.0.48-0
 
 ENV PLANEFINDER_AMD64_VERSION=5.0.162
-ENV PLANEFINDER_ARM64_VERSION 5.1.440
+ENV PLANEFINDER_ARM64_VERSION=5.1.440
 ENV PLANEFINDER_ARMHF_VERSION=5.0.161
 
 ENV S6_OVERLAY_VERSION=3.2.0.2
@@ -289,7 +289,7 @@ ENV SERVICE_ENABLE_ADSBEXCHANGE=false
 ENV SERVICE_ENABLE_PLANEFINDER=false
 ENV SERVICE_ENABLE_OPENSKY=false
 ENV SERVICE_ENABLE_ADSBFI=false
-ENV SERVICE_ENABLE_RADARBOX false
+ENV SERVICE_ENABLE_RADARBOX=false
 ENV SERVICE_ENABLE_ADSBHUB=false
 
 # System properties
