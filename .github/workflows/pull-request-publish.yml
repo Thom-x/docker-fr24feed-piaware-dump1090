@@ -159,16 +159,29 @@ jobs:
           docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-amd64.tar
           docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-armd64.tar
           docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-arm-v7.tar
-      - name: Images setup
-        id: image-setup
+      - name: Images setup docker.io
+        id: image-setup-dockerhub
         run: |
-          inputs=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}
+          inputs=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}
           images=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-arm64,$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-arm-v7,$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-amd64
           echo "inputs=$inputs" >> $GITHUB_OUTPUT
           echo "images=$images" >> $GITHUB_OUTPUT
-      - name: Create and push manifest images
+      - name: Create and push manifest images docker.io
         uses: Noelware/docker-manifest-action@master
         with:
-          inputs: ${{ steps.image-setup.outputs.inputs }}
-          images: ${{ steps.image-setup.outputs.images }}
+          inputs: ${{ steps.image-setup-dockerhub.outputs.inputs }}
+          images: ${{ steps.image-setup-dockerhub.outputs.images }}
+          push: true
+      - name: Images setup ghcr.io
+        id: image-setup-ghcr
+        run: |
+          inputs=ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}
+          images=ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}-arm64,ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}-arm-v7,ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}-amd64
+          echo "inputs=$inputs" >> $GITHUB_OUTPUT
+          echo "images=$images" >> $GITHUB_OUTPUT
+      - name: Create and push manifest images ghcr.io
+        uses: Noelware/docker-manifest-action@master
+        with:
+          inputs: ${{ steps.image-setup-ghcr.outputs.inputs }}
+          images: ${{ steps.image-setup-ghcr.outputs.images }}
           push: true
