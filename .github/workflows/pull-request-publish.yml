@@ -39,48 +39,16 @@ jobs:
               sleep 60s
               exit 42
           fi
-  test:
+
+  # Push images to GitHub Packages and Docker Hub for each architecture.
+  push:
     needs: is_deploy_comment
     if: needs.is_deploy_comment.outputs.is_deploy == 'true'
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: 'refs/pull/${{ github.event.issue.number }}/merge'
-      - name: Get commit
-        id: get_commit
-        run: |
-          echo "sha_short=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          image: 'tonistiigi/binfmt:qemu-v7.0.0'
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: all-buildx-${{ steps.get_commit.outputs.sha_short }}
-          restore-keys: |
-            all-buildx-
-      - name: Build
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64,linux/arm/v7,linux/arm64
-          push: false
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-
-  # Push image to GitHub Packages and Docker Hub.
-  push:
-    # Ensure test job passes before pushing image.
-    needs: test
     environment: docker
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        arch: [amd64, arm/v7, arm64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -100,7 +68,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
-          key: all-buildx-${{ steps.get_commit.outputs.sha_short }}
+          key: all-buildx-${{ steps.get_commit.outputs.sha_short }}-${{ matrix.arch }}
           restore-keys: |
             all-buildx-
       - name: Login to DockerHub
@@ -117,7 +85,11 @@ jobs:
       - name: Get tags list
         id: tags
         run: |
-          TAGS=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}
+          if [[ "${{ matrix.arch }}" == "amd64" ]]; then
+            TAGS=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }},$DOCKERHUB_IMAGE_NAME:${{ matrix.arch }}-PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:${{ matrix.arch }}-PR-${{ github.event.issue.number }}
+          else
+            TAGS=$DOCKERHUB_IMAGE_NAME:${{ matrix.arch }}-PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:${{ matrix.arch }}-PR-${{ github.event.issue.number }}
+          fi
           echo TAGS=$TAGS
           echo "tags=$TAGS" >> $GITHUB_OUTPUT
       - name: Build and push
@@ -125,7 +97,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm/v7,linux/arm64
+          platforms: linux/${{ matrix.arch }}
           push: true
           tags: ${{ steps.tags.outputs.tags }}
           cache-from: type=local,src=/tmp/.buildx-cache
