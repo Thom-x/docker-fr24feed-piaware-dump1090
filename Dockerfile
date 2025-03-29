@@ -71,7 +71,7 @@ RUN git clone https://github.com/flightaware/tcltls-rebuild && \
     dpkg-buildpackage -b --no-sign && \
     cd ../ && \
     dpkg -i tcl-tls_*.deb
-    
+
 RUN git clone -b ${PIAWARE_VERSION} --depth 1 https://github.com/flightaware/piaware_builder.git piaware_builder
 WORKDIR /tmp/piaware_builder
 RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
@@ -219,7 +219,7 @@ RUN if [ $TARGETARCH != "arm" ]; then \
     ; fi
 
 # THTTPD
-FROM alpine:3.19 AS thttpd
+FROM alpine:3.20.6 AS thttpd
 
 ENV THTTPD_VERSION=2.29
 
