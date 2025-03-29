@@ -54,10 +54,10 @@ jobs:
             archname: amd64
             os: ubuntu-22.04
           - arch: arm/v7
-            archname: armd64
+            archname: arm-v7
             os: ubuntu-22.04-arm
           - arch: arm64
-            archname: arm-v7
+            archname: arm64
             os: ubuntu-22.04-arm
     steps:
       - name: Checkout
@@ -144,21 +144,21 @@ jobs:
         with:
           name: ${{ needs.push.outputs.sha_short }}-amd64
           path: ${{ runner.temp }}
-      - name: Download artifact armd64
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.push.outputs.sha_short }}-armd64
-          path: ${{ runner.temp }}
       - name: Download artifact arm-v7
         uses: actions/download-artifact@v4
         with:
           name: ${{ needs.push.outputs.sha_short }}-arm-v7
           path: ${{ runner.temp }}
+      - name: Download artifact arm64
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.push.outputs.sha_short }}-arm64
+          path: ${{ runner.temp }}
       - name: Load image
         run: |
           docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-amd64.tar
-          docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-armd64.tar
           docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-arm-v7.tar
+          docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-arm64.tar
       - name: Images setup docker.io
         id: image-setup-dockerhub
         run: |
