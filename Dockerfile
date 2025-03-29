@@ -203,7 +203,7 @@ RUN set -x && \
     # mlat-client: simple test
     /usr/local/share/radarbox-mlat-client/venv/bin/python3 -c 'import mlat.client'
 
-FROM debian:bullseye as rbfeeder_fixcputemp
+FROM debian:bullseye-20250317 as rbfeeder_fixcputemp
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ADD rbfeeder_fixcputemp ./
 RUN set -x && \

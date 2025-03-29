@@ -25,6 +25,12 @@ Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts 
 - Docker
 - RTL-SDR DVBT USB Dongle (RTL2832)
 
+# Supported tags & platforms
+
+- `latest`, `vX.Y.Z` (amd64)
+- `latest-<platform>` (amd64, amr64, arm-v7)
+- `vX.Y.Z--<platform>` (amd64, amr64, arm-v7)
+
 # Getting started
 
 Run :
