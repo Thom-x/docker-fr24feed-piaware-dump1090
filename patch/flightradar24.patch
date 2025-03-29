@@ -226,7 +226,7 @@ diff --color -ru upstream/public_html/script.js modified/public_html/script.js
 +        if (!linkText) {
 +            linkText = ident.toUpperCase();
 +        }
-+        return "<a target=\"_blank\" href=\"https://opensky-network.org/aircraft-profile?icao24=" + ident.trim() + "\">" + linkText + "</a>";
++        return "<a target=\"_blank\" href=\"https://map.opensky-network.org/?icao=" + ident.trim() + "\">" + linkText + "</a>";
 +    }
 +
 +    return "";

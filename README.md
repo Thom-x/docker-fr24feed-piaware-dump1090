@@ -27,9 +27,9 @@ Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts 
 
 # Supported tags & platforms
 
-- `latest`, `vX.Y.Z` (amd64)
-- `latest-<platform>` (amd64, amr64, arm-v7)
-- `vX.Y.Z--<platform>` (amd64, amr64, arm-v7)
+- `latest`, `vX.Y.Z` contains all platforms (amd64, amr64, arm-v7) in one image
+- `latest-<platform>` split image for each platform (amd64, amr64, arm-v7)
+- `vX.Y.Z--<platform>` split image for each platform (amd64, amr64, arm-v7)
 
 # Getting started
 
