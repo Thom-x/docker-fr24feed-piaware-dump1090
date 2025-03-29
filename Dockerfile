@@ -1,6 +1,6 @@
-FROM debian:bullseye AS dump1090
+FROM debian:bullseye-20250317 AS dump1090
 
-ENV DUMP1090_VERSION=v9.0
+ENV DUMP1090_VERSION=v10.0.1
 
 # DUMP1090
 RUN apt-get update && \
@@ -20,13 +20,13 @@ WORKDIR /tmp
 RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/dump1090 && \
     cd dump1090 && \
     cp /patch/resources/fr24-logo.svg $PWD/public_html/images && \
-    patch --ignore-whitespace -p1 -ru --force --no-backup-if-mismatch -d $PWD < /patch/flightradar24.patch && \
+    # patch --ignore-whitespace -p1 -ru --force --no-backup-if-mismatch -d $PWD < /patch/flightradar24.patch && \
     make CPUFEATURES=no
 
-FROM debian:bullseye AS piaware
+FROM debian:bullseye-20250317 AS piaware
 
 ENV DEBIAN_VERSION=bullseye
-ENV PIAWARE_VERSION=v9.0.1
+ENV PIAWARE_VERSION=v10.0.1
 
 # PIAWARE
 WORKDIR /tmp
@@ -81,7 +81,7 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 #ADSBEXCHANGE
 # pinned commits, feel free to update to most recent commit, no major versions usually
 
-FROM debian:bullseye AS adsbexchange_packages
+FROM debian:bullseye-20250317 AS adsbexchange_packages
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /tmp
@@ -165,7 +165,7 @@ RUN cd /thttpd \
     && make CCOPT='-O2 -s -static' thttpd
 
 # CONFD
-FROM debian:bullseye-slim AS confd
+FROM debian:bullseye-20250317-slim AS confd
 
 ADD confd/confd.tar.gz /opt/confd/
 RUN ARCH=$(dpkg --print-architecture) && \
@@ -174,7 +174,7 @@ RUN ARCH=$(dpkg --print-architecture) && \
     rm /opt/confd/bin/confd-*
 
 # ONE STAGE COPY ALL
-FROM debian:bullseye-slim AS copyall
+FROM debian:bullseye-20250317-slim AS copyall
 
 COPY --from=dump1090 /tmp/dump1090/dump1090 /copy_root/usr/lib/fr24/
 COPY --from=dump1090 /tmp/dump1090/public_html /copy_root/usr/lib/fr24/public_html
@@ -189,18 +189,19 @@ COPY --from=thttpd /thttpd/thttpd /copy_root/
 COPY --from=confd /opt/confd/bin/confd /copy_root/opt/confd/bin/
 ADD build /copy_root/build
 
-FROM debian:bullseye-slim AS serve
+FROM debian:bullseye-20250317-slim AS serve
 
 ENV DEBIAN_VERSION=bullseye
-ENV RTL_SDR_VERSION=0.6.0
+ENV RTL_SDR_VERSION=v2.0.2
 
-ENV FR24FEED_AMD64_VERSION=1.0.44-0
-ENV FR24FEED_ARMHF_VERSION=1.0.44-0
+ENV FR24FEED_AMD64_VERSION=1.0.48-0
+ENV FR24FEED_ARMHF_VERSION=1.0.48-0
 
 ENV PLANEFINDER_AMD64_VERSION=5.0.162
+ENV PLANEFINDER_ARM64_VERSION 5.1.440
 ENV PLANEFINDER_ARMHF_VERSION=5.0.161
 
-ENV S6_OVERLAY_VERSION=3.1.3.0
+ENV S6_OVERLAY_VERSION=3.2.0.2
 
 # Services startup
 ENV SERVICE_ENABLE_DUMP1090=true
