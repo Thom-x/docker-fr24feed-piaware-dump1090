@@ -10,12 +10,19 @@ jobs:
     strategy:
       matrix:
         architecture: ["linux/amd64", "linux/arm/v7", "linux/arm64"]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up QEMU
+        if: contains(matrix.architecture, 'linux/arm64')
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+          image: tonistiigi/binfmt:qemu-v7.0.0
+      - name: Set up QEMU
+        if: !contains(matrix.architecture, 'linux/arm64')
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

@@ -1,0 +1,13 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_RADARBOX" != "false" ]; then
+	set -eo pipefail
+	# Prevent writing of coredumps
+	#  - Reason for coredumps: https://github.com/mikenye/docker-radarbox/issues/9#issuecomment-633068833
+	#  - Changes to docker-compose.yml: https://github.com/mikenye/docker-radarbox/issues/10#issuecomment-634027861
+	ulimit -c 0
+	/usr/bin/rbfeeder 2>&1 | mawk -W interactive '{printf "%c[34m[radarbox-feeder]%c[0m %s\n", 27, 27, $0}'
+	# awk -W interactive ...  (prefix log messages with color and "[radarbox-feeder]")
+else
+	tail -f /dev/null
+fi

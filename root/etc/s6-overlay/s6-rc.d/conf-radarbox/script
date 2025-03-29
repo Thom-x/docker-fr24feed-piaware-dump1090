@@ -1,0 +1,65 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_RADARBOX" != "false" ]; then
+    set -eo pipefail
+
+    default_value_html() {
+        key=${1//\-/_DASH_}
+        key=HTML_${key^^}
+        eval "value=\${$key:-\$2}"
+        printf -v $key -- "$value"
+        export $key
+    }
+    default_value() {
+        key=${1//\-/_DASH_}
+        key=RADARBOX_${key^^}
+        eval "value=\${$key:-\$2}"
+        printf -v $key -- "$value"
+        export $key
+    }
+
+    default_value_html "site_lat" "45.0"
+    default_value_html "site_lon" "9.0"
+    default_value_html "site_alt" "0"
+
+    default_value "input_host" "127.0.0.1"
+    default_value "input_port" "30005"
+    default_value "mlat" "false"
+
+    if [ -z "${RADARBOX_SHARING_KEY}" ]; then
+        echo "WARNING: RADARBOX_SHARING_KEY environment variable was not set!" | mawk -W interactive '{printf "%c[34m[radarbox-feeder]%c[0m %s\n", 27, 27, $0}'
+        echo "Please make sure you note down the serial generated." | mawk -W interactive '{printf "%c[34m[radarbox-feeder]%c[0m %s\n", 27, 27, $0}'
+        echo "Pass the key as environment var RADARBOX_SHARING_KEY on next launch!" | mawk -W interactive '{printf "%c[34m[radarbox-feeder]%c[0m %s\n", 27, 27, $0}'
+    fi
+
+    echo """
+    [client]
+    network_mode=true
+    log_file=/dev/null
+    debug_level=0
+    key=$RADARBOX_SHARING_KEY
+    lat=$HTML_SITE_LAT
+    lon=$HTML_SITE_LON
+    alt=$HTML_SITE_ALT
+    [network]
+    mode=beast
+    external_host=$RADARBOX_INPUT_HOST
+    external_port=$RADARBOX_INPUT_PORT
+    """ > /etc/rbfeeder.ini
+
+    {
+    echo "[mlat]"
+    if [[ "$RADARBOX_MLAT" == "true" ]]; then
+        echo "mlat_cmd=/usr/local/share/radarbox-mlat-client/venv/bin/mlat-client --results beast,listen,30107"
+        echo "autostart_mlat=true"
+    else
+        echo "autostart_mlat=false"
+    fi
+    } >> /etc/rbfeeder.ini
+
+    # # Create log dirs
+    # mkdir -p /var/log/rbfeeder
+    # chown nobody:nogroup /var/log/rbfeeder
+    # touch /var/log/rbfeeder.log
+    # truncate --size=0 /var/log/rbfeeder.log
+fi
