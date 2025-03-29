@@ -102,13 +102,15 @@ jobs:
           echo "tags=$TAGS" >> $GITHUB_OUTPUT
       - name: Build and push
         id: docker-build-push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
+          provenance: false
           file: ./Dockerfile
           platforms: linux/${{ matrix.arch }}
           push: true
           tags: ${{ steps.tags.outputs.tags }}
+          outputs: type=docker,dest=${{ runner.temp }}/${{ steps.get_commit.outputs.sha_short }}-${{ matrix.arch }}.tar
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       - name: Export image ID imageid-amd64
@@ -126,11 +128,16 @@ jobs:
         id: imageid-arm-v7
         run: |
           echo "imageid=${{ steps.docker-build-push.outputs.imageid }}" >> $GITHUB_OUTPUT
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.get_commit.outputs.sha_short }}-${{ matrix.arch }}
+          path: ${{ runner.temp }}/${{ steps.get_commit.outputs.sha_short }}-${{ matrix.arch }}.tar
     outputs:
+      sha_short: ${{ steps.get_commit.outputs.sha_short }}
       imageid-amd64: ${{ steps.imageid-amd64.outputs.imageid }}
       imageid-arm64: ${{ steps.imageid-arm64.outputs.imageid }}
       imageid-arm-v7: ${{ steps.imageid-arm-v7.outputs.imageid }}
-      
   # Push images to GitHub Packages and Docker Hub in a single image
   pushmanifest:
     needs: push
@@ -148,12 +155,35 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Aggregate images results
-        id: aggregate-images
+      - name: Download artifact amd64
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.push.outputs.sha_short }}-amd64
+          path: ${{ runner.temp }}
+      - name: Download artifact armd64
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.push.outputs.sha_short }}-armd64
+          path: ${{ runner.temp }}
+      - name: Download artifact arm-v7
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.push.outputs.sha_short }}-arm-v7
+          path: ${{ runner.temp }}
+      - name: Load image
         run: |
+          docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-amd64.tar
+          docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-armd64.tar
+          docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-arm-v7.tar
+          docker image ls -a
+      - name: Images setup
+        id: image-setup
+        run: |
+          inputs=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}
+          echo "inputs=$inputs" >> $GITHUB_OUTPUT
       - name: Create and push manifest images
         uses: Noelware/docker-manifest-action@master
         with:
-          inputs: $DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}
+          inputs: ${{ steps.image-setup.outputs.inputs }}
           images: ${{ needs.push.outputs.imageid-amd64 }},${{ needs.push.outputs.imageid-arm64 }},${{ needs.push.outputs.imageid-arm-v7 }}
           push: true
