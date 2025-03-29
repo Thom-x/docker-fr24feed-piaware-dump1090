@@ -85,10 +85,11 @@ jobs:
       - name: Get tags list
         id: tags
         run: |
-          if [[ "${{ matrix.arch }}" == "amd64" ]]; then
-            TAGS=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }},$DOCKERHUB_IMAGE_NAME:${{ matrix.arch }}-PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:${{ matrix.arch }}-PR-${{ github.event.issue.number }}
+          ARCH=$(echo "${{ matrix.arch }}" | tr '/' '-')
+          if [[ "${ARCH}" == "amd64" ]]; then
+            TAGS=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }},$DOCKERHUB_IMAGE_NAME:${ARCH}-PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:${ARCH}-PR-${{ github.event.issue.number }}
           else
-            TAGS=$DOCKERHUB_IMAGE_NAME:${{ matrix.arch }}-PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:${{ matrix.arch }}-PR-${{ github.event.issue.number }}
+            TAGS=$DOCKERHUB_IMAGE_NAME:${ARCH}-PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:${ARCH}-PR-${{ github.event.issue.number }}
           fi
           echo TAGS=$TAGS
           echo "tags=$TAGS" >> $GITHUB_OUTPUT
