@@ -19,7 +19,6 @@ jobs:
         if: contains(matrix.architecture, 'linux/arm64')
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: arm64
           image: 'tonistiigi/binfmt:qemu-v7.0.0'
       - name: Set up QEMU
         if: !contains(matrix.architecture, 'linux/arm64')
