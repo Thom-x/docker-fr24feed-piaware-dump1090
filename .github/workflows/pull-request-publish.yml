@@ -159,12 +159,11 @@ jobs:
           docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-amd64.tar
           docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-armd64.tar
           docker load --input ${{ runner.temp }}/${{ needs.push.outputs.sha_short }}-arm-v7.tar
-          docker image ls -a
       - name: Images setup
         id: image-setup
         run: |
           inputs=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}
-          images=$DOCKERHUB_IMAGE_NAME/PR-${{ github.event.issue.number }}-arm64,$DOCKERHUB_IMAGE_NAME/PR-${{ github.event.issue.number }}-arm-v7,$DOCKERHUB_IMAGE_NAME/PR-${{ github.event.issue.number }}-amd64
+          images=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-arm64,$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-arm-v7,$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-amd64
           echo "inputs=$inputs" >> $GITHUB_OUTPUT
           echo "images=$images" >> $GITHUB_OUTPUT
       - name: Create and push manifest images
