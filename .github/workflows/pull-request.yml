@@ -33,9 +33,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
-          key: all-buildx-${{ github.sha }}-${{ matrix.archname }}
+          key: ${{ matrix.archname }}-buildx-${{ github.sha }}
           restore-keys: |
-            ${{ matrix.arch }}-buildx-
+            ${{ matrix.archname }}-buildx-
       - name: Build
         uses: docker/build-push-action@v6
         with:
