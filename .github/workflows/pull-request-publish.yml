@@ -51,10 +51,13 @@ jobs:
       matrix:
         include:
           - arch: amd64
+            archname: amd64
             os: ubuntu-22.04
           - arch: arm/v7
+            archname: armd64
             os: ubuntu-22.04-arm
           - arch: arm64
+            archname: arm-v7
             os: ubuntu-22.04-arm
     steps:
       - name: Checkout
@@ -75,7 +78,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
-          key: all-buildx-${{ steps.get_commit.outputs.sha_short }}-${{ matrix.arch }}
+          key: all-buildx-${{ steps.get_commit.outputs.sha_short }}-${{ matrix.archname }}
           restore-keys: |
             all-buildx-
       - name: Login to DockerHub
@@ -92,11 +95,10 @@ jobs:
       - name: Get tags list
         id: tags
         run: |
-          ARCH=$(echo "${{ matrix.arch }}" | tr '/' '-')
-          if [[ "${ARCH}" == "amd64" ]]; then
-            TAGS=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }},$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-${ARCH},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}-${ARCH}
+          if [[ "${{ matrix.archname }}" == "amd64" ]]; then
+            TAGS=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }},$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-${{ matrix.archname }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}-${{ matrix.archname }}
           else
-            TAGS=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-${ARCH},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}-${ARCH}
+            TAGS=$DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }}-${{ matrix.archname }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}-${{ matrix.archname }}
           fi
           echo TAGS=$TAGS
           echo "tags=$TAGS" >> $GITHUB_OUTPUT
@@ -110,29 +112,29 @@ jobs:
           platforms: linux/${{ matrix.arch }}
           push: true
           tags: ${{ steps.tags.outputs.tags }}
-          outputs: type=docker,dest=${{ runner.temp }}/${{ steps.get_commit.outputs.sha_short }}-${{ matrix.arch }}.tar
+          outputs: type=docker,dest=${{ runner.temp }}/${{ steps.get_commit.outputs.sha_short }}-${{ matrix.archname }}.tar
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       - name: Export image ID imageid-amd64
-        if: matrix.arch == 'amd64'
+        if: matrix.archname == 'amd64'
         id: imageid-amd64
         run: |
           echo "imageid=${{ steps.docker-build-push.outputs.imageid }}" >> $GITHUB_OUTPUT
       - name: Export image ID imageid-arm64
-        if: matrix.arch == 'arm64'
+        if: matrix.archname == 'arm64'
         id: imageid-arm64
         run: |
           echo "imageid=${{ steps.docker-build-push.outputs.imageid }}" >> $GITHUB_OUTPUT
       - name: Export image ID imageid-arm-v7
-        if: matrix.arch == 'arm/v7'
+        if: matrix.archname == 'arm-v7'
         id: imageid-arm-v7
         run: |
           echo "imageid=${{ steps.docker-build-push.outputs.imageid }}" >> $GITHUB_OUTPUT
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.get_commit.outputs.sha_short }}-${{ matrix.arch }}
-          path: ${{ runner.temp }}/${{ steps.get_commit.outputs.sha_short }}-${{ matrix.arch }}.tar
+          name: ${{ steps.get_commit.outputs.sha_short }}-${{ matrix.archname }}
+          path: ${{ runner.temp }}/${{ steps.get_commit.outputs.sha_short }}-${{ matrix.archname }}.tar
     outputs:
       sha_short: ${{ steps.get_commit.outputs.sha_short }}
       imageid-amd64: ${{ steps.imageid-amd64.outputs.imageid }}
