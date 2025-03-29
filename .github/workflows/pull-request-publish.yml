@@ -110,3 +110,26 @@ jobs:
           tags: ${{ steps.tags.outputs.tags }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
+  # Push images to GitHub Packages and Docker Hub in a single image
+  pushmanifest:
+    needs: push
+    environment: docker
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create and push manifest images
+        uses: Noelware/docker-manifest-action@master
+        with:
+          inputs: PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}
+          images: PR-${{ github.event.issue.number }}-amd64,PR-${{ github.event.issue.number }}-arm64,PR-${{ github.event.issue.number }}-arm-v7
+          push: true
