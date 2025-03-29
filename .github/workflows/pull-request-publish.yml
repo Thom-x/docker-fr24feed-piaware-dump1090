@@ -101,6 +101,7 @@ jobs:
           echo TAGS=$TAGS
           echo "tags=$TAGS" >> $GITHUB_OUTPUT
       - name: Build and push
+        id: docker-build-push
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -110,6 +111,26 @@ jobs:
           tags: ${{ steps.tags.outputs.tags }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
+      - name: Export image ID imageid-amd64
+        if: matrix.arch == 'amd64'
+        id: imageid-amd64
+        run: |
+          echo "imageid=${{ steps.docker-build-push.outputs.imageid }}" >> $GITHUB_OUTPUT
+      - name: Export image ID imageid-arm64
+        if: matrix.arch == 'arm64'
+        id: imageid-arm64
+        run: |
+          echo "imageid=${{ steps.docker-build-push.outputs.imageid }}" >> $GITHUB_OUTPUT
+      - name: Export image ID imageid-arm-v7
+        if: matrix.arch == 'arm/v7'
+        id: imageid-arm-v7
+        run: |
+          echo "imageid=${{ steps.docker-build-push.outputs.imageid }}" >> $GITHUB_OUTPUT
+    outputs:
+      imageid-amd64: ${{ steps.imageid-amd64.outputs.imageid }}
+      imageid-arm64: ${{ steps.imageid-arm64.outputs.imageid }}
+      imageid-arm-v7: ${{ steps.imageid-arm-v7.outputs.imageid }}
+      
   # Push images to GitHub Packages and Docker Hub in a single image
   pushmanifest:
     needs: push
@@ -127,9 +148,12 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Aggregate images results
+        id: aggregate-images
+        run: |
       - name: Create and push manifest images
         uses: Noelware/docker-manifest-action@master
         with:
-          inputs: PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}
-          images: PR-${{ github.event.issue.number }}-amd64,PR-${{ github.event.issue.number }}-arm64,PR-${{ github.event.issue.number }}-arm-v7
+          inputs: $DOCKERHUB_IMAGE_NAME:PR-${{ github.event.issue.number }},ghcr.io/$GHCR_IMAGE_NAME:PR-${{ github.event.issue.number }}
+          images: ${{ needs.push.outputs.imageid-amd64 }},${{ needs.push.outputs.imageid-arm64 }},${{ needs.push.outputs.imageid-arm-v7 }}
           push: true
