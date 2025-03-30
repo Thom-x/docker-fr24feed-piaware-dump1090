@@ -119,7 +119,7 @@ jobs:
 
           if [[ "${{ matrix.archname }}" == "amd64" ]]; then
             # Use Docker `latest` tag convention
-            [ "$VERSION" == "master" ] && TAGS=$DOCKERHUB_IMAGE_NAME:latest,ghcr.io/$GHCR_IMAGE_NAME:latest,latest-${{ matrix.archname }},ghcr.io/$GHCR_IMAGE_NAME:latest-${{ matrix.archname }}
+            [ "$VERSION" == "master" ] && TAGS=$DOCKERHUB_IMAGE_NAME:latest,ghcr.io/$GHCR_IMAGE_NAME:latest,$DOCKERHUB_IMAGE_NAME:latest-${{ matrix.archname }},ghcr.io/$GHCR_IMAGE_NAME:latest-${{ matrix.archname }}
             [ "$VERSION" != "master" ] && TAGS=$DOCKERHUB_IMAGE_NAME:$VERSION,$DOCKERHUB_IMAGE_NAME:latest,ghcr.io/$GHCR_IMAGE_NAME:$VERSION,ghcr.io/$GHCR_IMAGE_NAME:latest,$DOCKERHUB_IMAGE_NAME:$VERSION-${{ matrix.archname }},$DOCKERHUB_IMAGE_NAME:latest-${{ matrix.archname }},ghcr.io/$GHCR_IMAGE_NAME:$VERSION-${{ matrix.archname }},ghcr.io/$GHCR_IMAGE_NAME:latest-${{ matrix.archname }}             
           else
             # Use Docker `latest` tag convention
