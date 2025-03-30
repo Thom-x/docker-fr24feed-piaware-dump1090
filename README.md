@@ -1,6 +1,6 @@
 # Fr24feed and FlightAware with dump1090 as a Docker image
 
-![Build status](https://github.com/Thom-x/docker-fr24feed-piaware-dump1090/workflows/Docker/badge.svg?branch=master)
+[![Docker](https://github.com/Thom-x/docker-fr24feed-piaware-dump1090/actions/workflows/docker-publish.yml/badge.svg?branch=master)](https://github.com/Thom-x/docker-fr24feed-piaware-dump1090/actions/workflows/docker-publish.yml)
 ![GitHub issues](https://img.shields.io/github/issues/Thom-x/docker-fr24feed-piaware-dump1090)
 
 ![Latest image version](https://img.shields.io/docker/v/thomx/fr24feed-piaware?sort=semver)
