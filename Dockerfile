@@ -416,6 +416,8 @@ RUN arch=$(dpkg --print-architecture) && \
     rm -rf /var/www/html && \
     sed -i 's/listen 80 default_server;/listen 8080 default_server;/g' /etc/nginx/sites-available/default && \
     sed -i 's/listen \[::\]:80 default_server;/listen \[::\]:8080 default_server;/g' /etc/nginx/sites-available/default && \
+    sed -i 's#access_log .*;#access_log /dev/stdout;#' /etc/nginx/nginx.conf && \
+    sed -i 's#error_log .*;#error_log /dev/stderr;#' /etc/nginx/nginx.conf && \
     ln -s /usr/lib/fr24/public_html /var/www/html && \
     /usr/sbin/nginx -v && \
     # FR24FEED
