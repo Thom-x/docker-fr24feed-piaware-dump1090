@@ -218,24 +218,6 @@ RUN if [ $TARGETARCH != "arm" ]; then \
         make \
     ; fi
 
-# THTTPD
-FROM alpine:3.20.6 AS thttpd
-
-ENV THTTPD_VERSION=2.29
-
-# Install all dependencies required for compiling thttpd
-RUN apk add gcc musl-dev make
-
-# Download thttpd sources
-RUN wget http://www.acme.com/software/thttpd/thttpd-${THTTPD_VERSION}.tar.gz \
-    && tar xzf thttpd-${THTTPD_VERSION}.tar.gz \
-    && mv /thttpd-${THTTPD_VERSION} /thttpd
-
-# Compile thttpd to a static binary which we can copy around
-RUN cd /thttpd \
-    && ./configure \
-    && make CCOPT='-O2 -s -static' thttpd
-
 # CONFD
 FROM debian:bullseye-20250317-slim AS confd
 
@@ -257,7 +239,6 @@ RUN mv /copy_root/piaware_builder/piaware_*_*.deb /copy_root/piaware.deb && \
     rm -rf /copy_root/piaware_builder
 RUN mv /copy_root/tcltls-rebuild/tcl-tls_*.deb /copy_root/tcl-tls.deb && \
     rm -rf /copy_root/tcltls-rebuild
-COPY --from=thttpd /thttpd/thttpd /copy_root/
 COPY --from=confd /opt/confd/bin/confd /copy_root/opt/confd/bin/
 COPY --from=radarbox /usr/bin/rbfeeder /copy_root/usr/bin/rbfeeder_armhf
 COPY --from=radarbox /usr/bin/dump1090-rb /copy_root/usr/bin/dump1090-rbs
@@ -339,6 +320,8 @@ RUN arch=$(dpkg --print-architecture) && \
     python3-venv \
     curl \
     gzip \
+    # nginx
+    nginx \
     # radarbox
     build-essential \
     python3-minimal \
@@ -427,10 +410,14 @@ RUN arch=$(dpkg --print-architecture) && \
     # Radarbox : create symlink for rbfeeder wrapper
     mv /build/rbfeeder_wrapper.sh /usr/bin/rbfeeder_wrapper.sh && \
     ln -s /usr/bin/rbfeeder_wrapper.sh /usr/bin/rbfeeder && \
-    # THTTPD
+    # nginx
     find /usr/lib/fr24/public_html -type d -print0 | xargs -0 chmod 0755 && \
     find /usr/lib/fr24/public_html -type f -print0 | xargs -0 chmod 0644 && \
-    /thttpd -V && \
+    rm -rf /var/www/html && \
+    sed -i 's/listen 80 default_server;/listen 8080 default_server;/g' /etc/nginx/sites-available/default && \
+    sed -i 's/listen \[::\]:80 default_server;/listen \[::\]:8080 default_server;/g' /etc/nginx/sites-available/default && \
+    ln -s /usr/lib/fr24/public_html /var/www/html && \
+    /usr/sbin/nginx -v && \
     # FR24FEED
     /build/fr24feed.sh && \
     /fr24feed/fr24feed/fr24feed --version && \
