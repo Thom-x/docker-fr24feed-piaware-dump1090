@@ -25,6 +25,12 @@ Feed FlightRadar24 and FlightAware, allow you to see the positions of aircrafts 
 - Docker
 - RTL-SDR DVBT USB Dongle (RTL2832)
 
+# Supported tags & platforms
+
+- `latest`, `vX.Y.Z` contains all platforms (amd64, amr64, arm-v7) in one image
+- `latest-<platform>` split image for each platform (amd64, amr64, arm-v7)
+- `vX.Y.Z--<platform>` split image for each platform (amd64, amr64, arm-v7)
+
 # Getting started
 
 Run :
@@ -307,7 +313,7 @@ Add the environment variable `SERVICE_ENABLE_OPENSKY` and set it to `true`.
 
 Ex : `-e 'SERVICE_ENABLE_OPENSKY=true' -e 'OPENSKY_USERNAME=MyUserName' -e 'OPENSKY_SERIAL=-462168426854'`
 
-## Radarbox
+## Airnavradar (previously named Radarbox) 
 
 First-time users should obtain a sharing key.
 
