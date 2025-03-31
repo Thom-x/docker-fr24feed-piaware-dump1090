@@ -9,9 +9,7 @@ if [ "$SERVICE_ENABLE_HTTP" != "false" ]; then
         ulimit -n "$SYSTEM_HTTP_ULIMIT_N"
     fi
 
-    /thttpd -D -h 0.0.0.0 -p 8080 -d /usr/lib/fr24/public_html -l - -M 60 2>&1 | mawk -W interactive '{printf "%c[32m[http]%c[0m %s\n", 27, 27, $0}'
-    # stdbuf ...  --  (remove blank lines from output)
-    # awk -W interactive ...  (prefix log messages with color and "[http]")
+    /usr/sbin/nginx -g "daemon off;"  2>&1 | mawk -W interactive '{printf "%c[32m[http]%c[0m %s\n", 27, 27, $0}'
 else
     tail -f /dev/null
 fi
