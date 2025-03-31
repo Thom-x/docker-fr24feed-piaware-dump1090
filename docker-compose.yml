@@ -39,6 +39,8 @@ services:
       - "RADARBOX_SHARING_KEY=MY_SHARING_KEY"
       - "SERVICE_ENABLE_ADSBHUB=true"
       - "ADSBHUB_CKEY=MY_SHARING_KEY"
+      - "SERVICE_ENABLE_BIAST=true"
+      - "BIAST_ARGS=-b 1"
     devices:
       - "/dev/bus/usb"
     # ports
