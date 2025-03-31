@@ -445,7 +445,7 @@ Ex : `-e 'HTML_SITE_NAME=My site'`
 ## BIAS-T Option
 
 You can enable the BIAS-T option for the RTL-SDR device by setting the `SERVICE_ENABLE_BIAST` environment variable to `true`. This will enable bias-tee power on the RTL-SDR device, which is useful for powering external LNA (Low Noise Amplifier) devices.
-It will run the command `rtl_sdr -b 1` to enable the bias-t option.
+It will run the command `rtl_biast -b 1` to enable the bias-t option.
 
 | Environment Variable   | Default value | Description                              |
 |------------------------|---------------|------------------------------------------|
