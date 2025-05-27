@@ -190,20 +190,20 @@ jobs:
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           # Strip "v" prefix from tag name
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-          [ "$VERSION" == "master" ] && TAGS_INPUTS=$DOCKERHUB_IMAGE_NAME:latest
-          [ "$VERSION" == "master" ] && TAGS_IMAGES=$DOCKERHUB_IMAGE_NAME:latest-amd64,$DOCKERHUB_IMAGE_NAME:latest-arm64,$DOCKERHUB_IMAGE_NAME:latest-arm-v7
+          [ "$VERSION" == "master" ] && TAGS_TAGS=$DOCKERHUB_IMAGE_NAME:latest
+          [ "$VERSION" == "master" ] && TAGS_INPUTS=$DOCKERHUB_IMAGE_NAME:latest-amd64,$DOCKERHUB_IMAGE_NAME:latest-arm64,$DOCKERHUB_IMAGE_NAME:latest-arm-v7
           
-          [ "$VERSION" != "master" ] && TAGS_INPUTS=$DOCKERHUB_IMAGE_NAME:$VERSION,$DOCKERHUB_IMAGE_NAME:latest
-          [ "$VERSION" != "master" ] && TAGS_IMAGES=$DOCKERHUB_IMAGE_NAME:$VERSION-amd64,$DOCKERHUB_IMAGE_NAME:$VERSION-arm64,$DOCKERHUB_IMAGE_NAME:$VERSION-arm-v7
+          [ "$VERSION" != "master" ] && TAGS_TAGS=$DOCKERHUB_IMAGE_NAME:$VERSION,$DOCKERHUB_IMAGE_NAME:latest
+          [ "$VERSION" != "master" ] && TAGS_INPUTS=$DOCKERHUB_IMAGE_NAME:$VERSION-amd64,$DOCKERHUB_IMAGE_NAME:$VERSION-arm64,$DOCKERHUB_IMAGE_NAME:$VERSION-arm-v7
+          echo TAGS_TAGS=$TAGS_TAGS
           echo TAGS_INPUTS=$TAGS_INPUTS
-          echo TAGS_IMAGES=$TAGS_IMAGES
+          echo "tags=$TAGS_TAGS" >> $GITHUB_OUTPUT
           echo "inputs=$TAGS_INPUTS" >> $GITHUB_OUTPUT
-          echo "images=$TAGS_IMAGES" >> $GITHUB_OUTPUT
       - name: Create and push manifest images
         uses: Noelware/docker-manifest-action@v1
         with:
+          tags: ${{ steps.image-setup-dockerhub.outputs.tags }}
           inputs: ${{ steps.image-setup-dockerhub.outputs.inputs }}
-          tags: ${{ steps.image-setup-dockerhub.outputs.images }}
           push: true
       - name: Images setup ghcr.io
         id: image-setup-ghcr
@@ -212,18 +212,18 @@ jobs:
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           # Strip "v" prefix from tag name
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-          [ "$VERSION" == "master" ] && TAGS_INPUTS=ghcr.io/$GHCR_IMAGE_NAME:latest
-          [ "$VERSION" == "master" ] && TAGS_IMAGES=ghcr.io/$GHCR_IMAGE_NAME:latest-amd64,ghcr.io/$GHCR_IMAGE_NAME:latest-arm64,ghcr.io/$GHCR_IMAGE_NAME:latest-arm-v7
+          [ "$VERSION" == "master" ] && TAGS_TAGS=ghcr.io/$GHCR_IMAGE_NAME:latest
+          [ "$VERSION" == "master" ] && TAGS_INPUTS=ghcr.io/$GHCR_IMAGE_NAME:latest-amd64,ghcr.io/$GHCR_IMAGE_NAME:latest-arm64,ghcr.io/$GHCR_IMAGE_NAME:latest-arm-v7
           
-          [ "$VERSION" != "master" ] && TAGS_INPUTS=ghcr.io/$GHCR_IMAGE_NAME:$VERSION,ghcr.io/$GHCR_IMAGE_NAME:latest
-          [ "$VERSION" != "master" ] && TAGS_IMAGES=ghcr.io/$GHCR_IMAGE_NAME:$VERSION-amd64,ghcr.io/$GHCR_IMAGE_NAME:$VERSION-arm64,ghcr.io/$GHCR_IMAGE_NAME:$VERSION-arm-v7
+          [ "$VERSION" != "master" ] && TAGS_TAGS=ghcr.io/$GHCR_IMAGE_NAME:$VERSION,ghcr.io/$GHCR_IMAGE_NAME:latest
+          [ "$VERSION" != "master" ] && TAGS_INPUTS=ghcr.io/$GHCR_IMAGE_NAME:$VERSION-amd64,ghcr.io/$GHCR_IMAGE_NAME:$VERSION-arm64,ghcr.io/$GHCR_IMAGE_NAME:$VERSION-arm-v7
+          echo TAGS_TAGS=$TAGS_TAGS
           echo TAGS_INPUTS=$TAGS_INPUTS
-          echo TAGS_IMAGES=$TAGS_IMAGES
+          echo "tags=$TAGS_TAGS" >> $GITHUB_OUTPUT
           echo "inputs=$TAGS_INPUTS" >> $GITHUB_OUTPUT
-          echo "images=$TAGS_IMAGES" >> $GITHUB_OUTPUT
       - name: Create and push manifest images
         uses: Noelware/docker-manifest-action@v1
         with:
+          tags: ${{ steps.image-setup-ghcr.outputs.tags }}
           inputs: ${{ steps.image-setup-ghcr.outputs.inputs }}
-          tags: ${{ steps.image-setup-ghcr.outputs.images }}
           push: true
