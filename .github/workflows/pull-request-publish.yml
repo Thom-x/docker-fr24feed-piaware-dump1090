@@ -167,10 +167,10 @@ jobs:
           echo "inputs=$inputs" >> $GITHUB_OUTPUT
           echo "images=$images" >> $GITHUB_OUTPUT
       - name: Create and push manifest images docker.io
-        uses: Noelware/docker-manifest-action@master
+        uses: Noelware/docker-manifest-action@v1
         with:
           inputs: ${{ steps.image-setup-dockerhub.outputs.inputs }}
-          images: ${{ steps.image-setup-dockerhub.outputs.images }}
+          tags: ${{ steps.image-setup-dockerhub.outputs.images }}
           push: true
       - name: Images setup ghcr.io
         id: image-setup-ghcr
@@ -180,8 +180,8 @@ jobs:
           echo "inputs=$inputs" >> $GITHUB_OUTPUT
           echo "images=$images" >> $GITHUB_OUTPUT
       - name: Create and push manifest images ghcr.io
-        uses: Noelware/docker-manifest-action@master
+        uses: Noelware/docker-manifest-action@v1
         with:
           inputs: ${{ steps.image-setup-ghcr.outputs.inputs }}
-          images: ${{ steps.image-setup-ghcr.outputs.images }}
+          tags: ${{ steps.image-setup-ghcr.outputs.images }}
           push: true
