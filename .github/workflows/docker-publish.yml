@@ -200,7 +200,7 @@ jobs:
           echo "inputs=$TAGS_INPUTS" >> $GITHUB_OUTPUT
           echo "images=$TAGS_IMAGES" >> $GITHUB_OUTPUT
       - name: Create and push manifest images
-        uses: Noelware/docker-manifest-action@master
+        uses: Noelware/docker-manifest-action@v1
         with:
           inputs: ${{ steps.image-setup-dockerhub.outputs.inputs }}
           tags: ${{ steps.image-setup-dockerhub.outputs.images }}
@@ -222,7 +222,7 @@ jobs:
           echo "inputs=$TAGS_INPUTS" >> $GITHUB_OUTPUT
           echo "images=$TAGS_IMAGES" >> $GITHUB_OUTPUT
       - name: Create and push manifest images
-        uses: Noelware/docker-manifest-action@master
+        uses: Noelware/docker-manifest-action@v1
         with:
           inputs: ${{ steps.image-setup-ghcr.outputs.inputs }}
           tags: ${{ steps.image-setup-ghcr.outputs.images }}
