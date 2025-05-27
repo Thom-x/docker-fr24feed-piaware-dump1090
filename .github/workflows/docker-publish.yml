@@ -203,7 +203,7 @@ jobs:
         uses: Noelware/docker-manifest-action@master
         with:
           inputs: ${{ steps.image-setup-dockerhub.outputs.inputs }}
-          images: ${{ steps.image-setup-dockerhub.outputs.images }}
+          tags: ${{ steps.image-setup-dockerhub.outputs.images }}
           push: true
       - name: Images setup ghcr.io
         id: image-setup-ghcr
@@ -225,5 +225,5 @@ jobs:
         uses: Noelware/docker-manifest-action@master
         with:
           inputs: ${{ steps.image-setup-ghcr.outputs.inputs }}
-          images: ${{ steps.image-setup-ghcr.outputs.images }}
+          tags: ${{ steps.image-setup-ghcr.outputs.images }}
           push: true
