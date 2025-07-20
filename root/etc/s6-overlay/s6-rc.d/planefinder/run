@@ -5,8 +5,8 @@ if [ "$SERVICE_ENABLE_PLANEFINDER" != "false" ]; then
 
     /planefinder/pfclient \
         --connection_type=1 \
-        --address="127.0.0.1" \
-        --port="30005" \
+        --address="${PLANEFINDER_INPUT_HOST}" \
+        --port="${PLANEFINDER_INPUT_PORT}" \
         --data_format=1 \
         --sharecode="${PLANEFINDER_SHARECODE}" \
         --lat="${HTML_SITE_LAT}" \

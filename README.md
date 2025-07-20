@@ -263,6 +263,8 @@ Add the environment variable `SERVICE_ENABLE_PLANEFINDER` and set it to `true`.
 | Environment Variable         | Description                       | Default value |
 | ---------------------------- | --------------------------------- | ------------- |
 | `PLANEFINDER_SHARECODE`      | generated share code (required)   | empty         |
+| `PLANEFINDER_INPUT_HOST`     | Input host                        | `127.0.0.1`     |
+| `PLANEFINDER_INPUT_PORT`     | Input port                        | `30005`       |
 
 Ex : `-e 'SERVICE_ENABLE_PLANEFINDER=true' -e 'PLANEFINDER_SHARECODE=65dsfsd56f'`
 
