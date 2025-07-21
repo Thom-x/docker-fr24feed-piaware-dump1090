@@ -3,6 +3,17 @@
 if [ "$SERVICE_ENABLE_PLANEFINDER" != "false" ]; then
     set -eo pipefail
 
+    default_value() {
+        key=${1//\-/_DASH_}
+        key=PLANEFINDER_${key^^}
+        eval "value=\${$key:-\$2}"
+        printf -v $key -- "$value"
+        export $key
+    }
+
+    default_value "input_host" "127.0.0.1"
+    default_value "input_port" "30005"
+
     /planefinder/pfclient \
         --connection_type=1 \
         --address="${PLANEFINDER_INPUT_HOST}" \
