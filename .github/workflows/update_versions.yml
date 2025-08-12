@@ -252,6 +252,10 @@ jobs:
           # Wait a moment for the PR to be fully created
           sleep 5
           
+          # Configure git user for the commit
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
           # Switch to the update-versions branch
           git checkout update-versions
           
