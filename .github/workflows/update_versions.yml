@@ -17,12 +17,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - name: Check for existing update PRs
+        id: check-existing-prs
+        run: |
+          # Check for existing open PRs with the update branch or similar title
+          EXISTING_PRS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls?state=open" | \
+            jq -r '.[] | select(.head.ref == "update-versions" or (.title | test("update component versions"; "i"))) | .number')
+          
+          if [ ! -z "$EXISTING_PRS" ]; then
+            echo "Found existing update PR(s): $EXISTING_PRS"
+            echo "Aborting to avoid duplicate update PRs."
+            echo "existing_pr=true" >> $GITHUB_OUTPUT
+            echo "pr_numbers=$EXISTING_PRS" >> $GITHUB_OUTPUT
+          else
+            echo "No existing update PRs found. Proceeding with update check."
+            echo "existing_pr=false" >> $GITHUB_OUTPUT
+          fi
 
+      - name: Abort if existing PR found
+        if: steps.check-existing-prs.outputs.existing_pr == 'true'
+        run: |
+          echo "::warning::Existing update PR(s) found: ${{ steps.check-existing-prs.outputs.pr_numbers }}"
+          echo "::warning::Skipping update to avoid duplicates. Please merge or close existing PR(s) first."
+          exit 0
       - name: Get latest DUMP1090_VERSION
+        if: steps.check-existing-prs.outputs.existing_pr == 'false'
         id: dump1090
         run: |
           VERSION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/flightaware/dump1090/tags | jq -r '.[0].name')
@@ -30,6 +50,7 @@ jobs:
           echo "Latest DUMP1090_VERSION: $VERSION"
 
       - name: Get latest PIAWARE_VERSION
+        if: steps.check-existing-prs.outputs.existing_pr == 'false'
         id: piaware
         run: |
           VERSION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/flightaware/piaware_builder/tags | jq -r '.[0].name')
@@ -37,6 +58,7 @@ jobs:
           echo "Latest PIAWARE_VERSION: $VERSION"
 
       - name: Get latest readsb commit
+        if: steps.check-existing-prs.outputs.existing_pr == 'false'
         id: readsb
         run: |
           COMMIT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repositories/454807301/commits/master | jq -r '.sha')
@@ -44,6 +66,7 @@ jobs:
           echo "Latest readsb commit: $COMMIT"
 
       - name: Get latest mlat-client commit
+        if: steps.check-existing-prs.outputs.existing_pr == 'false'
         id: mlat-client
         run: |
           COMMIT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/wiedehopf/mlat-client/commits/master | jq -r '.sha')
@@ -51,6 +74,7 @@ jobs:
           echo "Latest mlat-client commit: $COMMIT"
 
       - name: Get latest adsbexchange-stats commit
+        if: steps.check-existing-prs.outputs.existing_pr == 'false'
         id: adsbexchange-stats
         run: |
           COMMIT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/adsbxchange/adsbexchange-stats/commits/master | jq -r '.sha')
@@ -58,6 +82,7 @@ jobs:
           echo "Latest adsbexchange-stats commit: $COMMIT"
 
       - name: Get latest RADARBOX_MLAT_VERSION
+        if: steps.check-existing-prs.outputs.existing_pr == 'false'
         id: radarbox-mlat
         run: |
           VERSION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/mutability/mlat-client/tags | jq -r '.[0].name')
@@ -65,6 +90,7 @@ jobs:
           echo "Latest RADARBOX_MLAT_VERSION: $VERSION"
 
       - name: Get latest RTL_SDR_VERSION
+        if: steps.check-existing-prs.outputs.existing_pr == 'false'
         id: rtl-sdr
         run: |
           VERSION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/osmocom/rtl-sdr/tags | jq -r '.[0].name')
@@ -72,6 +98,7 @@ jobs:
           echo "Latest RTL_SDR_VERSION: $VERSION"
 
       - name: Get latest FR24FEED versions
+        if: steps.check-existing-prs.outputs.existing_pr == 'false'
         id: fr24feed
         run: |
           # Get FR24FEED versions from JSON
@@ -105,6 +132,7 @@ jobs:
       #     echo "Latest PLANEFINDER_ARM64_VERSION: $ARM64_VERSION"
       #     echo "Latest PLANEFINDER_ARMHF_VERSION: $ARMHF_VERSION"
       - name: Update Dockerfile with new versions
+        if: steps.check-existing-prs.outputs.existing_pr == 'false'
         run: |
           # Update DUMP1090_VERSION
           sed -i "s/^ENV DUMP1090_VERSION=.*/ENV DUMP1090_VERSION=${{ steps.dump1090.outputs.version }}/" Dockerfile
@@ -144,6 +172,7 @@ jobs:
           # sed -i "s/^ENV PLANEFINDER_ARMHF_VERSION=.*/ENV PLANEFINDER_ARMHF_VERSION=${PLANEFINDER_ARMHF_VERSION}/" Dockerfile
 
       - name: Check for changes
+        if: steps.check-existing-prs.outputs.existing_pr == 'false'
         id: changes
         run: |
           if git diff --quiet; then
@@ -156,7 +185,8 @@ jobs:
           fi
 
       - name: Create Pull Request
-        if: steps.changes.outputs.has_changes == 'true'
+        if: steps.check-existing-prs.outputs.existing_pr == 'false' && steps.changes.outputs.has_changes == 'true'
+        id: create-pr
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -176,6 +206,7 @@ jobs:
             - PLANEFINDER_ARM64_VERSION: ${{ steps.planefinder.outputs.arm64_version }}
             - PLANEFINDER_ARMHF_VERSION: ${{ steps.planefinder.outputs.armhf_version }}
           title: 'chore: update component versions'
+          labels: bump:minor
           body: |
             ## Automated Version Update
             
@@ -204,3 +235,34 @@ jobs:
             This update was automatically generated by the version update workflow.
           branch: update-versions
           delete-branch: true
+
+      - name: Output PR information
+        if: steps.check-existing-prs.outputs.existing_pr == 'false' && steps.changes.outputs.has_changes == 'true'
+        run: |
+          echo "Pull request #${{ steps.create-pr.outputs.pull-request-number }} was created/updated"
+          echo "PR URL: ${{ steps.create-pr.outputs.pull-request-url }}"
+
+      - name: Trigger Pull Request workflows
+        if: steps.check-existing-prs.outputs.existing_pr == 'false' && steps.changes.outputs.has_changes == 'true'
+        run: |
+          # Get the PR number
+          PR_NUMBER="${{ steps.create-pr.outputs.pull-request-number }}"
+          echo "PR #${PR_NUMBER} was created/updated"
+          
+          # Wait a moment for the PR to be fully created
+          sleep 5
+          
+          # Switch to the update-versions branch
+          git checkout update-versions
+          
+          # Create an empty commit to trigger workflows
+          # This is the most reliable way to trigger PR workflows
+          git commit --allow-empty -m "trigger: CI workflows for automated update
+          
+          This empty commit is created to trigger CI workflows for the automated version update PR.
+          The pull-request workflows should now run automatically."
+          
+          # Push the empty commit
+          git push origin update-versions
+          
+          echo "Empty commit pushed to trigger CI workflows for PR #${PR_NUMBER}"
