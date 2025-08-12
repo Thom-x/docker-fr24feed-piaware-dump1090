@@ -189,7 +189,7 @@ jobs:
         id: create-pr
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
           commit-message: |
             chore: update component versions
             
@@ -241,32 +241,4 @@ jobs:
         run: |
           echo "Pull request #${{ steps.create-pr.outputs.pull-request-number }} was created/updated"
           echo "PR URL: ${{ steps.create-pr.outputs.pull-request-url }}"
-
-      - name: Trigger Pull Request workflows
-        if: steps.check-existing-prs.outputs.existing_pr == 'false' && steps.changes.outputs.has_changes == 'true'
-        run: |
-          # Get the PR number
-          PR_NUMBER="${{ steps.create-pr.outputs.pull-request-number }}"
-          echo "PR #${PR_NUMBER} was created/updated"
-          
-          # Wait a moment for the PR to be fully created
-          sleep 5
-          
-          # Configure git user for the commit
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Switch to the update-versions branch
-          git checkout update-versions
-          
-          # Create an empty commit to trigger workflows
-          # This is the most reliable way to trigger PR workflows
-          git commit --allow-empty -m "trigger: CI workflows for automated update
-          
-          This empty commit is created to trigger CI workflows for the automated version update PR.
-          The pull-request workflows should now run automatically."
-          
-          # Push the empty commit
-          git push origin update-versions
-          
-          echo "Empty commit pushed to trigger CI workflows for PR #${PR_NUMBER}"
+          echo "The pull-request workflows should be triggered automatically since we used PAT_TOKEN"
