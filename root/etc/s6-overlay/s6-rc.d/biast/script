@@ -1,0 +1,20 @@
+#!/command/with-contenv bash
+
+set -eo pipefail
+if [ "$SERVICE_ENABLE_BIAST" != "false" ]; then
+
+	default_value() {
+		key=${1//\-/_DASH_}
+		key=BIAST_${key^^}
+		eval "value=\${$key:-\$2}"
+		printf -v $key -- "$value"
+		export $key
+	}
+    default_value "ARGS" "-b 1"
+
+    echo "Enabling bias-tee for RTL-SDR V3..." | mawk -W interactive '{printf "%c[31m[biast]%c[0m %s\n", 27, 27, $0}'
+    /usr/local/bin/rtl_biast ${ARGS} 2>&1 | mawk -W interactive '{printf "%c[31m[biast]%c[0m %s\n", 27, 27, $0}'
+    echo "SUCCESS: Bias Tee enabled" | mawk -W interactive '{printf "%c[31m[biast]%c[0m %s\n", 27, 27, $0}'
+    sleep 1
+
+fi

@@ -65,6 +65,8 @@ docker run -d -p 8080:8080 -p 8754:8754 \
 	-e 'RADARBOX_SHARING_KEY=MY_RADARBOX_SHARING_KEY' \
 	-e 'SERVICE_ENABLE_ADSBHUB=true' \
 	-e 'ADSBHUB_CKEY=MY_ADSBHUB_SHARING_KEY' \
+	-e 'SERVICE_ENABLE_BIAST=true' \
+	-e 'BIAST_ARGS=-b 1' \
 	--tmpfs /run:exec,size=32M \
 	--tmpfs /planefinder/log:exec,size=32M \
 	--tmpfs /usr/lib/fr24/public_html/data:size=32M \
@@ -97,6 +99,7 @@ To disable starting a service you can add an environement variable :
 | `SERVICE_ENABLE_ADSBFI`             | `false` | Disable adsb.fi feeder     | `false`       |
 | `SERVICE_ENABLE_RADARBOX`           | `false` | Disable radarbox feeder    | `false`       |
 | `SERVICE_ENABLE_ADSBHUB`            | `false` | Disable adsbhub feeder     | `false`       |
+| `SERVICE_ENABLE_BIAST`              | `false` | Disable biast-t option     | `false`       |
 
 
 Ex : `-e 'SERVICE_ENABLE_HTTP=false'`
@@ -440,6 +443,16 @@ Ex : `-e 'HTML_SITE_NAME=My site'`
 | `RTL_TCP_OVER_NETCAT` | `false`       | Use dump1090 in combination with netcat to feed data from rtl_tcp server. (Requires appox. 35-40Mbit/s). Example RTL_TCP command: `./rtl_tcp -a 0.0.0.0 -f 1090000000 -s 2400000 -p 30005 -P 28 -g -10` |
 | `RTL_TCP_REMOTE_HOST` | empty         | IP of rtl_tcp server                                                                                                                                                                                    |
 | `RTL_TCP_REMOTE_PORT` | empty         | Port of rtl_tcp server                                                                                                                                                                                  |
+
+## BIAS-T Option
+
+You can enable the BIAS-T option for the RTL-SDR device by setting the `SERVICE_ENABLE_BIAST` environment variable to `true`. This will enable bias-tee power on the RTL-SDR device, which is useful for powering external LNA (Low Noise Amplifier) devices.
+It will run the command `rtl_biast -b 1` to enable the bias-t option.
+
+| Environment Variable   | Default value | Description                              |
+|------------------------|---------------|------------------------------------------|
+| `SERVICE_ENABLE_BIAST` | `false`       | Enable bias-t option for RTL-SDR device. |
+| `BIAST_ARGS`           | `-b 1`        | Arguments for bias-t                     |
 
 ## Terrain-limit rings (optional):
 
