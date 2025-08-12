@@ -1,6 +1,6 @@
 FROM debian:bullseye-20250317 AS dump1090
 
-ENV DUMP1090_VERSION=v10.1
+ENV DUMP1090_VERSION=v10.2
 
 # DUMP1090
 RUN apt-get update && \
@@ -26,7 +26,7 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
 FROM debian:bullseye-20250317 AS piaware
 
 ENV DEBIAN_VERSION=bullseye
-ENV PIAWARE_VERSION=v10.1
+ENV PIAWARE_VERSION=v10.2
 
 # PIAWARE
 WORKDIR /tmp
@@ -123,7 +123,7 @@ RUN set -x && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
     # mlat-client
     URL=https://github.com/wiedehopf/mlat-client &&\
-    COMMIT_MLAT_CLIENT=0f95d5d9bb9d2a81e41651565beca2855cb4f1bd && \
+    COMMIT_MLAT_CLIENT=a34e48d2c1e0f957bfd5e472283af06c6cc6ddfc && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT_MLAT_CLIENT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     pushd ${SRCTMP} && \
     VENV="/usr/local/share/adsbexchange/venv" && \
@@ -251,8 +251,8 @@ FROM debian:bullseye-20250317-slim AS serve
 ENV DEBIAN_VERSION=bullseye
 ENV RTL_SDR_VERSION=v2.0.2
 
-ENV FR24FEED_AMD64_VERSION=1.0.48-0
-ENV FR24FEED_ARMHF_VERSION=1.0.48-0
+ENV FR24FEED_AMD64_VERSION=1.0.51-0
+ENV FR24FEED_ARMHF_VERSION=1.0.51-0
 
 ENV PLANEFINDER_AMD64_VERSION=5.0.162
 ENV PLANEFINDER_ARM64_VERSION=5.1.440
