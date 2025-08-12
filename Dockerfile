@@ -111,10 +111,10 @@ RUN set -x && \
     SRCTMP=/srctmp && \
     # readsb as a feed client
     URL=https://github.com/adsbxchange/readsb && \
-    COMMIT=f535e517996ad04ce8126a58757a9b91a82fe542 && \
-    mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
+    COMMIT_READSB=f535e517996ad04ce8126a58757a9b91a82fe542 && \
+    mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT_READSB}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     pushd ${SRCTMP} && \
-    echo "$COMMIT" > READSB_VERSION && \
+    echo "$COMMIT_READSB" > READSB_VERSION && \
     cat READSB_VERSION && \
     make -j "$(nproc)" AIRCRAFT_HASH_BITS=12 && \
     cp -v -T readsb /usr/local/share/adsbexchange/readsb && \
@@ -123,8 +123,8 @@ RUN set -x && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
     # mlat-client
     URL=https://github.com/wiedehopf/mlat-client &&\
-    COMMIT=0f95d5d9bb9d2a81e41651565beca2855cb4f1bd && \
-    mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
+    COMMIT_MLAT_CLIENT=0f95d5d9bb9d2a81e41651565beca2855cb4f1bd && \
+    mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT_MLAT_CLIENT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     pushd ${SRCTMP} && \
     VENV="/usr/local/share/adsbexchange/venv" && \
     python3 -m venv "${VENV}" && \
@@ -137,8 +137,8 @@ RUN set -x && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
     # adsbexchange-stats
     URL=https://github.com/adsbxchange/adsbexchange-stats && \
-    COMMIT=cbe5febf7e70e518d5a3550d3a2c8375b8a43c24 && \
-    mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
+    COMMIT_ADSBEXCHANGE_STATS=cbe5febf7e70e518d5a3550d3a2c8375b8a43c24 && \
+    mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT_ADSBEXCHANGE_STATS}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     cp -v -T ${SRCTMP}/json-status /usr/local/share/adsbexchange/json-status && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
     # readsb: simple tests

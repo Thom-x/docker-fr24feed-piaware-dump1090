@@ -1,0 +1,206 @@
+# $schema: https://json.schemastore.org/github-workflow.json
+
+name: 'Update different versions'
+on:
+  schedule:
+    - cron: '30 1 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Get latest DUMP1090_VERSION
+        id: dump1090
+        run: |
+          VERSION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/flightaware/dump1090/tags | jq -r '.[0].name')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Latest DUMP1090_VERSION: $VERSION"
+
+      - name: Get latest PIAWARE_VERSION
+        id: piaware
+        run: |
+          VERSION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/flightaware/piaware_builder/tags | jq -r '.[0].name')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Latest PIAWARE_VERSION: $VERSION"
+
+      - name: Get latest readsb commit
+        id: readsb
+        run: |
+          COMMIT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repositories/454807301/commits/master | jq -r '.sha')
+          echo "commit=$COMMIT" >> $GITHUB_OUTPUT
+          echo "Latest readsb commit: $COMMIT"
+
+      - name: Get latest mlat-client commit
+        id: mlat-client
+        run: |
+          COMMIT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/wiedehopf/mlat-client/commits/master | jq -r '.sha')
+          echo "commit=$COMMIT" >> $GITHUB_OUTPUT
+          echo "Latest mlat-client commit: $COMMIT"
+
+      - name: Get latest adsbexchange-stats commit
+        id: adsbexchange-stats
+        run: |
+          COMMIT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/adsbxchange/adsbexchange-stats/commits/master | jq -r '.sha')
+          echo "commit=$COMMIT" >> $GITHUB_OUTPUT
+          echo "Latest adsbexchange-stats commit: $COMMIT"
+
+      - name: Get latest RADARBOX_MLAT_VERSION
+        id: radarbox-mlat
+        run: |
+          VERSION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/mutability/mlat-client/tags | jq -r '.[0].name')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Latest RADARBOX_MLAT_VERSION: $VERSION"
+
+      - name: Get latest RTL_SDR_VERSION
+        id: rtl-sdr
+        run: |
+          VERSION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/osmocom/rtl-sdr/tags | jq -r '.[0].name')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Latest RTL_SDR_VERSION: $VERSION"
+
+      - name: Get latest FR24FEED versions
+        id: fr24feed
+        run: |
+          # Get FR24FEED versions from JSON
+          JSON_DATA=$(curl -s https://repo-feed.flightradar24.com/fr24feed_versions.json)
+          AMD64_VERSION=$(echo "$JSON_DATA" | jq -r '.platform.linux_x86_64_tgz.version')
+          ARMHF_VERSION=$(echo "$JSON_DATA" | jq -r '.platform.linux_arm_tgz.version')
+          echo "amd64_version=$AMD64_VERSION" >> $GITHUB_OUTPUT
+          echo "armhf_version=$ARMHF_VERSION" >> $GITHUB_OUTPUT
+          echo "Latest FR24FEED_AMD64_VERSION: $AMD64_VERSION"
+          echo "Latest FR24FEED_ARMHF_VERSION: $ARMHF_VERSION"
+
+      # - name: Get latest PLANEFINDER versions
+      #   id: planefinder
+      #   run: |
+      #     # Scrape PlaneFinder client page for versions
+      #     PAGE_CONTENT=$(curl -s https://planefinder.net/coverage/client)
+          
+      #     # Extract AMD64 version
+      #     AMD64_VERSION=$(echo "$PAGE_CONTENT" | grep -oP 'pfclient_\K[0-9]+\.[0-9]+\.[0-9]+(?=_amd64\.tar\.gz)' | head -1)
+          
+      #     # Extract ARM64 version  
+      #     ARM64_VERSION=$(echo "$PAGE_CONTENT" | grep -oP 'pfclient_\K[0-9]+\.[0-9]+\.[0-9]+(?=_arm64\.tar\.gz)' | head -1)
+          
+      #     # Extract ARMHF version
+      #     ARMHF_VERSION=$(echo "$PAGE_CONTENT" | grep -oP 'pfclient_\K[0-9]+\.[0-9]+\.[0-9]+(?=_armhf\.tar\.gz)' | head -1)
+          
+      #     echo "amd64_version=$AMD64_VERSION" >> $GITHUB_OUTPUT
+      #     echo "arm64_version=$ARM64_VERSION" >> $GITHUB_OUTPUT
+      #     echo "armhf_version=$ARMHF_VERSION" >> $GITHUB_OUTPUT
+      #     echo "Latest PLANEFINDER_AMD64_VERSION: $AMD64_VERSION"
+      #     echo "Latest PLANEFINDER_ARM64_VERSION: $ARM64_VERSION"
+      #     echo "Latest PLANEFINDER_ARMHF_VERSION: $ARMHF_VERSION"
+      - name: Update Dockerfile with new versions
+        run: |
+          # Update DUMP1090_VERSION
+          sed -i "s/^ENV DUMP1090_VERSION=.*/ENV DUMP1090_VERSION=${{ steps.dump1090.outputs.version }}/" Dockerfile
+          
+          # Update PIAWARE_VERSION
+          sed -i "s/^ENV PIAWARE_VERSION=.*/ENV PIAWARE_VERSION=${{ steps.piaware.outputs.version }}/" Dockerfile
+          
+          # Update readsb commit
+          sed -i "s/COMMIT_READSB=[a-zA-Z0-9]*/COMMIT_READSB=${{ steps.readsb.outputs.commit }}/" Dockerfile
+          
+          # Update mlat-client commit
+          sed -i "s/COMMIT_MLAT_CLIENT=[a-zA-Z0-9]*/COMMIT_MLAT_CLIENT=${{ steps.mlat-client.outputs.commit }}/" Dockerfile
+          
+          # Update adsbexchange-stats commit
+          sed -i "s/COMMIT_ADSBEXCHANGE_STATS=[a-zA-Z0-9]*/COMMIT_ADSBEXCHANGE_STATS=${{ steps.adsbexchange-stats.outputs.commit }}/" Dockerfile
+          
+          # Update RADARBOX_MLAT_VERSION
+          sed -i "s/^ENV RADARBOX_MLAT_VERSION=.*/ENV RADARBOX_MLAT_VERSION=${{ steps.radarbox-mlat.outputs.version }}/" Dockerfile
+          
+          # Update RTL_SDR_VERSION
+          sed -i "s/^ENV RTL_SDR_VERSION=.*/ENV RTL_SDR_VERSION=${{ steps.rtl-sdr.outputs.version }}/" Dockerfile
+          
+          # Update FR24FEED versions
+          # remove v prefix
+          FR24FEED_AMD64_VERSION=$(echo "${{ steps.fr24feed.outputs.amd64_version }}" | sed 's/^v//')
+          sed -i "s/^ENV FR24FEED_AMD64_VERSION=.*/ENV FR24FEED_AMD64_VERSION=${FR24FEED_AMD64_VERSION}/" Dockerfile
+          FR24FEED_ARMHF_VERSION=$(echo "${{ steps.fr24feed.outputs.armhf_version }}" | sed 's/^v//')
+          sed -i "s/^ENV FR24FEED_ARMHF_VERSION=.*/ENV FR24FEED_ARMHF_VERSION=${FR24FEED_ARMHF_VERSION}/" Dockerfile
+
+          # # Update PLANEFINDER versions
+          # # remove v prefix
+          # PLANEFINDER_AMD64_VERSION=$(echo "${{ steps.planefinder.outputs.amd64_version }}" | sed 's/^v//')
+          # sed -i "s/^ENV PLANEFINDER_AMD64_VERSION=.*/ENV PLANEFINDER_AMD64_VERSION=${PLANEFINDER_AMD64_VERSION}/" Dockerfile
+          # PLANEFINDER_ARM64_VERSION=$(echo "${{ steps.planefinder.outputs.arm64_version }}" | sed 's/^v//')
+          # sed -i "s/^ENV PLANEFINDER_ARM64_VERSION=.*/ENV PLANEFINDER_ARM64_VERSION=${PLANEFINDER_ARM64_VERSION}/" Dockerfile
+          # PLANEFINDER_ARMHF_VERSION=$(echo "${{ steps.planefinder.outputs.armhf_version }}" | sed 's/^v//')
+          # sed -i "s/^ENV PLANEFINDER_ARMHF_VERSION=.*/ENV PLANEFINDER_ARMHF_VERSION=${PLANEFINDER_ARMHF_VERSION}/" Dockerfile
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes detected"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            git diff
+          fi
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            chore: update component versions
+            
+            - DUMP1090_VERSION: ${{ steps.dump1090.outputs.version }}
+            - PIAWARE_VERSION: ${{ steps.piaware.outputs.version }}
+            - readsb commit: ${{ steps.readsb.outputs.commit }}
+            - mlat-client commit: ${{ steps.mlat-client.outputs.commit }}
+            - adsbexchange-stats commit: ${{ steps.adsbexchange-stats.outputs.commit }}
+            - RADARBOX_MLAT_VERSION: ${{ steps.radarbox-mlat.outputs.version }}
+            - RTL_SDR_VERSION: ${{ steps.rtl-sdr.outputs.version }}
+            - FR24FEED_AMD64_VERSION: ${{ steps.fr24feed.outputs.amd64_version }}
+            - FR24FEED_ARMHF_VERSION: ${{ steps.fr24feed.outputs.armhf_version }}
+            - PLANEFINDER_AMD64_VERSION: ${{ steps.planefinder.outputs.amd64_version }}
+            - PLANEFINDER_ARM64_VERSION: ${{ steps.planefinder.outputs.arm64_version }}
+            - PLANEFINDER_ARMHF_VERSION: ${{ steps.planefinder.outputs.armhf_version }}
+          title: 'chore: update component versions'
+          body: |
+            ## Automated Version Update
+            
+            This PR updates the following component versions:
+            
+            ### Git Repository Tags/Releases
+            - **DUMP1090_VERSION**: `${{ steps.dump1090.outputs.version }}`
+            - **PIAWARE_VERSION**: `${{ steps.piaware.outputs.version }}`
+            - **RADARBOX_MLAT_VERSION**: `${{ steps.radarbox-mlat.outputs.version }}`
+            - **RTL_SDR_VERSION**: `${{ steps.rtl-sdr.outputs.version }}`
+            
+            ### Git Repository Commits (latest from master)
+            - **readsb commit**: `${{ steps.readsb.outputs.commit }}`
+            - **mlat-client commit**: `${{ steps.mlat-client.outputs.commit }}`
+            - **adsbexchange-stats commit**: `${{ steps.adsbexchange-stats.outputs.commit }}`
+            
+            ### FR24FEED Versions (from JSON API)
+            - **FR24FEED_AMD64_VERSION**: `${{ steps.fr24feed.outputs.amd64_version }}`
+            - **FR24FEED_ARMHF_VERSION**: `${{ steps.fr24feed.outputs.armhf_version }}`
+            
+            ### PlaneFinder Versions (scraped from website)
+            - **PLANEFINDER_AMD64_VERSION**: `${{ steps.planefinder.outputs.amd64_version }}`
+            - **PLANEFINDER_ARM64_VERSION**: `${{ steps.planefinder.outputs.arm64_version }}`
+            - **PLANEFINDER_ARMHF_VERSION**: `${{ steps.planefinder.outputs.armhf_version }}`
+            
+            This update was automatically generated by the version update workflow.
+          branch: update-versions
+          delete-branch: true
