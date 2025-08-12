@@ -61,7 +61,7 @@ jobs:
             os: ubuntu-22.04-arm
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: 'refs/pull/${{ github.event.issue.number }}/merge'
       - name: Get commit
@@ -140,17 +140,17 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Download artifact amd64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{ needs.push.outputs.sha_short }}-amd64
           path: ${{ runner.temp }}
       - name: Download artifact arm-v7
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{ needs.push.outputs.sha_short }}-arm-v7
           path: ${{ runner.temp }}
       - name: Download artifact arm64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{ needs.push.outputs.sha_short }}-arm64
           path: ${{ runner.temp }}
