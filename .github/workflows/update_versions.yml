@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Check for existing update PRs
         id: check-existing-prs
@@ -187,7 +187,7 @@ jobs:
       - name: Create Pull Request
         if: steps.check-existing-prs.outputs.existing_pr == 'false' && steps.changes.outputs.has_changes == 'true'
         id: create-pr
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.PAT_TOKEN }}
           commit-message: |
