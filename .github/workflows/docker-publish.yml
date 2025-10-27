@@ -142,7 +142,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ github.sha }}-${{ matrix.archname }}
           path: ${{ runner.temp }}/${{ github.sha }}-${{ matrix.archname }}.tar
@@ -164,17 +164,17 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Download artifact amd64
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: ${{ github.sha }}-amd64
           path: ${{ runner.temp }}
       - name: Download artifact arm64
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: ${{ github.sha }}-arm64
           path: ${{ runner.temp }}
       - name: Download artifact arm-v7
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: ${{ github.sha }}-arm-v7
           path: ${{ runner.temp }}
