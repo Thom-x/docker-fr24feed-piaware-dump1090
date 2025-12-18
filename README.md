@@ -120,6 +120,7 @@ docker run -it --rm \
 ```
 
 When the container starts you should see the feeder id, note it. Wait 5 minutes and you should see a new receiver at https://fr.flightaware.com/adsb/piaware/claim (use the same IP as your docker host), claim it and exit the container.
+If not, just open https://fr.flightaware.com/adsb/piaware/claim/<your-feeder-id>
 
 Add the environment variable `PIAWARE_FEEDER_DASH_ID` with your feeder id.
 
