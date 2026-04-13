@@ -123,7 +123,7 @@ RUN set -x && \
     rm -rf ${SRCTMP} ${SRCTMP}.tar.gz && \
     # mlat-client
     URL=https://github.com/wiedehopf/mlat-client &&\
-    COMMIT_MLAT_CLIENT=6e942bca83aa4efed1bc10cfa857f67b1eba13b1 && \
+    COMMIT_MLAT_CLIENT=28ae4f7409c9dfddd2bb8984baadce5d31fdc8e3 && \
     mkdir -p $SRCTMP && wget -O ${SRCTMP}.tar.gz ${URL}/archive/${COMMIT_MLAT_CLIENT}.tar.gz && tar xf ${SRCTMP}.tar.gz -C ${SRCTMP} --strip-components=1 && \
     pushd ${SRCTMP} && \
     VENV="/usr/local/share/adsbexchange/venv" && \
