@@ -1,5 +1,10 @@
 FROM debian:bullseye-20250317 AS dump1090
 
+# bullseye-security moved to archive.debian.org (bullseye LTS ended 2026-08-31);
+# deb.debian.org no longer serves its packages, so apt-get install fails with 404.
+RUN sed -i 's|deb.debian.org/debian-security|archive.debian.org/debian-security|' /etc/apt/sources.list
+
+
 ENV DUMP1090_VERSION=v10.2
 
 # DUMP1090
@@ -24,6 +29,11 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
     make CPUFEATURES=no
 
 FROM debian:bullseye-20250317 AS piaware
+
+# bullseye-security moved to archive.debian.org (bullseye LTS ended 2026-08-31);
+# deb.debian.org no longer serves its packages, so apt-get install fails with 404.
+RUN sed -i 's|deb.debian.org/debian-security|archive.debian.org/debian-security|' /etc/apt/sources.list
+
 
 ENV DEBIAN_VERSION=bullseye
 ENV PIAWARE_VERSION=v10.2
@@ -82,6 +92,11 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 # pinned commits, feel free to update to most recent commit, no major versions usually
 
 FROM debian:bullseye-20250317 AS adsbexchange_packages
+
+# bullseye-security moved to archive.debian.org (bullseye LTS ended 2026-08-31);
+# deb.debian.org no longer serves its packages, so apt-get install fails with 404.
+RUN sed -i 's|deb.debian.org/debian-security|archive.debian.org/debian-security|' /etc/apt/sources.list
+
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /tmp
@@ -148,6 +163,11 @@ RUN set -x && \
 
 FROM debian:bullseye-20250317 AS radarbox
 
+# bullseye-security moved to archive.debian.org (bullseye LTS ended 2026-08-31);
+# deb.debian.org no longer serves its packages, so apt-get install fails with 404.
+RUN sed -i 's|deb.debian.org/debian-security|archive.debian.org/debian-security|' /etc/apt/sources.list
+
+
 # git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' 'https://github.com/mutability/mlat-client.git' | cut -d '/' -f 3 | grep '^v.*' | tail -1
 ENV RADARBOX_MLAT_VERSION=v0.2.13
 
@@ -204,6 +224,11 @@ RUN set -x && \
     /usr/local/share/radarbox-mlat-client/venv/bin/python3 -c 'import mlat.client'
 
 FROM debian:bullseye-20250317 AS rbfeeder_fixcputemp
+
+# bullseye-security moved to archive.debian.org (bullseye LTS ended 2026-08-31);
+# deb.debian.org no longer serves its packages, so apt-get install fails with 404.
+RUN sed -i 's|deb.debian.org/debian-security|archive.debian.org/debian-security|' /etc/apt/sources.list
+
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ADD rbfeeder_fixcputemp ./
 RUN set -x && \
@@ -247,6 +272,11 @@ COPY --from=rbfeeder_fixcputemp ./librbfeeder_fixcputemp.so /copy_root/usr/lib/a
 ADD build /copy_root/build
 
 FROM debian:bullseye-20250317-slim AS serve
+
+# bullseye-security moved to archive.debian.org (bullseye LTS ended 2026-08-31);
+# deb.debian.org no longer serves its packages, so apt-get install fails with 404.
+RUN sed -i 's|deb.debian.org/debian-security|archive.debian.org/debian-security|' /etc/apt/sources.list
+
 
 ENV DEBIAN_VERSION=bullseye
 ENV RTL_SDR_VERSION=v2.0.2
