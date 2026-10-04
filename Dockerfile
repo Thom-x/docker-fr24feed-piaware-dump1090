@@ -376,7 +376,7 @@ RUN arch=$(dpkg --print-architecture) && \
     libssl-dev \
     tcl-dev \
     chrpath \
-    netcat-traditional \
+    netcat-openbsd \
     tcl-tls \
     # piaware's bookworm package depends on rsyslog (bullseye's didn't);
     # installed for the dependency only, s6 doesn't start it
