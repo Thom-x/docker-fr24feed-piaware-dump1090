@@ -1,4 +1,4 @@
-FROM debian:bullseye-20250317 AS dump1090
+FROM debian:bookworm-20260918 AS dump1090
 
 ENV DUMP1090_VERSION=v10.2
 
@@ -23,9 +23,9 @@ RUN git clone -b ${DUMP1090_VERSION} --depth 1 https://github.com/flightaware/du
     patch --ignore-whitespace -p1 -ru --force --no-backup-if-mismatch -d $PWD < /patch/flightradar24.patch && \
     make CPUFEATURES=no
 
-FROM debian:bullseye-20250317 AS piaware
+FROM debian:bookworm-20260918 AS piaware
 
-ENV DEBIAN_VERSION=bullseye
+ENV DEBIAN_VERSION=bookworm
 ENV PIAWARE_VERSION=v10.2
 
 # PIAWARE
@@ -42,6 +42,9 @@ RUN apt-get update && \
     autoconf \
     python3-dev \
     python3-setuptools \
+    python3-wheel \
+    python3-build \
+    python3-pip \
     patchelf \
     python3-virtualenv \
     libz-dev \
@@ -60,17 +63,12 @@ RUN apt-get update && \
     libboost-filesystem-dev && \
     rm -rf /var/lib/apt/lists/*
 
-# Build and install tcl-tls
-RUN git config --global http.sslVerify false && git config --global http.postBuffer 1048576000
-RUN git clone https://github.com/flightaware/tcltls-rebuild && \
-    cd  /tmp/tcltls-rebuild && \
-    git fetch --all && \
-    git reset --hard origin/master && \
-    ./prepare-build.sh bullseye && \
-    cd package-bullseye && \
-    dpkg-buildpackage -b --no-sign && \
-    cd ../ && \
-    dpkg -i tcl-tls_*.deb
+# tcl-tls: FlightAware's tcltls-rebuild only backports to stretch/buster/
+# bullseye. Bookworm ships tcl-tls 1.7.22-3, which satisfies piaware's
+# dependency (>= 1.7.22-2+fa1).
+RUN apt-get update && \
+    apt-get install -y tcl-tls && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN git clone -b ${PIAWARE_VERSION} --depth 1 https://github.com/flightaware/piaware_builder.git piaware_builder
 WORKDIR /tmp/piaware_builder
@@ -81,7 +79,7 @@ RUN ./sensible-build.sh ${DEBIAN_VERSION} && \
 #ADSBEXCHANGE
 # pinned commits, feel free to update to most recent commit, no major versions usually
 
-FROM debian:bullseye-20250317 AS adsbexchange_packages
+FROM debian:bookworm-20260918 AS adsbexchange_packages
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /tmp
@@ -146,7 +144,7 @@ RUN set -x && \
     # mlat-client: simple test
     /usr/local/share/adsbexchange/venv/bin/python3 -c 'import mlat.client'
 
-FROM debian:bullseye-20250317 AS radarbox
+FROM debian:bookworm-20260918 AS radarbox
 
 # git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' 'https://github.com/mutability/mlat-client.git' | cut -d '/' -f 3 | grep '^v.*' | tail -1
 ENV RADARBOX_MLAT_VERSION=v0.2.13
@@ -179,14 +177,16 @@ RUN set -x && \
     rm -rf /var/lib/apt/lists/* && \
     dpkg --add-architecture armhf && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 1D043681 && \
-    bash -c "echo 'deb https://apt.rb24.com/ bullseye main' > /etc/apt/sources.list.d/rb24.list" && \
+    bash -c "echo 'deb https://apt.rb24.com/ bookworm main' > /etc/apt/sources.list.d/rb24.list" && \
     apt-get update && \
     # download rbfeeder deb
     cd /tmp && \
     apt-get download rbfeeder:armhf && \
     # extract rbfeeder deb
     ar xv ./rbfeeder_*armhf.deb && \
-    tar xvf ./data.tar.xz -C / && \
+    # bookworm has a merged /usr (/lib, /bin are symlinks): keep them, or
+    # extracting the package replaces /lib and breaks every binary
+    tar --keep-directory-symlink -xvf ./data.tar.xz -C / && \
     # mlat-client
     SRCTMP=/srctmp && \
     URL=https://github.com/mutability/mlat-client && \
@@ -203,7 +203,7 @@ RUN set -x && \
     # mlat-client: simple test
     /usr/local/share/radarbox-mlat-client/venv/bin/python3 -c 'import mlat.client'
 
-FROM debian:bullseye-20250317 AS rbfeeder_fixcputemp
+FROM debian:bookworm-20260918 AS rbfeeder_fixcputemp
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ADD rbfeeder_fixcputemp ./
 RUN set -x && \
@@ -219,7 +219,7 @@ RUN if [ $TARGETARCH != "arm" ]; then \
     ; fi
 
 # CONFD
-FROM debian:bullseye-20250317-slim AS confd
+FROM debian:bookworm-20260918-slim AS confd
 
 ADD confd/confd.tar.gz /opt/confd/
 RUN ARCH=$(dpkg --print-architecture) && \
@@ -228,17 +228,14 @@ RUN ARCH=$(dpkg --print-architecture) && \
     rm /opt/confd/bin/confd-*
 
 # ONE STAGE COPY ALL
-FROM debian:bullseye-20250317-slim AS copyall
+FROM debian:bookworm-20260918-slim AS copyall
 
 COPY --from=dump1090 /tmp/dump1090/dump1090 /copy_root/usr/lib/fr24/
 COPY --from=dump1090 /tmp/dump1090/public_html /copy_root/usr/lib/fr24/public_html
 COPY --from=piaware /tmp/piaware_builder /copy_root/piaware_builder
-COPY --from=piaware /tmp/tcltls-rebuild /copy_root/tcltls-rebuild
 COPY --from=adsbexchange  /usr/local/share/adsbexchange /copy_root/usr/local/share/adsbexchange
 RUN mv /copy_root/piaware_builder/piaware_*_*.deb /copy_root/piaware.deb && \
     rm -rf /copy_root/piaware_builder
-RUN mv /copy_root/tcltls-rebuild/tcl-tls_*.deb /copy_root/tcl-tls.deb && \
-    rm -rf /copy_root/tcltls-rebuild
 COPY --from=confd /opt/confd/bin/confd /copy_root/opt/confd/bin/
 COPY --from=radarbox /usr/bin/rbfeeder /copy_root/usr/bin/rbfeeder_armhf
 COPY --from=radarbox /usr/bin/dump1090-rb /copy_root/usr/bin/dump1090-rbs
@@ -246,9 +243,9 @@ COPY --from=radarbox /usr/local/share/radarbox-mlat-client /copy_root/usr/local/
 COPY --from=rbfeeder_fixcputemp ./librbfeeder_fixcputemp.so /copy_root/usr/lib/arm-linux-gnueabihf/librbfeeder_fixcputemp.so
 ADD build /copy_root/build
 
-FROM debian:bullseye-20250317-slim AS serve
+FROM debian:bookworm-20260918-slim AS serve
 
-ENV DEBIAN_VERSION=bullseye
+ENV DEBIAN_VERSION=bookworm
 ENV RTL_SDR_VERSION=v2.0.2
 
 ENV FR24FEED_AMD64_VERSION=1.0.56-0
@@ -379,11 +376,11 @@ RUN arch=$(dpkg --print-architecture) && \
     libssl-dev \
     tcl-dev \
     chrpath \
-    netcat && \
-    # Install tcl-tls
-    cd / && \
-    dpkg -i tcl-tls.deb && \
-    rm tcl-tls.deb && \
+    netcat-openbsd \
+    tcl-tls \
+    # piaware's bookworm package depends on rsyslog (bullseye's didn't);
+    # installed for the dependency only, s6 doesn't start it
+    rsyslog && \
     # DUMP1090
     mkdir -p /usr/lib/fr24/public_html/data && \
     rm /usr/lib/fr24/public_html/config.js && \
@@ -405,7 +402,7 @@ RUN arch=$(dpkg --print-architecture) && \
     echo "DOWNLOAD_ARCH=$DOWNLOAD_ARCH" && \
     wget https://opensky-network.org/files/firmware/opensky-feeder_latest_${DOWNLOAD_ARCH}.deb && \
     ar vx ./*.deb && \
-    tar xvf data.tar.xz -C / && \
+    tar --keep-directory-symlink -xvf data.tar.xz -C / && \
     rm ./*.deb && \
     mkdir -p /var/lib/openskyd/conf.d && \
     # Radarbox : create symlink for rbfeeder wrapper
