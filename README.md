@@ -99,6 +99,7 @@ To disable starting a service you can add an environement variable :
 | `SERVICE_ENABLE_ADSBFI`             | `false` | Disable adsb.fi feeder     | `false`       |
 | `SERVICE_ENABLE_RADARBOX`           | `false` | Disable radarbox feeder    | `false`       |
 | `SERVICE_ENABLE_ADSBHUB`            | `false` | Disable adsbhub feeder     | `false`       |
+| `SERVICE_ENABLE_PLANETRACK`         | `false` | Disable PlaneTrack feeder  | `false`       |
 | `SERVICE_ENABLE_BIAST`              | `false` | Disable biast-t option     | `false`       |
 
 
@@ -216,6 +217,31 @@ You can check that your MLAT is working correctly by searching for your station 
 The ADS-B Exchange Anywhere map will be available at: <https://www.adsbfi.com/api/feeders/?feed=MY_UUID>
 
 Ex : `-e 'SERVICE_ENABLE_ADSBFI=true' -e 'ADSBFI_UUID=8398f51e-a61d-11ec-b909-0242ac120002' -e 'ADSBFI_STATION_NAME=MyStation'`
+
+## PlaneTrack
+
+PlaneTrack.ai is an independent flight tracker, a commercial service with a free tier. No account is needed to start feeding: the feed sends Beast data to `feed.planetrack.ai:30004` and MLAT to `feed.planetrack.ai:31090`.
+
+Add the environment variable `SERVICE_ENABLE_PLANETRACK` and set it to `true`.
+
+Optionally add the environment variable `PLANETRACK_UUID` with a UUID generated with `cat /proc/sys/kernel/random/uuid` or `uuidgen` if you don't have `/proc`.
+If `PLANETRACK_UUID` is empty, a UUID is generated on the first start and printed in the log. Set `PLANETRACK_UUID` to that value to keep the same station when the container is re-created (or mount a volume at `/usr/local/share/planetrack`).
+In case of multiple receivers, please use a different UUID for each receiver.
+
+| Environment Variable          | Description               | Default value |
+| ----------------------------- | ------------------------- | ------------- |
+| `PLANETRACK_UUID`             | Uuid (generated if empty) | empty         |
+| `PLANETRACK_STATION_NAME`     | Station name              | `ADSBFI_STATION_NAME`, else `ADSBEXCHANGE_STATION_NAME`, else `planetrack-` + start of the UUID |
+| `PLANETRACK_MLAT`             | Enable/disable MLAT       | `true`        |
+
+Configure the MLAT coordinates so that PlaneTrack MLAT can work. (see its own section below)
+PlaneTrack MLAT uses the same `MLAT_EXACT_LAT`, `MLAT_EXACT_LON` and `MLAT_ALTITUDE_MSL_METERS` as the other MLAT feeds. If they are not set, PlaneTrack MLAT stays off with a warning and the Beast feed keeps running. To turn it off on purpose, set `PLANETRACK_MLAT` to `false` (you won't get MLAT results and won't contribute to MLAT).
+
+`PLANETRACK_STATION_NAME` is used for the MLAT sync status. If it is empty, the adsb.fi or ADS-B Exchange station name is used, else `planetrack-` followed by the first 8 characters of the UUID.
+
+Claim the station at <https://planetrack.ai/myip?uuid=MY_UUID> to get PlaneTrack Premium free while it feeds. The same page shows whether PlaneTrack is receiving data from the station.
+
+Ex : `-e 'SERVICE_ENABLE_PLANETRACK=true' -e 'PLANETRACK_UUID=8398f51e-a61d-11ec-b909-0242ac120002' -e 'PLANETRACK_STATION_NAME=MyStation'`
 
 ## Exact coordinates for MLAT
 
