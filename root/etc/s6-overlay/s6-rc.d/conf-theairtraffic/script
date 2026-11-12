@@ -1,0 +1,20 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_THEAIRTRAFFIC" != "false" ]; then
+    if ((${#THEAIRTRAFFIC_UUID} == 36)); then
+        set -eo pipefail
+
+        mkdir -p /usr/local/share/theairtraffic
+        echo "${THEAIRTRAFFIC_UUID}" >/usr/local/share/theairtraffic/theairtraffic-uuid
+        mkdir -p /run/theairtraffic-feed
+
+        # delay other theairtraffic services a little bit to produce less error messages on startup
+        sleep 1.5
+    else
+        for i in {1..5}; do
+            echo "FATAL: THEAIRTRAFFIC_UUID not set or invalid!" | mawk -W interactive '{printf "%c[35m[theairtraffic-conf]%c[31m %s\n", 27, 27, $0}'
+        done
+        kill 1
+        exit 1
+    fi
+fi
