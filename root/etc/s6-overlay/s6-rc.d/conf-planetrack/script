@@ -1,0 +1,45 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_PLANETRACK" != "false" ]; then
+    set -eo pipefail
+
+    PLANETRACK_DIR=/usr/local/share/planetrack
+    PLANETRACK_UUID_FILE="${PLANETRACK_DIR}/planetrack-uuid"
+    UUID_REGEX='^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+
+    mkdir -p "${PLANETRACK_DIR}"
+
+    PLANETRACK_UUID="$(echo "${PLANETRACK_UUID}" | tr -d '[:space:]')"
+
+    if [ -n "${PLANETRACK_UUID}" ]; then
+        if ! [[ "${PLANETRACK_UUID}" =~ ${UUID_REGEX} ]]; then
+            for _ in {1..5}; do
+                echo "FATAL: PLANETRACK_UUID invalid! It must be a 36 character UUID, or empty to generate one." | mawk -W interactive '{printf "%c[35m[planetrack-conf]%c[31m %s\n", 27, 27, $0}'
+            done
+            kill 1
+            exit 1
+        fi
+        echo "${PLANETRACK_UUID}" >"${PLANETRACK_UUID_FILE}"
+    else
+        # no UUID given: reuse the one generated on an earlier start of this container, or generate one
+        PLANETRACK_UUID="$(head -n 1 "${PLANETRACK_UUID_FILE}" 2>/dev/null || true)"
+        if [[ "${PLANETRACK_UUID}" =~ ${UUID_REGEX} ]]; then
+            UUID_SOURCE="reusing UUID from ${PLANETRACK_UUID_FILE}"
+        else
+            PLANETRACK_UUID="$(cat /proc/sys/kernel/random/uuid 2>/dev/null || python3 -c 'import uuid; print(uuid.uuid4())')"
+            echo "${PLANETRACK_UUID}" >"${PLANETRACK_UUID_FILE}"
+            UUID_SOURCE="generated a new UUID"
+        fi
+        {
+            echo "WARNING: PLANETRACK_UUID not set, ${UUID_SOURCE}: ${PLANETRACK_UUID}"
+            echo "Pass it as environment var PLANETRACK_UUID=${PLANETRACK_UUID} to keep this station when the container is re-created!"
+        } | mawk -W interactive '{printf "%c[35m[planetrack-conf]%c[0m %s\n", 27, 27, $0}'
+    fi
+
+    echo "Check and claim this station: https://planetrack.ai/myip?uuid=${PLANETRACK_UUID}" | mawk -W interactive '{printf "%c[35m[planetrack-conf]%c[0m %s\n", 27, 27, $0}'
+
+    mkdir -p /run/planetrack-feed
+
+    # delay other planetrack services a little bit to produce less error messages on startup
+    sleep 1.5
+fi
