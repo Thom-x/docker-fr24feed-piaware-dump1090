@@ -35,6 +35,9 @@ services:
       - "SERVICE_ENABLE_ADSBFI=true"
       - "ADSBFI_UUID=MY_UUID"
       - "ADSBFI_STATION_NAME=MY_STATION_NAME"
+      - "SERVICE_ENABLE_PLANETRACK=true"
+      - "PLANETRACK_UUID=MY_UUID" # optional: leave it out and a UUID is generated and printed in the log
+      - "PLANETRACK_STATION_NAME=MY_STATION_NAME"
       - "SERVICE_ENABLE_RADARBOX=true"
       - "RADARBOX_SHARING_KEY=MY_SHARING_KEY"
       - "SERVICE_ENABLE_ADSBHUB=true"

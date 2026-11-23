@@ -1,0 +1,46 @@
+#!/command/with-contenv bash
+
+if [ "$SERVICE_ENABLE_PLANETRACK" != "false" ]; then
+    if [ "$PLANETRACK_MLAT" == "no" ] || [ "$PLANETRACK_MLAT" == "false" ]; then
+        tail -f /dev/null
+        exit 0
+    fi
+
+    set -eo pipefail
+
+    MLAT_ALTITUDE_MSL_METERS="$(echo "${MLAT_ALTITUDE_MSL_METERS}" | tr --delete ' m')"
+
+    # same station name as the other MLAT feeds unless one is set for PlaneTrack; else derived from the station UUID
+    PLANETRACK_STATION_NAME="${PLANETRACK_STATION_NAME:-${ADSBFI_STATION_NAME:-${ADSBEXCHANGE_STATION_NAME}}}"
+    if [ -z "$PLANETRACK_STATION_NAME" ]; then
+        PLANETRACK_STATION_NAME="planetrack-$(head -c 8 /usr/local/share/planetrack/planetrack-uuid 2>/dev/null || echo station)"
+    fi
+
+    # MLAT needs the exact receiver position. Without it, only PlaneTrack MLAT pauses: the Beast feed and
+    # every other service keep running.
+    if [ -z "$MLAT_EXACT_LAT" ] || [ -z "$MLAT_EXACT_LON" ] || [ -z "$MLAT_ALTITUDE_MSL_METERS" ]; then
+        echo "WARNING: MLAT_EXACT_LAT, MLAT_EXACT_LON or MLAT_ALTITUDE_MSL_METERS not set, PlaneTrack MLAT is off (the Beast feed still runs). Set them, or PLANETRACK_MLAT=false to hide this warning." | mawk -W interactive '{printf "%c[35m[planetrack-mlat]%c[33m %s\n", 27, 27, $0}'
+        tail -f /dev/null
+        exit 0
+    fi
+    # pushes MLAT results into dump1090 via port 30104
+    # listens on 31018 to provide MLAT results as SBS / basestation
+    # listens on 30189 to provide MLAT results as beast
+    # pushes MLAT results into planetrack-feed (local json only, readsb does not forward MLAT results)
+    /usr/local/share/adsbexchange/venv/bin/mlat-client \
+        --input-type dump1090 --no-udp \
+        --input-connect 127.0.0.1:30005 \
+        --server feed.planetrack.ai:31090 \
+        --lat "${MLAT_EXACT_LAT}" --lon "${MLAT_EXACT_LON}" \
+        --alt "${MLAT_ALTITUDE_MSL_METERS}" \
+        --user "${PLANETRACK_STATION_NAME}" \
+        --uuid-file /usr/local/share/planetrack/planetrack-uuid \
+        --results beast,connect,127.0.0.1:30104 \
+        --results basestation,listen,31018 \
+        --results beast,listen,30189 \
+        --results beast,connect,127.0.0.1:30188 \
+        2>&1 | mawk -W interactive '{printf "%c[35m[planetrack-mlat]%c[0m %s\n", 27, 27, $0}'
+    # awk -W interactive ...  (prefix log messages with color and "[planetrack-mlat]")
+else
+    tail -f /dev/null
+fi
