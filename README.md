@@ -99,6 +99,7 @@ To disable starting a service you can add an environement variable :
 | `SERVICE_ENABLE_ADSBFI`             | `false` | Disable adsb.fi feeder     | `false`       |
 | `SERVICE_ENABLE_RADARBOX`           | `false` | Disable radarbox feeder    | `false`       |
 | `SERVICE_ENABLE_ADSBHUB`            | `false` | Disable adsbhub feeder     | `false`       |
+| `SERVICE_ENABLE_THEAIRTRAFFIC`      | `false` | Disable TheAirTraffic feed | `false`       |
 | `SERVICE_ENABLE_BIAST`              | `false` | Disable biast-t option     | `false`       |
 
 
@@ -216,6 +217,27 @@ You can check that your MLAT is working correctly by searching for your station 
 The ADS-B Exchange Anywhere map will be available at: <https://www.adsbfi.com/api/feeders/?feed=MY_UUID>
 
 Ex : `-e 'SERVICE_ENABLE_ADSBFI=true' -e 'ADSBFI_UUID=8398f51e-a61d-11ec-b909-0242ac120002' -e 'ADSBFI_STATION_NAME=MyStation'`
+
+## TheAirTraffic
+
+Add the environment variable `THEAIRTRAFFIC_UUID` with a UUID generated with `cat /proc/sys/kernel/random/uuid` or `uuidgen` if you don't have `/proc`.
+In case of multiple receivers, please use a different UUID for each receiver.
+
+Add the environment variable `SERVICE_ENABLE_THEAIRTRAFFIC` and set it to `true`.
+
+| Environment Variable          | Description               | Default value |
+| ----------------------------- | ------------------------- | ------------- |
+| `THEAIRTRAFFIC_UUID`          | Uuid (required)           | empty         |
+| `THEAIRTRAFFIC_STATION_NAME`  | Station name              | empty         |
+| `THEAIRTRAFFIC_MLAT`          | Enable/disable MLAT       | `true`        |
+
+Configure the MLAT coordinates so that TheAirTraffic MLAT can work. (see its own section below)
+If you don't want to supply your exact coordinates, please set the `THEAIRTRAFFIC_MLAT` environment variable to `false`. (you won't get MLAT results and won't contribute to MLAT)
+
+Add the environment variable `THEAIRTRAFFIC_STATION_NAME`, it will be used for the MLAT sync status.
+You can check that your feeder is connected here: <https://theairtraffic.com/myip>
+
+Ex : `-e 'SERVICE_ENABLE_THEAIRTRAFFIC=true' -e 'THEAIRTRAFFIC_UUID=8398f51e-a61d-11ec-b909-0242ac120002' -e 'THEAIRTRAFFIC_STATION_NAME=MyStation'`
 
 ## Exact coordinates for MLAT
 
